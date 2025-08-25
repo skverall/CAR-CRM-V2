@@ -17,31 +17,31 @@ async function fetchExpenses() {
 export default async function ExpensesPage() {
   const items = await fetchExpenses()
   return (
-    <main className="p-6">
-      <h1 className="text-2xl font-semibold mb-4">Список расходов</h1>
-      <div className="overflow-x-auto">
-        <table className="min-w-[800px] w-full text-sm">
+    <main>
+      <h1>Список расходов</h1>
+      <div style={{ overflowX: 'auto' }}>
+        <table style={{ minWidth: 800, width: '100%' }}>
           <thead>
-            <tr className="text-left border-b">
-              <th className="py-2 pr-4">Date</th>
-              <th className="py-2 pr-4">VIN</th>
-              <th className="py-2 pr-4">Model</th>
-              <th className="py-2 pr-4">Description</th>
-              <th className="py-2 pr-4">Category</th>
-              <th className="py-2 pr-4">Investor</th>
-              <th className="py-2 pr-4 text-right">Amount</th>
+            <tr>
+              <th>Date</th>
+              <th>VIN</th>
+              <th>Model</th>
+              <th>Description</th>
+              <th>Category</th>
+              <th>Investor</th>
+              <th style={{ textAlign: 'right' }}>Amount</th>
             </tr>
           </thead>
           <tbody>
             {items?.map((x:any) => (
-              <tr key={x.id} className="border-b hover:bg-neutral-50">
-                <td className="py-1 pr-4 whitespace-nowrap">{new Date(x.date).toLocaleDateString()}</td>
-                <td className="py-1 pr-4">{x.vin ?? ''}</td>
-                <td className="py-1 pr-4">{x.model ?? ''}</td>
-                <td className="py-1 pr-4">{x.description ?? ''}</td>
-                <td className="py-1 pr-4">{x.category ?? ''}</td>
-                <td className="py-1 pr-4">{x.investor ?? ''}</td>
-                <td className="py-1 pr-4 text-right">{Number(x.amount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+              <tr key={x.id}>
+                <td>{new Date(x.date).toLocaleDateString()}</td>
+                <td>{x.vin ?? ''}</td>
+                <td>{x.model ?? ''}</td>
+                <td>{x.description ?? ''}</td>
+                <td>{x.category ?? ''}</td>
+                <td>{x.investor ?? ''}</td>
+                <td style={{ textAlign: 'right' }}>{Number(x.amount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
               </tr>
             ))}
           </tbody>
