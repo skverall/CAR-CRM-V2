@@ -38,8 +38,8 @@ async function fetchExpenses(sp: SearchParams) {
   return data
 }
 
-export default async function ExpensesPage({ searchParams }: { searchParams: SearchParams | Promise<SearchParams> }) {
-  const sp = await Promise.resolve(searchParams)
+export default async function ExpensesPage({ searchParams }: { searchParams: Promise<SearchParams> }) {
+  const sp = await searchParams
   const items = await fetchExpenses(sp)
   const params = (k: string) => (Array.isArray(sp[k]) ? (sp[k] as string[])[0] : (sp[k] as string) || '')
   const exportHref = `/expenses/export?from=${encodeURIComponent(params('from') || '')}&to=${encodeURIComponent(params('to') || '')}&vin=${encodeURIComponent(params('vin') || '')}&model=${encodeURIComponent(params('model') || '')}&category=${encodeURIComponent(params('category') || '')}&investor=${encodeURIComponent(params('investor') || '')}&q=${encodeURIComponent(params('q') || '')}&limit=${encodeURIComponent(params('limit') || '5000')}`
