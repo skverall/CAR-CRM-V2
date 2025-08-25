@@ -24,10 +24,17 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
+      <body className={`${geistSans.variable} ${geistMono.variable}`}>
+        <header className="app-header">
+          <nav className="nav">
+            <a href="/">Home</a>
+            <a href="/expenses">Expenses</a>
+            <a href="/dashboard">Dashboard</a>
+          </nav>
+        </header>
+        <div className="container">
+          {children}
+        </div>
       </body>
     </html>
   );

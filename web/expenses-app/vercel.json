@@ -1,0 +1,7 @@
+{
+  "installCommand": "npm install",
+  "buildCommand": "next build",
+  "devCommand": "next dev",
+  "framework": "nextjs"
+}
+
