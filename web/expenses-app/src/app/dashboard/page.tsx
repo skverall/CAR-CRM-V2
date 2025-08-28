@@ -52,24 +52,49 @@ export default async function DashboardPage() {
         </Card>
 
         <Card title="По категориям">
-          <ul style={{ margin: 0, paddingLeft: 16 }}>
-            {byCategory.map((x: any, i: number) => (
-              <li key={i}>{x.category ?? 'Н/Д'}: {Number(x.total).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ({x.cnt})</li>
-            ))}
-          </ul>
+          {(() => {
+            const max = Math.max(1, ...byCategory.map((x: any) => Number(x.total || 0)))
+            return (
+              <div style={{ display: 'grid', gap: 6 }}>
+                {byCategory.map((x: any, i: number) => (
+                  <div key={i}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: 'var(--muted)' }}>
+                      <span>{x.category ?? 'Н/Д'}</span>
+                      <span>{Number(x.total).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                    </div>
+                    <div style={{ height: 8, background: '#1f252b', borderRadius: 4, overflow: 'hidden', border: '1px solid var(--border)' }}>
+                      <div style={{ width: `${(Number(x.total || 0) / max) * 100}%`, height: '100%', background: 'var(--accent)' }} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )
+          })()}
         </Card>
       </div>
 
       <div style={{ marginTop: 16 }}>
         <Card title="По месяцам">
-          <ul style={{ margin: 0, paddingLeft: 16 }}>
-            {byMonth.map((x: any, i: number) => (
-              <li key={i}>{new Date(x.month).toLocaleDateString(undefined, { year: 'numeric', month: 'long' })}: {Number(x.total).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</li>
-            ))}
-          </ul>
+          {(() => {
+            const max = Math.max(1, ...byMonth.map((x: any) => Number(x.total || 0)))
+            return (
+              <div style={{ display: 'grid', gap: 6 }}>
+                {byMonth.map((x: any, i: number) => (
+                  <div key={i}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: 'var(--muted)' }}>
+                      <span>{new Date(x.month).toLocaleDateString(undefined, { year: 'numeric', month: 'long' })}</span>
+                      <span>{Number(x.total).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                    </div>
+                    <div style={{ height: 8, background: '#1f252b', borderRadius: 4, overflow: 'hidden', border: '1px solid var(--border)' }}>
+                      <div style={{ width: `${(Number(x.total || 0) / max) * 100}%`, height: '100%', background: 'var(--accent)' }} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )
+          })()}
         </Card>
       </div>
     </main>
   )
 }
-

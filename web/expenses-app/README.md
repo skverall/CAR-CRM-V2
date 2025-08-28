@@ -9,12 +9,22 @@ NEXT_PUBLIC_SUPABASE_URL=your_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
 ```
 
+## Database Migrations (Supabase)
+
+- Open `supabase/migrations/0001_expenses.sql` in Supabase SQL editor and run it, or use Supabase CLI to apply migrations.
+- It creates table `expenses`, helpful indexes (including trigram for fast search), and dashboard views:
+  - `v_expenses_by_investor`
+  - `v_expenses_by_category`
+  - `v_expenses_by_month`
+- Row Level Security (RLS) is enabled with a read-only policy.
+
 ## Features
 
 - Expenses list with interactive filters (live URL updates)
 - Pagination and column sorting
 - CSV export with current filters
 - Dashboard with aggregated views
+- Inline charts for categories and months
 
 ## Getting Started
 
