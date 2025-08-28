@@ -47,15 +47,16 @@ function parseSort(sp: SearchParams): { col: string; asc: boolean } {
   return { col: safeCol, asc }
 }
 
-export default async function ExpensesPage({ searchParams }: { searchParams: SearchParams }) {
-  const pageSize = Math.min(Math.max(parseInt(sval(searchParams, 'pageSize') || '50', 10) || 50, 1), 500)
-  const page = Math.max(parseInt(sval(searchParams, 'page') || '1', 10) || 1, 1)
+export default async function ExpensesPage({ searchParams }: { searchParams: Promise<SearchParams> }) {
+  const awaited = await searchParams
+  const pageSize = Math.min(Math.max(parseInt(sval(awaited, 'pageSize') || '50', 10) || 50, 1), 500)
+  const page = Math.max(parseInt(sval(awaited, 'page') || '1', 10) || 1, 1)
   const fromIdx = (page - 1) * pageSize
   const toIdx = fromIdx + pageSize - 1
-  const { col, asc } = parseSort(searchParams)
+  const { col, asc } = parseSort(awaited)
 
   // total count
-  const countQuery = applyFilters(supabase.from('expenses').select('*', { count: 'exact', head: true }), searchParams)
+  const countQuery = applyFilters(supabase.from('expenses').select('*', { count: 'exact', head: true }), awaited)
   const { count, error: countError } = await countQuery
   if (countError) {
     console.error(countError)
@@ -65,7 +66,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams: Sea
   let data: any[] = []
   let error: any = null
   try {
-    let q = applyFilters(supabase.from('expenses').select('*'), searchParams)
+    let q = applyFilters(supabase.from('expenses').select('*'), awaited)
     q = q.order(col as any, { ascending: asc }).range(fromIdx, toIdx)
     const res = await q
     if (res.error) throw res.error
@@ -79,8 +80,8 @@ export default async function ExpensesPage({ searchParams }: { searchParams: Sea
   const pageSum = data.reduce((s, x: any) => s + Number(x.amount || 0), 0)
 
   const sp = new URLSearchParams()
-  for (const k of Object.keys(searchParams)) {
-    const v = sval(searchParams, k)
+  for (const k of Object.keys(awaited)) {
+    const v = sval(awaited, k)
     if (v) sp.set(k, v)
   }
 
@@ -94,7 +95,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams: Sea
   }
 
   function sortHref(field: string) {
-    const current = sval(searchParams, 'sort') || 'date_desc'
+    const current = sval(awaited, 'sort') || 'date_desc'
     const [c, d = 'desc'] = current.split('_')
     const nextDir = c === field && d === 'asc' ? 'desc' : 'asc'
     return withParams({ sort: `${field}_${nextDir}`, page: '1' })
@@ -152,4 +153,3 @@ export default async function ExpensesPage({ searchParams }: { searchParams: Sea
     </main>
   )
 }
-
