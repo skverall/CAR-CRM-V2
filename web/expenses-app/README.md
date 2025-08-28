@@ -25,6 +25,8 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
 - CSV export with current filters
 - Dashboard with aggregated views
 - Inline charts for categories and months
+- Quick date presets (This month / Last month / This year)
+- Investors page with totals and link to filtered expenses
 
 ## Getting Started
 

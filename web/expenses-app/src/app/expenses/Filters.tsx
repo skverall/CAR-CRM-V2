@@ -15,7 +15,7 @@ function useDebounced(fn: () => void, delay: number, deps: any[]) {
     if (t.current) clearTimeout(t.current)
     t.current = setTimeout(fn, delay)
     return () => t.current && clearTimeout(t.current)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps)
 }
 
@@ -66,6 +66,29 @@ export default function Filters() {
     return `/expenses/export?${params.toString()}`
   }, [sp])
 
+  const fmtDate = (d: Date) => d.toISOString().slice(0, 10)
+  const setRange = useCallback((from?: Date, to?: Date) => {
+    const params = new URLSearchParams(sp?.toString())
+    if (from) params.set('from', fmtDate(from)); else params.delete('from')
+    if (to) params.set('to', fmtDate(to)); else params.delete('to')
+    params.delete('page')
+    router.replace(`${pathname}?${params.toString()}`)
+  }, [router, pathname, sp])
+
+  const presets = useMemo(() => {
+    const now = new Date()
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
+    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0)
+    const prevStart = new Date(now.getFullYear(), now.getMonth() - 1, 1)
+    const prevEnd = new Date(now.getFullYear(), now.getMonth(), 0)
+    const startOfYear = new Date(now.getFullYear(), 0, 1)
+    return {
+      thisMonth: { from: startOfMonth, to: endOfMonth },
+      lastMonth: { from: prevStart, to: prevEnd },
+      thisYear: { from: startOfYear, to: now },
+    }
+  }, [])
+
   return (
     <form onSubmit={(e) => e.preventDefault()} className="toolbar" role="search">
       <input name="from" placeholder="От (ГГГГ-ММ-ДД)" value={form.from} onChange={onChange("from")} />
@@ -74,7 +97,7 @@ export default function Filters() {
       <input name="model" placeholder="Модель" value={form.model} onChange={onChange("model")} />
       <input name="category" placeholder="Категория" value={form.category} onChange={onChange("category")} />
       <input name="investor" placeholder="Инвестор" value={form.investor} onChange={onChange("investor")} />
-      <input name="q" placeholder="Поиск в описании/заметках" value={form.q} onChange={onChange("q")} className="col-span-3" />
+      <input name="q" placeholder="Поиск по описанию/заметкам" value={form.q} onChange={onChange("q")} className="col-span-3" />
       <select name="pageSize" value={form.pageSize} onChange={onChange("pageSize")}>
         <option value="25">25</option>
         <option value="50">50</option>
@@ -83,6 +106,12 @@ export default function Filters() {
       </select>
       <button type="button" onClick={onReset}>Сбросить</button>
       <Link href={exportHref} role="button">Экспорт CSV</Link>
+      <div style={{ display: 'flex', gap: 8 }}>
+        <button type="button" onClick={() => setRange(presets.thisMonth.from, presets.thisMonth.to)}>Этот месяц</button>
+        <button type="button" onClick={() => setRange(presets.lastMonth.from, presets.lastMonth.to)}>Прошлый месяц</button>
+        <button type="button" onClick={() => setRange(presets.thisYear.from, presets.thisYear.to)}>Этот год</button>
+      </div>
     </form>
   )
 }
+

@@ -28,16 +28,16 @@ export default async function DashboardPage() {
 
   return (
     <main>
-      <h1>Дашборд</h1>
+      <h1>Сводка</h1>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 16 }}>
-        <Card title="Всего расходов">
+        <Card title="Общая сумма расходов">
           <div style={{ fontSize: 24, fontWeight: 700 }}>{total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
         </Card>
-        <Card title="Категории">
+        <Card title="Категорий">
           <div style={{ fontSize: 24, fontWeight: 700 }}>{byCategory.length}</div>
         </Card>
-        <Card title="Инвесторы">
+        <Card title="Инвесторов">
           <div style={{ fontSize: 24, fontWeight: 700 }}>{byInvestor.length}</div>
         </Card>
       </div>
@@ -46,7 +46,7 @@ export default async function DashboardPage() {
         <Card title="По инвесторам">
           <ul style={{ margin: 0, paddingLeft: 16 }}>
             {byInvestor.map((x: any, i: number) => (
-              <li key={i}>{x.investor ?? 'Н/Д'}: {Number(x.total).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ({x.cnt})</li>
+              <li key={i}>{x.investor ?? 'н/д'}: {Number(x.total).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ({x.cnt})</li>
             ))}
           </ul>
         </Card>
@@ -59,7 +59,7 @@ export default async function DashboardPage() {
                 {byCategory.map((x: any, i: number) => (
                   <div key={i}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: 'var(--muted)' }}>
-                      <span>{x.category ?? 'Н/Д'}</span>
+                      <span>{x.category ?? 'н/д'}</span>
                       <span>{Number(x.total).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
                     </div>
                     <div style={{ height: 8, background: '#1f252b', borderRadius: 4, overflow: 'hidden', border: '1px solid var(--border)' }}>
@@ -98,3 +98,4 @@ export default async function DashboardPage() {
     </main>
   )
 }
+

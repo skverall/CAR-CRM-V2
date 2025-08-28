@@ -4,10 +4,11 @@ export default function Page() {
   return (
     <main>
       <h1>Расходы</h1>
-      <p>Выберите раздел для работы:</p>
+      <p>Быстрые ссылки по разделам:</p>
       <ul>
         <li><Link href="/expenses">Список расходов</Link></li>
-        <li><Link href="/dashboard">Дашборд</Link></li>
+        <li><Link href="/dashboard">Сводка</Link></li>
+        <li><Link href="/investors">Инвесторы</Link></li>
       </ul>
     </main>
   )

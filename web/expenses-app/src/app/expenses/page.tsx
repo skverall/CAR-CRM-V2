@@ -107,13 +107,13 @@ export default async function ExpensesPage({ searchParams }: { searchParams: Sea
       <Filters />
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
-        <div className="muted">Всего строк: {total ?? '—'}</div>
+        <div className="muted">Всего записей: {total ?? '—'}</div>
         <div className="muted">Страница: {page}{totalPages ? ` / ${totalPages}` : ''}</div>
         <div className="muted">Сумма на странице: {pageSum.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
       </div>
 
       {error && (
-        <div style={{ color: '#f87171', marginBottom: 12 }}>Ошибка загрузки: {String(error.message || error)}</div>
+        <div style={{ color: '#f87171', marginBottom: 12 }}>Ошибка загрузки данных: {String(error.message || error)}</div>
       )}
 
       <div style={{ overflowX: 'auto' }}>
@@ -147,7 +147,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams: Sea
 
       <div className="pagination" style={{ marginTop: 12 }}>
         <Link href={withParams({ page: String(Math.max(1, page - 1)) })} aria-disabled={page <= 1} role="button">Назад</Link>
-        <Link href={withParams({ page: String(page + 1) })} aria-disabled={totalPages ? page >= totalPages : false} role="button">Вперед</Link>
+        <Link href={withParams({ page: String(page + 1) })} aria-disabled={totalPages ? page >= totalPages : false} role="button">Вперёд</Link>
       </div>
     </main>
   )
