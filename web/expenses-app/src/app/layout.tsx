@@ -31,6 +31,9 @@ export default function RootLayout({
             <a href="/expenses">Расходы</a>
             <a href="/dashboard">Сводка</a>
             <a href="/investors">Инвесторы</a>
+            <span style={{ flex: 1 }} />
+            <a href="/expenses/new">+ Новый расход</a>
+            <a href="/inventory/new">+ Новый инвентарь</a>
           </nav>
         </header>
         <div className="container">{children}</div>
@@ -38,4 +41,3 @@ export default function RootLayout({
     </html>
   );
 }
-

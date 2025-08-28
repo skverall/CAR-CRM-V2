@@ -7,16 +7,18 @@ Create `.env.local` in `web/expenses-app` and set:
 ```
 NEXT_PUBLIC_SUPABASE_URL=your_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
+# Set ONLY on server (never expose client-side)
+SUPABASE_SERVICE_ROLE=your_service_role_key
 ```
 
 ## Database Migrations (Supabase)
 
-- Open `supabase/migrations/0001_expenses.sql` in Supabase SQL editor and run it, or use Supabase CLI to apply migrations.
+- Open `supabase/migrations/0001_expenses.sql` and `supabase/migrations/0002_inventory.sql` in Supabase SQL editor and run them, or use Supabase CLI to apply migrations.
 - It creates table `expenses`, helpful indexes (including trigram for fast search), and dashboard views:
   - `v_expenses_by_investor`
   - `v_expenses_by_category`
   - `v_expenses_by_month`
-- Row Level Security (RLS) is enabled with a read-only policy.
+- Row Level Security (RLS) is enabled with a read-only policy. API routes use `SUPABASE_SERVICE_ROLE` for inserts.
 
 ## Features
 
@@ -27,6 +29,8 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
 - Inline charts for categories and months
 - Quick date presets (This month / Last month / This year)
 - Investors page with totals and link to filtered expenses
+- Create expense form at `/expenses/new` (server-side write via Supabase service role)
+- Create inventory form at `/inventory/new` and `inventory` table
 
 ## Getting Started
 

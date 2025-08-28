@@ -29,6 +29,11 @@ export default async function DashboardPage() {
   return (
     <main>
       <h1>Сводка</h1>
+      <div style={{ marginBottom: 8 }}>
+        <a href="/expenses/new" role="button">+ Новый расход</a>
+        <span style={{ marginLeft: 8 }} />
+        <a href="/inventory/new" role="button">+ Новый инвентарь</a>
+      </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 16 }}>
         <Card title="Общая сумма расходов">
@@ -98,4 +103,3 @@ export default async function DashboardPage() {
     </main>
   )
 }
-

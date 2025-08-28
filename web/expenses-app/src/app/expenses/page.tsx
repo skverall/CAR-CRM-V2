@@ -4,9 +4,6 @@ import { createClient } from '@supabase/supabase-js'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-if (!supabaseUrl || !supabaseAnonKey) {
-  console.warn('Не заданы переменные окружения NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_ANON_KEY')
-}
 const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
 type SearchParams = Record<string, string | string[] | undefined>
@@ -55,14 +52,9 @@ export default async function ExpensesPage({ searchParams }: { searchParams: Pro
   const toIdx = fromIdx + pageSize - 1
   const { col, asc } = parseSort(awaited)
 
-  // total count
   const countQuery = applyFilters(supabase.from('expenses').select('*', { count: 'exact', head: true }), awaited)
-  const { count, error: countError } = await countQuery
-  if (countError) {
-    console.error(countError)
-  }
+  const { count } = await countQuery
 
-  // page data
   let data: any[] = []
   let error: any = null
   try {
@@ -104,7 +96,9 @@ export default async function ExpensesPage({ searchParams }: { searchParams: Pro
   return (
     <main>
       <h1>Расходы</h1>
-
+      <div style={{ marginBottom: 8 }}>
+        <Link href="/expenses/new" role="button">+ Добавить расход</Link>
+      </div>
       <Filters />
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
