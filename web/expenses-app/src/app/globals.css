@@ -29,8 +29,16 @@ body {
 table { width: 100%; border-collapse: collapse; font-size: 14px; }
 th, td { padding: 8px 12px; border-bottom: 1px solid var(--border); }
 th { text-align: left; color: var(--muted); font-weight: 600; }
+tbody tr:hover { background: #151a20; }
 
 /* Forms */
 form input, form select { padding: 8px 10px; border: 1px solid var(--border); background: var(--card); color: var(--foreground); border-radius: 6px; }
 form button, a[role="button"] { padding: 8px 12px; border: 1px solid var(--border); background: var(--card); color: var(--foreground); border-radius: 6px; cursor: pointer; text-decoration: none; }
 form button:hover, a[role="button"]:hover { border-color: var(--accent); }
+
+/* Helpers */
+.muted { color: var(--muted); }
+.toolbar { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; margin-bottom: 12px; }
+.toolbar .col-span-3 { grid-column: span 3 / span 3; }
+.pagination { display: flex; gap: 8px; }
+.pagination [aria-disabled="true"] { opacity: .5; pointer-events: none; }

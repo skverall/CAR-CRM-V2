@@ -24,37 +24,37 @@ function Card({ title, children }: { title: string; children: React.ReactNode })
 
 export default async function DashboardPage() {
   const { byInvestor, byCategory, byMonth } = await fetchViews()
-  const total = [...byInvestor].reduce((s:any, x:any) => s + Number(x.total || 0), 0)
+  const total = [...byInvestor].reduce((s: any, x: any) => s + Number(x.total || 0), 0)
 
   return (
     <main>
       <h1>Дашборд</h1>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 16 }}>
-        <Card title="Всего">
+        <Card title="Всего расходов">
           <div style={{ fontSize: 24, fontWeight: 700 }}>{total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
         </Card>
-        <Card title="Категорий">
+        <Card title="Категории">
           <div style={{ fontSize: 24, fontWeight: 700 }}>{byCategory.length}</div>
         </Card>
-        <Card title="Инвесторов">
+        <Card title="Инвесторы">
           <div style={{ fontSize: 24, fontWeight: 700 }}>{byInvestor.length}</div>
         </Card>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 16, marginTop: 16 }}>
-        <Card title="По инвестору">
+        <Card title="По инвесторам">
           <ul style={{ margin: 0, paddingLeft: 16 }}>
             {byInvestor.map((x: any, i: number) => (
-              <li key={i}>{x.investor ?? '—'}: {Number(x.total).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ({x.cnt})</li>
+              <li key={i}>{x.investor ?? 'Н/Д'}: {Number(x.total).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ({x.cnt})</li>
             ))}
           </ul>
         </Card>
 
-        <Card title="По категории">
+        <Card title="По категориям">
           <ul style={{ margin: 0, paddingLeft: 16 }}>
             {byCategory.map((x: any, i: number) => (
-              <li key={i}>{x.category ?? '—'}: {Number(x.total).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ({x.cnt})</li>
+              <li key={i}>{x.category ?? 'Н/Д'}: {Number(x.total).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ({x.cnt})</li>
             ))}
           </ul>
         </Card>

@@ -1,5 +1,21 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Environment
+
+Create `.env.local` in `web/expenses-app` and set:
+
+```
+NEXT_PUBLIC_SUPABASE_URL=your_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
+```
+
+## Features
+
+- Expenses list with interactive filters (live URL updates)
+- Pagination and column sorting
+- CSV export with current filters
+- Dashboard with aggregated views
+
 ## Getting Started
 
 First, run the development server:

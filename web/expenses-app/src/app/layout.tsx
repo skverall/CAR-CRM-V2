@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Expenses CRM",
-  description: "Expenses website powered by Supabase",
+  title: "Расходы | CRM",
+  description: "Простое приложение для учета расходов (Supabase)",
 };
 
 export default function RootLayout({
@@ -23,13 +23,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="ru">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <header className="app-header">
           <nav className="nav">
-            <a href="/">Home</a>
-            <a href="/expenses">Expenses</a>
-            <a href="/dashboard">Dashboard</a>
+            <a href="/">Домой</a>
+            <a href="/expenses">Расходы</a>
+            <a href="/dashboard">Дашборд</a>
           </nav>
         </header>
         <div className="container">
