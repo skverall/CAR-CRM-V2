@@ -1,0 +1,16 @@
+{
+  "name": "car-crm-v2",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": [
+    "web"
+  ],
+  "scripts": {
+    "dev": "pnpm --filter web dev",
+    "build": "pnpm --filter web build",
+    "start": "pnpm --filter web start",
+    "lint": "pnpm --filter web lint",
+    "import": "pnpm --filter web run import"
+  }
+}
+

@@ -1,0 +1,186 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// Models reflect core tables. Advanced DDL (views, RLS, triggers) is handled in SQL migrations.
+
+model investors {
+  id                 String   @id @db.Uuid @default(dbgenerated("gen_random_uuid()"))
+  name               String   @unique
+  initial_investment Decimal  @db.Numeric(12, 2) @default(0)
+  notes              String?  @db.Text
+  created_at         DateTime @default(now()) @db.Timestamptz(6)
+  updated_at         DateTime @updatedAt @db.Timestamptz(6)
+
+  vehicles vehicles[]
+  expenses expenses[]
+  payouts  payouts[]
+  extra_income extra_income[]
+}
+
+enum vehicle_status {
+  On_Sale   @map("On Sale")
+  Sold
+  Reserved
+  In_Transit @map("In Transit")
+}
+
+model vehicles {
+  id            String          @id @db.Uuid @default(dbgenerated("gen_random_uuid()"))
+  vin           String?         @unique
+  make          String
+  model         String
+  year          Int
+  trim          String?
+  spec          String?
+  color         String?
+  tire_year     Int?
+  status        vehicle_status  @default(On_Sale)
+  date_purchased DateTime       @db.Date
+  investor_id   String          @db.Uuid
+  purchase_price Decimal        @db.Numeric(12, 2)
+  total_cost     Decimal        @db.Numeric(12, 2) @default(0)
+  list_price     Decimal?       @db.Numeric(12, 2)
+  sold_price     Decimal?       @db.Numeric(12, 2)
+  date_sold      DateTime?      @db.Date
+  market_avg     Decimal?       @db.Numeric(12, 2)
+  roi            Decimal?       @db.Numeric(8, 5) @default(dbgenerated("NULL"))
+  market_margin  Decimal?       @db.Numeric(8, 5) @default(dbgenerated("NULL"))
+  notes          String?        @db.Text
+  created_at     DateTime       @default(now()) @db.Timestamptz(6)
+  updated_at     DateTime       @updatedAt @db.Timestamptz(6)
+
+  investor investors @relation(fields: [investor_id], references: [id])
+  expenses expenses[]
+}
+
+model expenses {
+  id          String   @id @db.Uuid @default(dbgenerated("gen_random_uuid()"))
+  vehicle_id  String?  @db.Uuid
+  investor_id String?  @db.Uuid
+  date        DateTime @db.Date
+  description String?  @db.Text
+  amount      Decimal  @db.Numeric(12, 2)
+  category    String
+  notes       String?  @db.Text
+  created_at  DateTime @default(now()) @db.Timestamptz(6)
+  updated_at  DateTime @updatedAt @db.Timestamptz(6)
+
+  vehicle  vehicles?   @relation(fields: [vehicle_id], references: [id])
+  investor investors?  @relation(fields: [investor_id], references: [id])
+}
+
+model extra_income {
+  id          String   @id @db.Uuid @default(dbgenerated("gen_random_uuid()"))
+  date        DateTime @db.Date
+  source      String
+  amount      Decimal  @db.Numeric(12, 2)
+  notes       String?  @db.Text
+  investor_id String?  @db.Uuid
+  created_at  DateTime @default(now()) @db.Timestamptz(6)
+}
+
+model cash_accounts {
+  id      String  @id @db.Uuid @default(dbgenerated("gen_random_uuid()"))
+  name    String  @unique
+  balance Decimal @db.Numeric(12, 2) @default(0)
+}
+
+enum cash_reference_type {
+  expense
+  vehicle_purchase
+  vehicle_sale
+  extra_income
+  manual_adjustment
+}
+
+model cash_movements {
+  id             String               @id @db.Uuid @default(dbgenerated("gen_random_uuid()"))
+  date           DateTime             @db.Date
+  account_id     String               @db.Uuid
+  amount         Decimal              @db.Numeric(12, 2)
+  reference_type cash_reference_type
+  reference_id   String?              @db.Uuid
+  notes          String?              @db.Text
+  created_at     DateTime             @default(now()) @db.Timestamptz(6)
+}
+
+enum payout_type {
+  returned_capital
+  profit_share
+  other
+}
+
+model payouts {
+  id          String      @id @db.Uuid @default(dbgenerated("gen_random_uuid()"))
+  date        DateTime    @db.Date
+  investor_id String      @db.Uuid
+  amount      Decimal     @db.Numeric(12, 2)
+  type        payout_type
+  notes       String?     @db.Text
+  created_at  DateTime    @default(now()) @db.Timestamptz(6)
+
+  investor investors @relation(fields: [investor_id], references: [id])
+}
+
+enum attachment_kind {
+  photo
+  invoice
+  insurance
+  rta
+  other
+}
+
+model attachments {
+  id          String   @id @db.Uuid @default(dbgenerated("gen_random_uuid()"))
+  vehicle_id  String?  @db.Uuid
+  expense_id  String?  @db.Uuid
+  url         String
+  kind        attachment_kind
+  uploaded_by String   @db.Uuid
+  created_at  DateTime @default(now()) @db.Timestamptz(6)
+}
+
+enum user_role {
+  owner
+  manager
+  analyst
+  viewer
+}
+
+model users {
+  supabase_user_id String   @id @db.Uuid
+  role             user_role @default(viewer)
+  created_at       DateTime @default(now()) @db.Timestamptz(6)
+}
+
+model audit_logs {
+  id         String   @id @db.Uuid @default(dbgenerated("gen_random_uuid()"))
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  actor_id   String?  @db.Uuid
+  entity     String
+  entity_id  String   @db.Uuid
+  action     String
+  diff       Json?
+}
+
+model import_errors {
+  id         String   @id @db.Uuid @default(dbgenerated("gen_random_uuid()"))
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  sheet      String
+  row        Json?
+  error      String
+}
