@@ -1,7 +1,7 @@
 "use client"
 import { useEffect, useMemo, useState } from 'react'
 import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table'
-import type { ExpenseRow } from '@/src/lib/types'
+import type { ExpenseRow } from '../../../lib/types'
 
 function TextInput(props: React.InputHTMLAttributes<HTMLInputElement>) {
   return <input {...props} className={`border rounded px-2 py-1 ${props.className || ''}`} />

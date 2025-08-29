@@ -1,7 +1,7 @@
 "use client"
 import { useEffect, useMemo, useState } from 'react'
 import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table'
-import type { InvestorPositionRow } from '@/src/lib/types'
+import type { InvestorPositionRow } from '../../../lib/types'
 
 export default function InvestorsPage() {
   const [rows, setRows] = useState<InvestorPositionRow[]>([])

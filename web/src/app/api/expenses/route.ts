@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server'
-import { prisma } from '@/src/server/db'
-import { Prisma } from '@/src/generated/prisma'
+import { prisma } from '../../../server/db'
+import { Prisma } from '../../../generated/prisma'
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url)

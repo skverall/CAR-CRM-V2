@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server'
-import { prisma } from '@/src/server/db'
-import { Prisma } from '@/src/generated/prisma'
+import { prisma } from '../../../../../server/db'
+import { Prisma } from '../../../../../generated/prisma'
 
 export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
   const id = params.id

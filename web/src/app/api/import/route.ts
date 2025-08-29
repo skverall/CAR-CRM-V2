@@ -1,8 +1,8 @@
 import { NextRequest } from 'next/server'
-import { prisma } from '@/src/server/db'
-import { Prisma } from '@/src/generated/prisma'
+import { prisma } from '../../../server/db'
+import { Prisma } from '../../../generated/prisma'
 import * as XLSX from 'xlsx'
-import { parseDate, parseNumber, splitMakeModel, detectTrimAndSpec } from '@/src/lib/excel'
+import { parseDate, parseNumber, splitMakeModel, detectTrimAndSpec } from '../../../lib/excel'
 
 export const runtime = 'nodejs'
 
