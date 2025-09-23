@@ -2,12 +2,34 @@ import { NextResponse } from 'next/server'
 
 import { getCurrentSession } from '@/lib/auth'
 import { handleError } from '@/lib/errors'
-import { listFxRates, upsertFxRate } from '@/server/fx'
+import { getRate, listFxRates, upsertFxRate } from '@/server/fx'
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const { searchParams } = new URL(request.url)
+    const counter = searchParams.get('counter')
+
+    if (counter) {
+      const dateParam = searchParams.get('date')
+      const lookupDate = dateParam ? new Date(dateParam) : new Date()
+      const rate = await getRate(counter.toUpperCase(), lookupDate)
+      return NextResponse.json({
+        id: rate.id,
+        counter: rate.counter,
+        rate: rate.rate.toNumber(),
+        date: rate.date.toISOString(),
+      })
+    }
+
     const rates = await listFxRates()
-    return NextResponse.json(rates)
+    return NextResponse.json(
+      rates.map((rate) => ({
+        id: rate.id,
+        counter: rate.counter,
+        rate: rate.rate.toNumber(),
+        date: rate.date.toISOString(),
+      })),
+    )
   } catch (error) {
     return handleError(error)
   }

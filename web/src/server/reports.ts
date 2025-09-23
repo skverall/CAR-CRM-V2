@@ -1,4 +1,4 @@
-import { Prisma, CarStatus } from '@prisma/client'
+import { Prisma, CarStatus, CapitalAccountType } from '@prisma/client'
 
 import { prisma } from '@/lib/prisma'
 import { listCapitalAccounts } from '@/server/capital'
@@ -10,7 +10,7 @@ function sumExpenses(expenses: Array<{ amount: Prisma.Decimal; fxRateToAed: Pris
 }
 
 export async function getDashboardOverview() {
-  const [cars, expenses, incomes, accounts, cashflow] = await Promise.all([
+  const [cars, expenses, incomes, capitalAccounts, cashflowTxns] = await Promise.all([
     prisma.car.findMany({
       include: {
         expenses: true,
@@ -56,20 +56,53 @@ export async function getDashboardOverview() {
 
   const incomeTotal = sumExpenses(incomes)
 
-  const cashflowSeries = cashflow.map((txn) => ({
-    date: txn.date.toISOString().slice(0, 10),
-    amount: txn.amountAed.toNumber(),
+  const accounts = capitalAccounts.map((account) => ({
+    id: account.id,
+    name: account.name,
+    type: account.type,
+    balanceAed: account.balanceAed,
   }))
+
+  const capitalSummary = accounts.reduce<Record<CapitalAccountType, number>>((summary, account) => {
+    summary[account.type] = (summary[account.type] ?? 0) + account.balanceAed
+    return summary
+  }, {} as Record<CapitalAccountType, number>)
+
+  const profitSplit = totalProfit.lte(DECIMAL_ZERO)
+    ? []
+    : [
+        { label: 'Investor', amountAed: totalProfit.mul(0.5).toNumber() },
+        { label: 'Assistant', amountAed: totalProfit.mul(0.25).toNumber() },
+        { label: 'Owner', amountAed: totalProfit.mul(0.25).toNumber() },
+      ]
+
+  const cashflowDaily = cashflowTxns.reduce<Map<string, Prisma.Decimal>>((map, txn) => {
+    const key = txn.date.toISOString().slice(0, 10)
+    const current = map.get(key) ?? DECIMAL_ZERO
+    map.set(key, current.add(txn.amountAed))
+    return map
+  }, new Map())
+
+  const cashflowSeries = Array.from(cashflowDaily.entries())
+    .sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))
+    .map(([date, amount]) => ({ date, amount: amount.toNumber() }))
 
   return {
     carsInWork,
     totalProfitAed: totalProfit.toNumber(),
     totalRevenueAed: incomeTotal.toNumber(),
     accounts,
+    capitalSummary: {
+      business: capitalSummary[CapitalAccountType.BUSINESS] ?? 0,
+      investor: capitalSummary[CapitalAccountType.INVESTOR] ?? 0,
+      owner: capitalSummary[CapitalAccountType.OWNER] ?? 0,
+      assistant: capitalSummary[CapitalAccountType.ASSISTANT] ?? 0,
+    },
     expenseDistribution: Object.entries(expenseDistribution).map(([type, amount]) => ({
       type,
       amountAed: amount.toNumber(),
     })),
+    profitSplit,
     cashflowSeries,
   }
 }
