@@ -36,3 +36,9 @@ export const carListQuerySchema = z.object({
 })
 
 export type CarListQuery = z.infer<typeof carListQuerySchema>
+
+export const carStatusUpdateSchema = z.object({
+  status: z.nativeEnum(CarStatus),
+})
+
+export type CarStatusUpdateInput = z.infer<typeof carStatusUpdateSchema>

@@ -14,6 +14,7 @@ import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { useToast } from '@/components/ui/use-toast'
+import { useFxRateAutoFill } from '@/hooks/use-fx-rate'
 
 const VIN_REGEX = /^[A-HJ-NPR-Z0-9]{11,17}$/
 
@@ -70,6 +71,25 @@ export function AddCarDialog({ accounts }: Props) {
       notes: '',
       fundingAccountId: accounts.find((account) => account.type === 'BUSINESS')?.id ?? '',
     },
+  })
+
+  const buyCurrency = form.watch('buyCurrency')
+  const buyDate = form.watch('buyDate')
+
+  const handleFxRate = React.useCallback(
+    (nextRate: number) => {
+      form.setValue('buyRate', Number(nextRate.toFixed(6)), {
+        shouldDirty: false,
+        shouldValidate: true,
+      })
+    },
+    [form],
+  )
+
+  const { isLoading: isFxLoading } = useFxRateAutoFill({
+    currency: buyCurrency,
+    date: buyDate,
+    onRate: handleFxRate,
   })
 
   const onSubmit = async (values: CarFormValues) => {
@@ -216,6 +236,9 @@ export function AddCarDialog({ accounts }: Props) {
                   <FormControl>
                     <Input type='number' step='0.0001' {...field} />
                   </FormControl>
+                  <FormDescription>
+                    {isFxLoading ? 'Подбираем курс...' : 'Подставляется автоматически по справочнику FX.'}
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}

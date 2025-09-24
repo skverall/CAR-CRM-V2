@@ -14,6 +14,7 @@ import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { useToast } from '@/components/ui/use-toast'
+import { useFxRateAutoFill } from '@/hooks/use-fx-rate'
 
 const expenseTypes = [
   'FUEL',
@@ -80,6 +81,25 @@ export function AddExpenseDialog({ accounts, cars, defaultCarId }: Props) {
       paidFrom: 'BUSINESS_FUNDS',
       isPersonal: false,
     },
+  })
+
+  const currency = form.watch('currency')
+  const date = form.watch('date')
+
+  const handleFxRate = React.useCallback(
+    (nextRate: number) => {
+      form.setValue('fxRateToAed', Number(nextRate.toFixed(6)), {
+        shouldDirty: false,
+        shouldValidate: true,
+      })
+    },
+    [form],
+  )
+
+  const { isLoading: isFxLoading } = useFxRateAutoFill({
+    currency,
+    date,
+    onRate: handleFxRate,
   })
 
   const onSubmit = async (values: ExpenseFormValues) => {
@@ -209,6 +229,9 @@ export function AddExpenseDialog({ accounts, cars, defaultCarId }: Props) {
                   <FormControl>
                     <Input type='number' step='0.0001' {...field} />
                   </FormControl>
+                  <FormDescription>
+                    {isFxLoading ? 'Подбираем курс...' : 'Подставляется автоматически по справочнику FX.'}
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}

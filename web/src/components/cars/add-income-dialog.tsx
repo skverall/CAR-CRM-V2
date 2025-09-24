@@ -9,11 +9,12 @@ import { z } from 'zod'
 
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { useToast } from '@/components/ui/use-toast'
+import { useFxRateAutoFill } from '@/hooks/use-fx-rate'
 
 const formSchema = z.object({
   carId: z.string().min(1, 'Выберите автомобиль'),
@@ -64,6 +65,25 @@ export function AddIncomeDialog({ accounts, cars, defaultCarId }: Props) {
       paymentMethod: '',
       description: '',
     },
+  })
+
+  const currency = form.watch('currency')
+  const date = form.watch('date')
+
+  const handleFxRate = React.useCallback(
+    (nextRate: number) => {
+      form.setValue('fxRateToAed', Number(nextRate.toFixed(6)), {
+        shouldDirty: false,
+        shouldValidate: true,
+      })
+    },
+    [form],
+  )
+
+  const { isLoading: isFxLoading } = useFxRateAutoFill({
+    currency,
+    date,
+    onRate: handleFxRate,
   })
 
   const onSubmit = async (values: IncomeFormValues) => {
@@ -168,6 +188,9 @@ export function AddIncomeDialog({ accounts, cars, defaultCarId }: Props) {
                   <FormControl>
                     <Input type='number' step='0.0001' {...field} />
                   </FormControl>
+                  <FormDescription>
+                    {isFxLoading ? 'Подбираем курс...' : 'Подставляется автоматически по справочнику FX.'}
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}

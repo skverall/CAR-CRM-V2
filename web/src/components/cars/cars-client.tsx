@@ -1,10 +1,10 @@
 'use client'
 
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { ColumnDef } from '@tanstack/react-table'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import * as React from 'react'
 
+import { CAR_STATUS_BADGE_VARIANT, CAR_STATUS_LABEL } from '@/constants/cars'
 import { AddCarDialog } from '@/components/cars/add-car-dialog'
 import { AddExpenseDialog } from '@/components/cars/add-expense-dialog'
 import { AddIncomeDialog } from '@/components/cars/add-income-dialog'
@@ -42,47 +42,54 @@ type AccountOption = {
 }
 
 export function CarsClient({ cars }: { cars: CarListItem[] }) {
-  const router = useRouter()
   const { toast } = useToast()
-  const [accounts, setAccounts] = React.useState<AccountOption[]>([])
-  const [isLoading, setIsLoading] = React.useState(false)
+  const [accounts, setAccounts] = useState<AccountOption[]>([])
 
-  React.useEffect(() => {
+  useEffect(() => {
     let mounted = true
-    async function load() {
+
+    async function loadAccounts() {
       try {
         const response = await fetch('/api/capital/accounts')
-        if (!response.ok) throw new Error('Не удалось загрузить счета')
+        if (!response.ok) {
+          const payload = await response.json().catch(() => ({}))
+          throw new Error(payload.error ?? 'РќРµ СѓРґР°Р»РѕСЃСЊ РїРѕР»СѓС‡РёС‚СЊ СЃС‡РµС‚Р°')
+        }
         const data = await response.json()
         if (mounted) setAccounts(data)
       } catch (error) {
         toast({
-          title: 'Ошибка',
-          description: error instanceof Error ? error.message : 'Не удалось загрузить данные',
+          title: 'РћС€РёР±РєР°',
+          description: error instanceof Error ? error.message : 'РќРµ СѓРґР°Р»РѕСЃСЊ РїРѕР»СѓС‡РёС‚СЊ РґР°РЅРЅС‹Рµ СЃС‡РµС‚РѕРІ',
           variant: 'destructive',
         })
+      } finally {
+        // intentionally left blank
       }
     }
-    load()
+
+    loadAccounts()
     return () => {
       mounted = false
     }
   }, [toast])
 
-  const carOptions = React.useMemo(
-    () => cars.map((car) => ({ id: car.id, label: `${car.vin} • ${car.make} ${car.model} ${car.year}` })),
+  const carOptions = useMemo(
+    () => cars.map((car) => ({ id: car.id, label: `${car.vin} вЂў ${car.make} ${car.model} ${car.year}` })),
     [cars],
   )
 
-  const formatCurrency = React.useCallback((value: number) => {
-    return new Intl.NumberFormat('en-AE', {
-      style: 'currency',
-      currency: 'AED',
-      maximumFractionDigits: 0,
-    }).format(value)
-  }, [])
+  const formatCurrency = useCallback(
+    (value: number) =>
+      new Intl.NumberFormat('en-AE', {
+        style: 'currency',
+        currency: 'AED',
+        maximumFractionDigits: 0,
+      }).format(value),
+    [],
+  )
 
-  const columns = React.useMemo<ColumnDef<CarListItem>[]>(
+  const columns = useMemo<ColumnDef<CarListItem>[]>(
     () => [
       {
         accessorKey: 'vin',
@@ -90,7 +97,7 @@ export function CarsClient({ cars }: { cars: CarListItem[] }) {
       },
       {
         accessorKey: 'make',
-        header: 'Авто',
+        header: 'РђРІС‚Рѕ',
         cell: ({ row }) => (
           <div className='flex flex-col'>
             <span className='font-medium'>{row.original.make} {row.original.model}</span>
@@ -100,23 +107,27 @@ export function CarsClient({ cars }: { cars: CarListItem[] }) {
       },
       {
         accessorKey: 'status',
-        header: 'Статус',
-        cell: ({ row }) => <Badge>{row.original.status.toLowerCase()}</Badge>,
+        header: 'РЎС‚Р°С‚СѓСЃ',
+        cell: ({ row }) => (
+          <Badge variant={CAR_STATUS_BADGE_VARIANT[row.original.status as keyof typeof CAR_STATUS_BADGE_VARIANT] ?? 'outline'}>
+            {CAR_STATUS_LABEL[row.original.status as keyof typeof CAR_STATUS_LABEL] ?? row.original.status}
+          </Badge>
+        ),
       },
       {
-        header: 'Себестоимость',
+        header: 'РџРѕРєСѓРїРєР°',
         cell: ({ row }) => formatCurrency(row.original.metrics.buyCostAed),
       },
       {
-        header: 'Расходы',
+        header: 'Р Р°СЃС…РѕРґС‹',
         cell: ({ row }) => formatCurrency(row.original.metrics.expensesAed),
       },
       {
-        header: 'Выручка',
+        header: 'Р’С‹СЂСѓС‡РєР°',
         cell: ({ row }) => formatCurrency(row.original.metrics.revenueAed),
       },
       {
-        header: 'Прибыль',
+        header: 'РџСЂРёР±С‹Р»СЊ',
         cell: ({ row }) => (
           <span className={row.original.metrics.profitAed >= 0 ? 'text-emerald-600' : 'text-destructive'}>
             {formatCurrency(row.original.metrics.profitAed)}
@@ -133,7 +144,7 @@ export function CarsClient({ cars }: { cars: CarListItem[] }) {
         cell: ({ row }) => (
           <div className='flex items-center gap-2'>
             <Button variant='ghost' size='sm' asChild>
-              <Link href={`/cars/${row.original.id}`}>Детали</Link>
+              <Link href={`/cars/${row.original.id}`}>РћС‚РєСЂС‹С‚СЊ</Link>
             </Button>
             <AddExpenseDialog accounts={accounts} cars={carOptions} defaultCarId={row.original.id} />
             <AddIncomeDialog accounts={accounts} cars={carOptions} defaultCarId={row.original.id} />
@@ -147,15 +158,14 @@ export function CarsClient({ cars }: { cars: CarListItem[] }) {
   return (
     <div className='space-y-6'>
       <div className='flex flex-wrap items-center justify-between gap-2'>
-        <h1 className='text-2xl font-semibold tracking-tight'>Автомобили</h1>
+        <h1 className='text-2xl font-semibold tracking-tight'>РђРІС‚РѕРјРѕР±РёР»Рё</h1>
         <div className='flex flex-wrap gap-2'>
           <AddExpenseDialog accounts={accounts} cars={carOptions} />
           <AddIncomeDialog accounts={accounts} cars={carOptions} />
           <AddCarDialog accounts={accounts} />
         </div>
       </div>
-      <DataTable columns={columns} data={cars} searchKey='vin' placeholder='Поиск по VIN' />
+      <DataTable columns={columns} data={cars} searchKey='vin' placeholder='РџРѕРёСЃРє РїРѕ VIN' />
     </div>
   )
 }
-

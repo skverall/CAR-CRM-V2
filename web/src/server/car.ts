@@ -1,9 +1,10 @@
 import { Prisma, CarStatus, CapitalAccountType, CapitalTxnReason, UserRole } from '@prisma/client'
 
+import { CAR_STATUS_ORDER } from '@/constants/cars'
 import { AppError } from '@/lib/errors'
 import { prisma } from '@/lib/prisma'
 import { SessionUser } from '@/lib/auth'
-import { carCreateSchema, carListQuerySchema } from '@/lib/validators/cars'
+import { carCreateSchema, carListQuerySchema, carStatusUpdateSchema } from '@/lib/validators/cars'
 
 const DECIMAL_ZERO = new Prisma.Decimal(0)
 const decimal = (value: number | string) => new Prisma.Decimal(value)
@@ -13,13 +14,22 @@ const roleCanManageCars = new Set<UserRole>([UserRole.OWNER, UserRole.ASSISTANT]
 
 function ensureCanManage(user: SessionUser) {
   if (!roleCanManageCars.has(user.role)) {
-    throw new AppError('Недостаточно прав для управления автомобилями', { status: 403 })
+    throw new AppError('пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ', { status: 403 })
   }
 }
 
 function sumToAed(records: Array<{ amount: Prisma.Decimal; fxRateToAed: Prisma.Decimal }>) {
   return records.reduce((total, record) => total.add(record.amount.mul(record.fxRateToAed)), DECIMAL_ZERO)
 }
+
+function canTransitionStatus(current: CarStatus, next: CarStatus) {
+  if (current === next) return true
+  const fromIndex = CAR_STATUS_ORDER.indexOf(current)
+  const toIndex = CAR_STATUS_ORDER.indexOf(next)
+  if (fromIndex === -1 || toIndex === -1) return false
+  return toIndex >= fromIndex
+}
+
 
 function toPlainCar(car: Awaited<ReturnType<typeof prisma.car.findFirst>>) {
   if (!car) return null
@@ -54,7 +64,7 @@ export async function createCar(payload: unknown, user: SessionUser) {
     : await prisma.capitalAccount.findFirst({ where: { type: CapitalAccountType.BUSINESS } })
 
   if (!fundingAccount) {
-    throw new AppError('Не удалось определить счёт для финансирования покупки', { status: 400 })
+    throw new AppError('пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ', { status: 400 })
   }
 
   const car = await prisma.$transaction(async (tx) => {
@@ -208,7 +218,7 @@ export async function getCarById(id: string) {
   })
 
   if (!car) {
-    throw new AppError('Автомобиль не найден', { status: 404 })
+    throw new AppError('пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ', { status: 404 })
   }
 
   const directExpenses = car.expenses.filter((expense) => !expense.isPersonal)
@@ -266,6 +276,33 @@ export async function getCarById(id: string) {
   }
 }
 
+export async function updateCarStatus(carId: string, payload: unknown, user: SessionUser) {
+  ensureCanManage(user)
+  const data = carStatusUpdateSchema.parse(payload)
+
+  const car = await prisma.car.findUnique({ where: { id: carId } })
+
+  if (!car) {
+    throw new AppError('пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ', { status: 404 })
+  }
+
+  if (!canTransitionStatus(car.status, data.status)) {
+    throw new AppError('пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ', { status: 400 })
+  }
+
+  if (car.status === data.status) {
+    return toPlainCar(car)
+  }
+
+  const updated = await prisma.car.update({
+    where: { id: carId },
+    data: { status: data.status },
+  })
+
+  return toPlainCar(updated)
+}
+
+
 export async function distributeProfit(carId: string, user: SessionUser) {
   ensureCanManage(user)
   const car = await prisma.car.findUnique({
@@ -278,11 +315,11 @@ export async function distributeProfit(carId: string, user: SessionUser) {
   })
 
   if (!car) {
-    throw new AppError('Автомобиль не найден', { status: 404 })
+    throw new AppError('пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ', { status: 404 })
   }
 
   if (car.status !== CarStatus.SOLD) {
-    throw new AppError('Прибыль можно распределять только после продажи', { status: 400 })
+    throw new AppError('пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ', { status: 400 })
   }
 
   const directExpenses = car.expenses.filter((expense) => !expense.isPersonal)
@@ -292,7 +329,7 @@ export async function distributeProfit(carId: string, user: SessionUser) {
   const profit = revenue.sub(buyCost.add(expenseSum))
 
   if (profit.lte(DECIMAL_ZERO)) {
-    throw new AppError('Прибыль отсутствует', { status: 400 })
+    throw new AppError('пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ', { status: 400 })
   }
 
   const existingPayout = car.capitalTxns.some((txn) =>
@@ -304,7 +341,7 @@ export async function distributeProfit(carId: string, user: SessionUser) {
   )
 
   if (existingPayout) {
-    throw new AppError('Прибыль уже распределена для этого авто', { status: 409 })
+    throw new AppError('пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ', { status: 409 })
   }
 
   const businessAccount = await prisma.capitalAccount.findFirst({
@@ -312,7 +349,7 @@ export async function distributeProfit(carId: string, user: SessionUser) {
   })
 
   if (!businessAccount) {
-    throw new AppError('Не найден бизнес-счёт для распределения', { status: 400 })
+    throw new AppError('пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ-пїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ', { status: 400 })
   }
 
   const buyTxn = car.capitalTxns.find((txn) => txn.reason === CapitalTxnReason.BUY_CAR)
@@ -321,14 +358,14 @@ export async function distributeProfit(carId: string, user: SessionUser) {
     : await prisma.capitalAccount.findFirst({ where: { type: CapitalAccountType.INVESTOR } })
 
   if (!investorAccount) {
-    throw new AppError('Не найден инвесторский счёт', { status: 400 })
+    throw new AppError('пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ', { status: 400 })
   }
 
   const ownerAccount = await prisma.capitalAccount.findFirst({ where: { type: CapitalAccountType.OWNER } })
   const assistantAccount = await prisma.capitalAccount.findFirst({ where: { type: CapitalAccountType.ASSISTANT } })
 
   if (!ownerAccount || !assistantAccount) {
-    throw new AppError('Отсутствуют счета владельца или помощника', { status: 400 })
+    throw new AppError('пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ', { status: 400 })
   }
 
   const investorShare = profit.mul(0.5)
