@@ -15,7 +15,7 @@ interface ProtectedRouteProps {
 export function ProtectedRoute({ 
   children, 
   requiredRoles, 
-  redirectTo = '/auth/login' 
+  redirectTo = '/login'
 }: ProtectedRouteProps) {
   const { user, profile, loading } = useAuth()
   const router = useRouter()

@@ -57,7 +57,7 @@ export function RegisterForm() {
       } else {
         setSuccess(true)
         setTimeout(() => {
-          router.push('/auth/login')
+          router.push('/login')
         }, 2000)
       }
     } catch (err) {
@@ -177,7 +177,7 @@ export function RegisterForm() {
       <div className="text-center">
         <Button
           variant="link"
-          onClick={() => router.push('/auth/login')}
+          onClick={() => router.push('/login')}
           disabled={isLoading}
         >
           Уже есть аккаунт? Войти

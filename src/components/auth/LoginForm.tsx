@@ -105,7 +105,7 @@ export function LoginForm() {
       <div className="text-center">
         <Button
           variant="link"
-          onClick={() => router.push('/auth/register')}
+          onClick={() => router.push('/register')}
           disabled={isLoading}
         >
           Нет аккаунта? Зарегистрироваться
