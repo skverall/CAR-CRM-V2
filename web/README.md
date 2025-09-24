@@ -1,36 +1,61 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Авто-Учёт (CAR-CRM-V2)
 
-## Getting Started
+Веб-приложение на Next.js 14 для учёта автомобилей, капитала и распределения прибыли между инвестором, владельцем и помощником.
 
-First, run the development server:
+## Быстрый старт
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
+pnpm prisma migrate dev
+pnpm db:seed
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Приложение будет доступно на http://localhost:3000. Демонстрационные учётные данные создаются сидом (магические ссылки на указанные e-mail).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Скрипты
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+| Команда | Назначение |
+| --- | --- |
+| `pnpm dev` | запуск в режиме разработки |
+| `pnpm build` / `pnpm start` | сборка и запуск в production-режиме |
+| `pnpm test` | unit-тесты Vitest |
+| `pnpm test:coverage` | покрытие тестами |
+| `pnpm prisma migrate dev` | прогон миграций для SQLite |
+| `pnpm db:seed` | заполнение демо-данными |
 
-## Learn More
+## Docker
 
-To learn more about Next.js, take a look at the following resources:
+Для локального запуска в контейнере:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+docker compose up --build
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+Приложение доступно на http://localhost:3000, данные SQLite сохраняются в каталоге репозитория.
 
-## Deploy on Vercel
+## Структура отчётности и функционал
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- Дашборд с KPI, графиком cashflow и распределением прибыли.
+- Список авто с быстрыми действиями (расход, доход, смена статуса).
+- Карточка VIN с таймлайном операций, расчётом долей и кнопкой выплаты.
+- Раздел капитала с журналом движений, фильтрами, экспортом CSV и быстрыми кнопками депозита/вывода.
+- Отчёты с фильтрами по диапазону дат, сводкой по VIN, расходам и источникам, экспортом CSV.
+- Автоматическая подстановка FX-курса в формах (по справочнику `/api/fxrate`).
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+## Тесты
+
+Тесты сосредоточены на критичной бизнес-логике (агрегация отчётов, переходы статусов авто):
+
+```bash
+pnpm test
+```
+
+Отчёты о покрытии формируются в `coverage/`.
+
+## Полезные переменные окружения
+
+- `DATABASE_URL` — путь к SQLite (по умолчанию `file:./prisma/dev.db`).
+- `NEXTAUTH_SECRET`, `NEXTAUTH_URL` — параметры NextAuth.
+- SMTP-переменные `EMAIL_SERVER_*`, `EMAIL_FROM` — для отправки магических ссылок (по умолчанию используется вывод в консоль).
+

@@ -106,3 +106,161 @@ export async function getDashboardOverview() {
     cashflowSeries,
   }
 }
+
+type ReportFilterInput = {
+  from?: string
+  to?: string
+}
+
+export async function getReportSummary(filters: ReportFilterInput) {
+  const fromDate = filters.from ? new Date(filters.from) : undefined
+  const toDate = filters.to ? new Date(filters.to) : undefined
+
+  const expenseWhere: Prisma.ExpenseWhereInput = { isPersonal: false }
+  const generalExpenseWhere: Prisma.ExpenseWhereInput = { isPersonal: true }
+  const incomeWhere: Prisma.IncomeWhereInput = {}
+  const carWhere: Prisma.CarWhereInput = {}
+
+  if (fromDate || toDate) {
+    expenseWhere.date = {}
+    generalExpenseWhere.date = {}
+    incomeWhere.date = {}
+    carWhere.buyDate = {}
+    if (fromDate) {
+      expenseWhere.date.gte = fromDate
+      generalExpenseWhere.date.gte = fromDate
+      incomeWhere.date.gte = fromDate
+      carWhere.buyDate.gte = fromDate
+    }
+    if (toDate) {
+      expenseWhere.date.lte = toDate
+      generalExpenseWhere.date.lte = toDate
+      incomeWhere.date.lte = toDate
+      carWhere.buyDate.lte = toDate
+    }
+  }
+
+  const [expenses, generalExpenses, incomes, purchases] = await Promise.all([
+    prisma.expense.findMany({
+      where: expenseWhere,
+      include: {
+        car: {
+          select: { id: true, vin: true, make: true, model: true, year: true, source: true },
+        },
+      },
+    }),
+    prisma.expense.findMany({ where: generalExpenseWhere }),
+    prisma.income.findMany({
+      where: incomeWhere,
+      include: {
+        car: {
+          select: { id: true, vin: true, make: true, model: true, year: true, source: true },
+        },
+      },
+    }),
+    prisma.car.findMany({
+      where: carWhere,
+      select: { id: true, vin: true, make: true, model: true, year: true, source: true, buyPrice: true, buyRate: true },
+    }),
+  ])
+
+  const carMap = new Map<
+    string,
+    {
+      id: string
+      vin: string
+      make: string
+      model: string
+      year: number
+      source: string | null
+      buyCostAed: number
+      expensesAed: number
+      revenueAed: number
+    }
+  >()
+
+  const ensureCar = (car: { id: string; vin: string; make: string; model: string; year: number; source: string | null }) => {
+    if (!carMap.has(car.id)) {
+      carMap.set(car.id, {
+        id: car.id,
+        vin: car.vin,
+        make: car.make,
+        model: car.model,
+        year: car.year,
+        source: car.source,
+        buyCostAed: 0,
+        expensesAed: 0,
+        revenueAed: 0,
+      })
+    }
+    return carMap.get(car.id)!
+  }
+
+  let totalRevenue = 0
+  let totalDirectExpenses = 0
+
+  for (const car of purchases) {
+    const entry = ensureCar({ ...car, source: car.source })
+    const buyPrice = car.buyPrice instanceof Prisma.Decimal ? car.buyPrice.toNumber() : Number(car.buyPrice)
+    const buyRate = car.buyRate instanceof Prisma.Decimal ? car.buyRate.toNumber() : Number(car.buyRate)
+    entry.buyCostAed += buyPrice * buyRate
+    totalDirectExpenses += buyPrice * buyRate
+  }
+
+  const expenseByType = new Map<string, number>()
+  const revenueBySource = new Map<string, number>()
+
+  for (const expense of expenses) {
+    if (!expense.car) continue
+    const entry = ensureCar(expense.car)
+    const amountAed = expense.amount.mul(expense.fxRateToAed).toNumber()
+    entry.expensesAed += amountAed
+    totalDirectExpenses += amountAed
+
+    const typeKey = expense.type.toLowerCase()
+    expenseByType.set(typeKey, (expenseByType.get(typeKey) ?? 0) + amountAed)
+  }
+
+  for (const income of incomes) {
+    if (!income.car) continue
+    const entry = ensureCar(income.car)
+    const amountAed = income.amount.mul(income.fxRateToAed).toNumber()
+    entry.revenueAed += amountAed
+    totalRevenue += amountAed
+
+    const sourceKey = income.car.source ?? 'Не указан'
+    revenueBySource.set(sourceKey, (revenueBySource.get(sourceKey) ?? 0) + amountAed)
+  }
+
+  const generalExpensesAed = generalExpenses.reduce((sum, expense) => sum + expense.amount.mul(expense.fxRateToAed).toNumber(), 0)
+  const carSummaries = Array.from(carMap.values()).map((item) => ({
+    ...item,
+    profitAed: item.revenueAed - (item.buyCostAed + item.expensesAed),
+  }))
+
+  carSummaries.sort((a, b) => b.profitAed - a.profitAed)
+
+  const expenseDistribution = Array.from(expenseByType.entries())
+    .map(([type, amount]) => ({ type, amountAed: amount }))
+    .sort((a, b) => b.amountAed - a.amountAed)
+
+  const sourceDistribution = Array.from(revenueBySource.entries())
+    .map(([source, amount]) => ({ source, amountAed: amount }))
+    .sort((a, b) => b.amountAed - a.amountAed)
+
+  return {
+    filters: {
+      from: fromDate?.toISOString() ?? null,
+      to: toDate?.toISOString() ?? null,
+    },
+    totals: {
+      revenueAed: totalRevenue,
+      directExpensesAed: totalDirectExpenses,
+      generalExpensesAed,
+      profitAed: totalRevenue - (totalDirectExpenses + generalExpensesAed),
+    },
+    cars: carSummaries,
+    expenseByType: expenseDistribution,
+    revenueBySource: sourceDistribution,
+  }
+}

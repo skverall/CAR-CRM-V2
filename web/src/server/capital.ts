@@ -29,16 +29,39 @@ export async function listCapitalAccounts() {
   }))
 }
 
+export async function listCapitalTransactions(limit = 120) {
+  const txns = await prisma.capitalTxn.findMany({
+    orderBy: { date: 'desc' },
+    take: limit,
+    include: {
+      account: { select: { id: true, name: true, type: true } },
+      car: { select: { id: true, vin: true, make: true, model: true, year: true } },
+    },
+  })
+
+  return txns.map((txn) => ({
+    id: txn.id,
+    account: txn.account,
+    amountAed: txn.amountAed.toNumber(),
+    date: txn.date.toISOString(),
+    reason: txn.reason,
+    car: txn.car
+      ? { id: txn.car.id, vin: txn.car.vin, make: txn.car.make, model: txn.car.model, year: txn.car.year }
+      : null,
+    meta: txn.meta ?? null,
+  }))
+}
+
 export async function createCapitalTxn(payload: unknown, user: SessionUser) {
   const data = capitalTxnCreateSchema.parse(payload)
 
   if (ownerOnlyReasons.has(data.reason) && user.role !== UserRole.OWNER) {
-    throw new AppError('Недостаточно прав для операции', { status: 403 })
+    throw new AppError('пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ', { status: 403 })
   }
 
   const account = await prisma.capitalAccount.findUnique({ where: { id: data.accountId } })
   if (!account) {
-    throw new AppError('Счёт не найден', { status: 404 })
+    throw new AppError('пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ', { status: 404 })
   }
 
   const amountAed = decimal(data.amountAed)

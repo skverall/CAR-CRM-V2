@@ -1,11 +1,10 @@
-﻿'use client'
+'use client'
 
 import { CapitalTxnReason } from '@prisma/client'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Loader2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import * as React from 'react'
-import type { Resolver } from 'react-hook-form'
+import { type ReactNode, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -22,12 +21,12 @@ const reasonOptions = [
   CapitalTxnReason.WITHDRAW_OWNER,
   CapitalTxnReason.ADJUST,
   CapitalTxnReason.OTHER,
-]
+] as const
 
 const formSchema = z.object({
-  accountId: z.string().min(1, 'Select an account'),
-  amountAed: z.coerce.number().refine((value) => value !== 0, 'Amount cannot be zero'),
-  date: z.string().min(1, 'Date is required'),
+  accountId: z.string().min(1, 'Выберите счёт'),
+  amountAed: z.coerce.number().refine((value) => value !== 0, 'Сумма не может быть 0'),
+  date: z.string().min(1, 'Дата обязательна'),
   reason: z.nativeEnum(CapitalTxnReason),
   note: z.string().optional(),
 })
@@ -38,28 +37,48 @@ type AccountOption = {
   type: string
 }
 
-type Props = {
-  accounts: AccountOption[]
-}
-
 type FormValues = z.infer<typeof formSchema>
 
-const resolver: Resolver<FormValues> = zodResolver(formSchema) as unknown as Resolver<FormValues>
+type Props = {
+  accounts: AccountOption[]
+  trigger?: ReactNode
+  triggerLabel?: string
+  triggerVariant?: 'default' | 'secondary' | 'outline' | 'ghost'
+  reason?: CapitalTxnReason
+  lockReason?: boolean
+  defaultAmountAed?: number
+  dialogTitle?: string
+  description?: string
+  successMessage?: string
+}
 
-export function ManualTxnDialog({ accounts }: Props) {
+export function ManualTxnDialog({
+  accounts,
+  trigger,
+  triggerLabel = 'Manual transaction',
+  triggerVariant = 'outline',
+  reason = CapitalTxnReason.ADJUST,
+  lockReason = false,
+  defaultAmountAed = 0,
+  dialogTitle = 'Manual transaction',
+  description,
+  successMessage = 'Transaction recorded',
+}: Props) {
   const router = useRouter()
   const { toast } = useToast()
-  const [open, setOpen] = React.useState(false)
+  const [open, setOpen] = useState(false)
+
+  const defaultValues: FormValues = {
+    accountId: accounts[0]?.id ?? '',
+    amountAed: defaultAmountAed,
+    date: new Date().toISOString().slice(0, 10),
+    reason,
+    note: '',
+  }
 
   const form = useForm<FormValues>({
-    resolver,
-    defaultValues: {
-      accountId: accounts[0]?.id ?? '',
-      amountAed: 0,
-      date: new Date().toISOString().slice(0, 10),
-      reason: CapitalTxnReason.ADJUST,
-      note: '',
-    },
+    resolver: zodResolver(formSchema),
+    defaultValues,
   })
 
   const onSubmit = async (values: FormValues) => {
@@ -72,17 +91,17 @@ export function ManualTxnDialog({ accounts }: Props) {
 
       if (!response.ok) {
         const error = await response.json().catch(() => ({}))
-        throw new Error(error.error ?? 'Failed to record transaction')
+        throw new Error(error.error ?? 'Не удалось записать операцию')
       }
 
-      form.reset()
+      form.reset({ ...defaultValues, reason })
       setOpen(false)
-      toast({ title: 'Transaction recorded' })
+      toast({ title: successMessage })
       router.refresh()
     } catch (error) {
       toast({
-        title: 'Error',
-        description: error instanceof Error ? error.message : 'Failed to record transaction',
+        title: 'Ошибка',
+        description: error instanceof Error ? error.message : 'Не удалось записать операцию',
         variant: 'destructive',
       })
     }
@@ -91,11 +110,16 @@ export function ManualTxnDialog({ accounts }: Props) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant='outline'>Manual transaction</Button>
+        {trigger ?? (
+          <Button variant={triggerVariant} size='sm'>
+            {triggerLabel}
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent className='max-w-lg'>
         <DialogHeader>
-          <DialogTitle>Manual transaction</DialogTitle>
+          <DialogTitle>{dialogTitle}</DialogTitle>
+          {description ? <p className='text-sm text-muted-foreground'>{description}</p> : null}
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
@@ -104,17 +128,17 @@ export function ManualTxnDialog({ accounts }: Props) {
               name='accountId'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Account</FormLabel>
+                  <FormLabel>Счёт</FormLabel>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder='Select an account' />
+                        <SelectValue placeholder='Выберите счёт' />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
                       {accounts.map((account) => (
                         <SelectItem key={account.id} value={account.id}>
-                          {account.name} - {account.type.toLowerCase()}
+                          {account.name} · {account.type.toLowerCase()}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -128,11 +152,11 @@ export function ManualTxnDialog({ accounts }: Props) {
               name='amountAed'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Amount (AED)</FormLabel>
+                  <FormLabel>Сумма (AED)</FormLabel>
                   <FormControl>
                     <Input type='number' step='0.01' {...field} />
                   </FormControl>
-                  <FormDescription>Positive values add funds, negative values withdraw.</FormDescription>
+                  <FormDescription>Положительное значение пополняет счёт, отрицательное — списывает.</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -142,7 +166,7 @@ export function ManualTxnDialog({ accounts }: Props) {
               name='date'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Date</FormLabel>
+                  <FormLabel>Дата</FormLabel>
                   <FormControl>
                     <Input type='date' {...field} />
                   </FormControl>
@@ -155,17 +179,17 @@ export function ManualTxnDialog({ accounts }: Props) {
               name='reason'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Reason</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
+                  <FormLabel>Основание</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value} disabled={lockReason}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {reasonOptions.map((reason) => (
-                        <SelectItem key={reason} value={reason}>
-                          {reason.toLowerCase()}
+                      {reasonOptions.map((option) => (
+                        <SelectItem key={option} value={option}>
+                          {option.toLowerCase()}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -179,7 +203,7 @@ export function ManualTxnDialog({ accounts }: Props) {
               name='note'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Note</FormLabel>
+                  <FormLabel>Комментарий</FormLabel>
                   <FormControl>
                     <Textarea rows={3} {...field} />
                   </FormControl>
@@ -189,11 +213,11 @@ export function ManualTxnDialog({ accounts }: Props) {
             />
             <DialogFooter>
               <Button type='button' variant='ghost' onClick={() => setOpen(false)}>
-                Cancel
+                Отмена
               </Button>
               <Button type='submit' disabled={form.formState.isSubmitting}>
                 {form.formState.isSubmitting ? <Loader2 className='mr-2 h-4 w-4 animate-spin' /> : null}
-                Save
+                Сохранить
               </Button>
             </DialogFooter>
           </form>

@@ -1,0 +1,19 @@
+version: '3.9'
+
+services:
+  web:
+    build: .
+    ports:
+      - '3000:3000'
+    environment:
+      NEXTAUTH_SECRET: dev-secret
+      NEXTAUTH_URL: http://localhost:3000
+      DATABASE_URL: file:./web/prisma/dev.db
+    command: pnpm --filter web dev
+    volumes:
+      - .:/app
+      - web_node_modules:/app/web/node_modules
+    working_dir: /app
+
+volumes:
+  web_node_modules:
