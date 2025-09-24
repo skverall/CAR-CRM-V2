@@ -10,7 +10,7 @@ export const CAR_STATUS_LABEL: Record<CarStatusValue, string> = {
   ARCHIVED: 'Архив',
 }
 
-export const CAR_STATUS_BADGE_VARIANT: Record<CarStatusValue, string> = {
+export const CAR_STATUS_BADGE_VARIANT: Record<CarStatusValue, 'default' | 'secondary' | 'outline' | 'destructive'> = {
   IN_STOCK: 'outline',
   REPAIRING: 'secondary',
   LISTED: 'default',
