@@ -25,14 +25,14 @@ export function DistributeProfitButton({ carId, profit }: Props) {
       })
       if (!response.ok) {
         const error = await response.json()
-        throw new Error(error.error ?? 'Не удалось распределить прибыль')
+        throw new Error(error.error ?? 'РќРµ СѓРґР°Р»РѕСЃСЊ СЂР°СЃРїСЂРµРґРµР»РёС‚СЊ РїСЂРёР±С‹Р»СЊ')
       }
-      toast({ title: 'Прибыль распределена' })
+      toast({ title: 'РџСЂРёР±С‹Р»СЊ СЂР°СЃРїСЂРµРґРµР»РµРЅР°' })
       router.refresh()
     } catch (error) {
       toast({
-        title: 'Ошибка',
-        description: error instanceof Error ? error.message : 'Не удалось распределить прибыль',
+        title: 'РћС€РёР±РєР°',
+        description: error instanceof Error ? error.message : 'РќРµ СѓРґР°Р»РѕСЃСЊ СЂР°СЃРїСЂРµРґРµР»РёС‚СЊ РїСЂРёР±С‹Р»СЊ',
         variant: 'destructive',
       })
     } finally {
@@ -43,7 +43,7 @@ export function DistributeProfitButton({ carId, profit }: Props) {
   return (
     <Button variant='outline' disabled={profit <= 0 || isLoading} onClick={distribute}>
       {isLoading ? <Loader2 className='mr-2 h-4 w-4 animate-spin' /> : null}
-      Распределить прибыль
+      Р Р°СЃРїСЂРµРґРµР»РёС‚СЊ РїСЂРёР±С‹Р»СЊ
     </Button>
   )
 }

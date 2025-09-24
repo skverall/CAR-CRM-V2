@@ -15,7 +15,7 @@ export function Topbar() {
       <MobileNav />
       <div className='flex flex-1 items-center gap-2 rounded-lg border bg-muted/30 px-3 py-2'>
         <Search className='h-4 w-4 text-muted-foreground' />
-        <Input className='h-auto border-0 bg-transparent p-0 text-sm focus-visible:ring-0' placeholder='Search VIN, car, buyer…' />
+        <Input className='h-auto border-0 bg-transparent p-0 text-sm focus-visible:ring-0' placeholder='Search VIN, car, buyer' />
       </div>
       <ThemeToggle />
       <UserMenu />

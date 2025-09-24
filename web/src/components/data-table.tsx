@@ -52,7 +52,7 @@ export function DataTable<TData, TValue>({ columns, data, searchKey, placeholder
       {searchKey ? (
         <div className='flex items-center justify-between gap-2'>
           <Input
-            placeholder={placeholder ?? 'Search…'}
+            placeholder={placeholder ?? 'Search'}
             value={globalFilter ?? ''}
             onChange={(event) => setGlobalFilter(event.target.value)}
             className='h-9 w-full max-w-xs'

@@ -28,7 +28,7 @@ export async function getRate(counter: string, date: Date) {
   })
 
   if (!fxRate) {
-    throw new AppError(`Не найден курс для ${counter}`, { status: 404 })
+    throw new AppError(`РљСѓСЂСЃ РґР»СЏ РІР°Р»СЋС‚С‹ ${counter} РЅРµ РЅР°Р№РґРµРЅ`, { status: 404 })
   }
 
   return fxRate

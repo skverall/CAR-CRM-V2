@@ -22,37 +22,37 @@ export default async function ExpensesPage() {
 
   const carOptions = carsResult.items.map((car) => ({
     id: car.id,
-    label: `${car.vin} • ${car.make} ${car.model} ${car.year}`,
+    label: `${car.vin} вЂў ${car.make} ${car.model} ${car.year}`,
   }))
 
   return (
     <div className='space-y-6'>
       <div className='flex items-center justify-between'>
-        <h1 className='text-2xl font-semibold tracking-tight'>Расходы</h1>
+        <h1 className='text-2xl font-semibold tracking-tight'>Р Р°СЃС…РѕРґС‹</h1>
         <AddExpenseDialog accounts={accounts} cars={carOptions} />
       </div>
       <Card>
         <CardHeader>
-          <CardTitle>Последние расходы</CardTitle>
+          <CardTitle>РџРѕСЃР»РµРґРЅРёРµ РѕРїРµСЂР°С†РёРё</CardTitle>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Дата</TableHead>
-                <TableHead>Авто</TableHead>
-                <TableHead>Тип</TableHead>
-                <TableHead>Источник</TableHead>
-                <TableHead className='text-right'>Сумма</TableHead>
+                <TableHead>Р”Р°С‚Р°</TableHead>
+                <TableHead>РђРІС‚РѕРјРѕР±РёР»СЊ</TableHead>
+                <TableHead>РўРёРї</TableHead>
+                <TableHead>РСЃС‚РѕС‡РЅРёРє</TableHead>
+                <TableHead className='text-right'>РЎСѓРјРјР°</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {expenses.map((expense) => (
                 <TableRow key={expense.id}>
-                  <TableCell>{new Date(expense.date).toLocaleDateString()}</TableCell>
-                  <TableCell>{expense.car ? `${expense.car.vin} • ${expense.car.make}` : 'Общие'}</TableCell>
-                  <TableCell>{expense.type.toLowerCase()}</TableCell>
-                  <TableCell>{expense.paidFrom.toLowerCase()}</TableCell>
+                  <TableCell>{new Date(expense.date).toLocaleDateString('ru-RU')}</TableCell>
+                  <TableCell>{expense.car ? `${expense.car.vin} вЂў ${expense.car.make}` : 'РћР±С‰РёР№ СЂР°СЃС…РѕРґ'}</TableCell>
+                  <TableCell className='capitalize'>{expense.type.toLowerCase()}</TableCell>
+                  <TableCell className='capitalize'>{expense.paidFrom.toLowerCase()}</TableCell>
                   <TableCell className='text-right'>{formatCurrency(expense.amountAed)}</TableCell>
                 </TableRow>
               ))}

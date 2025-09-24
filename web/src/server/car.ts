@@ -14,7 +14,7 @@ const roleCanManageCars = new Set<UserRole>([UserRole.OWNER, UserRole.ASSISTANT]
 
 function ensureCanManage(user: SessionUser) {
   if (!roleCanManageCars.has(user.role)) {
-    throw new AppError('������������ ���� ��� ���������� ������������', { status: 403 })
+    throw new AppError('Недостаточно прав для управления автомобилями', { status: 403 })
   }
 }
 
@@ -64,7 +64,7 @@ export async function createCar(payload: unknown, user: SessionUser) {
     : await prisma.capitalAccount.findFirst({ where: { type: CapitalAccountType.BUSINESS } })
 
   if (!fundingAccount) {
-    throw new AppError('�� ������� ���������� ���� ��� �������������� �������', { status: 400 })
+    throw new AppError('Не найден счёт финансирования покупок', { status: 400 })
   }
 
   const car = await prisma.$transaction(async (tx) => {
@@ -218,7 +218,7 @@ export async function getCarById(id: string) {
   })
 
   if (!car) {
-    throw new AppError('���������� �� ������', { status: 404 })
+    throw new AppError('Автомобиль не найден', { status: 404 })
   }
 
   const directExpenses = car.expenses.filter((expense) => !expense.isPersonal)
@@ -283,11 +283,11 @@ export async function updateCarStatus(carId: string, payload: unknown, user: Ses
   const car = await prisma.car.findUnique({ where: { id: carId } })
 
   if (!car) {
-    throw new AppError('���������� �� ������', { status: 404 })
+    throw new AppError('Автомобиль не найден', { status: 404 })
   }
 
   if (!canTransitionStatus(car.status, data.status)) {
-    throw new AppError('�������� ������ ��� ���������� �������', { status: 400 })
+    throw new AppError('Недопустимый переход состояния автомобиля', { status: 400 })
   }
 
   if (car.status === data.status) {
@@ -315,11 +315,11 @@ export async function distributeProfit(carId: string, user: SessionUser) {
   })
 
   if (!car) {
-    throw new AppError('���������� �� ������', { status: 404 })
+    throw new AppError('Автомобиль не найден', { status: 404 })
   }
 
   if (car.status !== CarStatus.SOLD) {
-    throw new AppError('������� ����� ������������ ������ ����� �������', { status: 400 })
+    throw new AppError('Распределение прибыли доступно только для проданных автомобилей', { status: 400 })
   }
 
   const directExpenses = car.expenses.filter((expense) => !expense.isPersonal)
@@ -329,7 +329,7 @@ export async function distributeProfit(carId: string, user: SessionUser) {
   const profit = revenue.sub(buyCost.add(expenseSum))
 
   if (profit.lte(DECIMAL_ZERO)) {
-    throw new AppError('������� �����������', { status: 400 })
+    throw new AppError('Прибыль по автомобилю отрицательная', { status: 400 })
   }
 
   const existingPayout = car.capitalTxns.some((txn) =>
@@ -341,7 +341,7 @@ export async function distributeProfit(carId: string, user: SessionUser) {
   )
 
   if (existingPayout) {
-    throw new AppError('������� ��� ������������ ��� ����� ����', { status: 409 })
+    throw new AppError('Прибыль уже была распределена для этого автомобиля', { status: 409 })
   }
 
   const businessAccount = await prisma.capitalAccount.findFirst({
@@ -349,7 +349,7 @@ export async function distributeProfit(carId: string, user: SessionUser) {
   })
 
   if (!businessAccount) {
-    throw new AppError('�� ������ ������-���� ��� �������������', { status: 400 })
+    throw new AppError('Не найден бизнес-счёт для списания', { status: 400 })
   }
 
   const buyTxn = car.capitalTxns.find((txn) => txn.reason === CapitalTxnReason.BUY_CAR)
@@ -358,14 +358,14 @@ export async function distributeProfit(carId: string, user: SessionUser) {
     : await prisma.capitalAccount.findFirst({ where: { type: CapitalAccountType.INVESTOR } })
 
   if (!investorAccount) {
-    throw new AppError('�� ������ ������������ ����', { status: 400 })
+    throw new AppError('Не найден счёт инвестора', { status: 400 })
   }
 
   const ownerAccount = await prisma.capitalAccount.findFirst({ where: { type: CapitalAccountType.OWNER } })
   const assistantAccount = await prisma.capitalAccount.findFirst({ where: { type: CapitalAccountType.ASSISTANT } })
 
   if (!ownerAccount || !assistantAccount) {
-    throw new AppError('����������� ����� ��������� ��� ���������', { status: 400 })
+    throw new AppError('Нужны счета владельца и помощника для распределения', { status: 400 })
   }
 
   const investorShare = profit.mul(0.5)

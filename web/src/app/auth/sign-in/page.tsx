@@ -14,20 +14,22 @@ import { Input } from '@/components/ui/input'
 import { useToast } from '@/components/ui/use-toast'
 
 const formSchema = z.object({
-  email: z.string().email('Введите корректный email'),
+  email: z.string().email('Р’РІРµРґРёС‚Рµ РєРѕСЂСЂРµРєС‚РЅС‹Р№ email'),
 })
+
+type FormValues = z.infer<typeof formSchema>
 
 export default function SignInPage() {
   const searchParams = useSearchParams()
   const { toast } = useToast()
   const [isSubmitting, setIsSubmitting] = React.useState(false)
 
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: { email: '' },
   })
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  const onSubmit = async (values: FormValues) => {
     try {
       setIsSubmitting(true)
       const result = await signIn('email', {
@@ -35,14 +37,19 @@ export default function SignInPage() {
         redirect: false,
         callbackUrl: searchParams.get('callbackUrl') ?? '/',
       })
+
       if (result?.error) {
         throw new Error(result.error)
       }
-      toast({ title: 'Письмо отправлено', description: 'Проверьте почту и перейдите по ссылке для входа.' })
+
+      toast({
+        title: 'РџРёСЃСЊРјРѕ РѕС‚РїСЂР°РІР»РµРЅРѕ',
+        description: 'РџСЂРѕРІРµСЂСЊС‚Рµ РїРѕС‡С‚Сѓ Рё РїРµСЂРµР№РґРёС‚Рµ РїРѕ СЃСЃС‹Р»РєРµ РґР»СЏ РІС…РѕРґР°.',
+      })
     } catch (error) {
       toast({
-        title: 'Ошибка входа',
-        description: error instanceof Error ? error.message : 'Не удалось отправить письмо',
+        title: 'РћС€РёР±РєР° РІС…РѕРґР°',
+        description: error instanceof Error ? error.message : 'РќРµ СѓРґР°Р»РѕСЃСЊ РѕС‚РїСЂР°РІРёС‚СЊ РїРёСЃСЊРјРѕ РґР»СЏ РІС…РѕРґР°',
         variant: 'destructive',
       })
     } finally {
@@ -54,8 +61,8 @@ export default function SignInPage() {
     <div className='flex min-h-screen items-center justify-center bg-muted/40 p-4'>
       <Card className='w-full max-w-md'>
         <CardHeader>
-          <CardTitle>Вход по email</CardTitle>
-          <CardDescription>Мы отправим ссылку для входа на ваш почтовый адрес.</CardDescription>
+          <CardTitle>Р’РѕР№С‚Рё РїРѕ email</CardTitle>
+          <CardDescription>РћС‚РїСЂР°РІРёРј РѕРґРЅРѕСЂР°Р·РѕРІСѓСЋ СЃСЃС‹Р»РєСѓ РґР»СЏ РІС…РѕРґР° РЅР° СѓРєР°Р·Р°РЅРЅСѓСЋ РїРѕС‡С‚Сѓ.</CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -67,14 +74,14 @@ export default function SignInPage() {
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <Input type='email' placeholder='you@example.com' {...field} />
+                      <Input type='email' placeholder='you@example.com' autoComplete='email' {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
               <Button type='submit' className='w-full' disabled={isSubmitting}>
-                {isSubmitting ? 'Отправляем...' : 'Отправить ссылку'}
+                {isSubmitting ? 'РћС‚РїСЂР°РІР»СЏРµРјвЂ¦' : 'РџРѕР»СѓС‡РёС‚СЊ СЃСЃС‹Р»РєСѓ'}
               </Button>
             </form>
           </Form>

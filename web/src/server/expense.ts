@@ -20,7 +20,7 @@ async function resolveAccount(
   if (payload.accountId) {
     const account = await prisma.capitalAccount.findUnique({ where: { id: payload.accountId } })
     if (!account) {
-      throw new AppError('Счёт не найден', { status: 400 })
+      throw new AppError('РЎС‡С‘С‚ РЅРµ РЅР°Р№РґРµРЅ', { status: 400 })
     }
     return account
   }
@@ -28,7 +28,7 @@ async function resolveAccount(
   if (payload.paidFrom === ExpensePaidFrom.BUSINESS_FUNDS) {
     const account = await prisma.capitalAccount.findFirst({ where: { type: CapitalAccountType.BUSINESS } })
     if (!account) {
-      throw new AppError('Не найден бизнес-счёт', { status: 400 })
+      throw new AppError('РќРµ РЅР°Р№РґРµРЅ Р±РёР·РЅРµСЃ-СЃС‡С‘С‚', { status: 400 })
     }
     return account
   }
@@ -36,7 +36,7 @@ async function resolveAccount(
   if (payload.paidFrom === ExpensePaidFrom.MY_PERSONAL) {
     const account = await prisma.capitalAccount.findFirst({ where: { type: CapitalAccountType.OWNER } })
     if (!account) {
-      throw new AppError('Не найден личный счёт владельца', { status: 400 })
+      throw new AppError('РќРµ РЅР°Р№РґРµРЅ Р»РёС‡РЅС‹Р№ СЃС‡С‘С‚ РІР»Р°РґРµР»СЊС†Р°', { status: 400 })
     }
     return account
   }
@@ -57,17 +57,17 @@ async function resolveAccount(
 
     const account = await prisma.capitalAccount.findFirst({ where: { type: CapitalAccountType.INVESTOR } })
     if (!account) {
-      throw new AppError('Не найден инвесторский счёт', { status: 400 })
+      throw new AppError('РќРµ РЅР°Р№РґРµРЅ СЃС‡С‘С‚ РёРЅРІРµСЃС‚РѕСЂР°', { status: 400 })
     }
     return account
   }
 
-  throw new AppError('Не удалось определить счёт оплаты', { status: 400 })
+  throw new AppError('РќРµ СѓРґР°Р»РѕСЃСЊ РѕРїСЂРµРґРµР»РёС‚СЊ СЃС‡С‘С‚ РґР»СЏ РѕРїРµСЂР°С†РёРё', { status: 400 })
 }
 
 export async function createExpense(payload: unknown, user: SessionUser) {
   if (!roleCanCreateExpenses.has(user.role)) {
-    throw new AppError('Недостаточно прав для создания расхода', { status: 403 })
+    throw new AppError('РќРµРґРѕСЃС‚Р°С‚РѕС‡РЅРѕ РїСЂР°РІ РґР»СЏ СЃРѕР·РґР°РЅРёСЏ СЂР°СЃС…РѕРґР°', { status: 403 })
   }
 
   const data = expenseCreateSchema.parse(payload)

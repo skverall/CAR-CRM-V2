@@ -22,34 +22,34 @@ export default async function IncomesPage() {
 
   const carOptions = carsResult.items.map((car) => ({
     id: car.id,
-    label: `${car.vin} • ${car.make} ${car.model} ${car.year}`,
+    label: `${car.vin} вЂў ${car.make} ${car.model} ${car.year}`,
   }))
 
   return (
     <div className='space-y-6'>
       <div className='flex items-center justify-between'>
-        <h1 className='text-2xl font-semibold tracking-tight'>Доходы</h1>
+        <h1 className='text-2xl font-semibold tracking-tight'>Р”РѕС…РѕРґС‹</h1>
         <AddIncomeDialog accounts={accounts} cars={carOptions} />
       </div>
       <Card>
         <CardHeader>
-          <CardTitle>Последние доходы</CardTitle>
+          <CardTitle>РџСЂРѕРґР°Р¶Рё</CardTitle>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Дата</TableHead>
-                <TableHead>Авто</TableHead>
-                <TableHead>Покупатель</TableHead>
-                <TableHead className='text-right'>Сумма</TableHead>
+                <TableHead>Р”Р°С‚Р°</TableHead>
+                <TableHead>РђРІС‚РѕРјРѕР±РёР»СЊ</TableHead>
+                <TableHead>РџРѕРєСѓРїР°С‚РµР»СЊ</TableHead>
+                <TableHead className='text-right'>РЎСѓРјРјР°</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {incomes.map((income) => (
                 <TableRow key={income.id}>
-                  <TableCell>{new Date(income.date).toLocaleDateString()}</TableCell>
-                  <TableCell>{income.car ? `${income.car.vin} • ${income.car.make}` : '-'}</TableCell>
+                  <TableCell>{new Date(income.date).toLocaleDateString('ru-RU')}</TableCell>
+                  <TableCell>{income.car ? `${income.car.vin} вЂў ${income.car.make}` : '-'}</TableCell>
                   <TableCell>{income.buyerName ?? '-'}</TableCell>
                   <TableCell className='text-right'>{formatCurrency(income.amountAed)}</TableCell>
                 </TableRow>

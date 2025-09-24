@@ -23,7 +23,7 @@ export function Sidebar() {
 
   return (
     <aside className='hidden w-64 shrink-0 border-r bg-muted/40 lg:flex lg:flex-col'>
-      <div className='flex h-16 items-center border-b px-6 text-lg font-semibold'>јвто-”чЄт</div>
+      <div className='flex h-16 items-center border-b px-6 text-lg font-semibold'>–Р–≤—В–Њ-–£—З—С—В</div>
       <nav className='flex-1 space-y-1 p-4'>
         {navItems.map((item) => {
           const Icon = item.icon

@@ -56,12 +56,12 @@ export async function createCapitalTxn(payload: unknown, user: SessionUser) {
   const data = capitalTxnCreateSchema.parse(payload)
 
   if (ownerOnlyReasons.has(data.reason) && user.role !== UserRole.OWNER) {
-    throw new AppError('������������ ���� ��� ��������', { status: 403 })
+    throw new AppError('Недостаточно прав для этой операции', { status: 403 })
   }
 
   const account = await prisma.capitalAccount.findUnique({ where: { id: data.accountId } })
   if (!account) {
-    throw new AppError('���� �� ������', { status: 404 })
+    throw new AppError('Счёт не найден', { status: 404 })
   }
 
   const amountAed = decimal(data.amountAed)

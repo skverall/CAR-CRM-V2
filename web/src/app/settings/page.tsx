@@ -10,26 +10,26 @@ export default async function SettingsPage() {
   return (
     <div className='space-y-6'>
       <div className='flex items-center justify-between'>
-        <h1 className='text-2xl font-semibold tracking-tight'>Настройки</h1>
+        <h1 className='text-2xl font-semibold tracking-tight'>РќР°СЃС‚СЂРѕР№РєРё</h1>
         <FxRateDialog />
       </div>
       <Card>
         <CardHeader>
-          <CardTitle>Курсы валют</CardTitle>
+          <CardTitle>РљСѓСЂСЃС‹ РІР°Р»СЋС‚</CardTitle>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Дата</TableHead>
-                <TableHead>Валюта</TableHead>
-                <TableHead className='text-right'>Курс (AED)</TableHead>
+                <TableHead>Р”Р°С‚Р°</TableHead>
+                <TableHead>Р’Р°Р»СЋС‚Р°</TableHead>
+                <TableHead className='text-right'>РљСѓСЂСЃ (AED)</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {rates.map((rate) => (
                 <TableRow key={rate.id}>
-                  <TableCell>{new Date(rate.date).toLocaleDateString()}</TableCell>
+                  <TableCell>{new Date(rate.date).toLocaleDateString('ru-RU')}</TableCell>
                   <TableCell>{rate.counter}</TableCell>
                   <TableCell className='text-right'>{rate.rate.toNumber()}</TableCell>
                 </TableRow>

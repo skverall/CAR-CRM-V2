@@ -11,8 +11,8 @@ import './globals.css'
 const fontSans = Inter({ subsets: ['latin'], variable: '--font-sans' })
 
 export const metadata: Metadata = {
-  title: 'Авто-Учёт',
-  description: 'CRM-платформа для учёта автомобилей, расходов, доходов, капитала и распределения долей.',
+  title: 'РђРІС‚Рѕ-РЈС‡С‘С‚',
+  description: 'CRMвЂ‘СЃРёСЃС‚РµРјР° РґР»СЏ СѓС‡С‘С‚Р° Р°РІС‚РѕРјРѕР±РёР»РµР№, СЂР°СЃС…РѕРґРѕРІ, РґРѕС…РѕРґРѕРІ Рё СЂР°СЃРїСЂРµРґРµР»РµРЅРёСЏ РєР°РїРёС‚Р°Р»Р°.',
 }
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {

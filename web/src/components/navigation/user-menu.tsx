@@ -41,7 +41,7 @@ export function UserMenu() {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onSelect={() => signOut({ callbackUrl: '/auth/sign-in' })}>Выйти</DropdownMenuItem>
+        <DropdownMenuItem onSelect={() => signOut({ callbackUrl: '/auth/sign-in' })}>Р’С‹Р№С‚Рё</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   )

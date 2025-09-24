@@ -13,27 +13,27 @@ async function resolveAccount(accountId?: string) {
   if (accountId) {
     const account = await prisma.capitalAccount.findUnique({ where: { id: accountId } })
     if (!account) {
-      throw new AppError('Счёт не найден', { status: 400 })
+      throw new AppError('РЎС‡С‘С‚ РЅРµ РЅР°Р№РґРµРЅ', { status: 400 })
     }
     return account
   }
 
   const business = await prisma.capitalAccount.findFirst({ where: { type: CapitalAccountType.BUSINESS } })
   if (!business) {
-    throw new AppError('Не найден бизнес-счёт для зачисления дохода', { status: 400 })
+    throw new AppError('РќРµ РЅР°Р№РґРµРЅ Р±РёР·РЅРµСЃ-СЃС‡С‘С‚ РґР»СЏ Р·Р°С‡РёСЃР»РµРЅРёСЏ РґРѕС…РѕРґР°', { status: 400 })
   }
   return business
 }
 
 export async function createIncome(payload: unknown, user: SessionUser) {
   if (!roleCanCreateIncome.has(user.role)) {
-    throw new AppError('Недостаточно прав для создания дохода', { status: 403 })
+    throw new AppError('РќРµРґРѕСЃС‚Р°С‚РѕС‡РЅРѕ РїСЂР°РІ РґР»СЏ СЃРѕР·РґР°РЅРёСЏ РґРѕС…РѕРґР°', { status: 403 })
   }
 
   const data = incomeCreateSchema.parse(payload)
   const car = await prisma.car.findUnique({ where: { id: data.carId } })
   if (!car) {
-    throw new AppError('Авто не найдено для начисления дохода', { status: 404 })
+    throw new AppError('РђРІС‚РѕРјРѕР±РёР»СЊ РґР»СЏ РґРѕС…РѕРґР° РЅРµ РЅР°Р№РґРµРЅ', { status: 404 })
   }
 
   const account = await resolveAccount(data.accountId)
