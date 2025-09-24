@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react'
 import { Download, PlusCircle, Wallet } from 'lucide-react'
+import type { Prisma } from '@prisma/client'
 
 import { CashflowChart } from '@/components/dashboard/cashflow-chart'
 import { ManualTxnDialog } from '@/components/capital/manual-txn-dialog'
@@ -44,7 +45,7 @@ type CapitalTxn = {
     model: string
     year: number
   } | null
-  meta: Record<string, unknown> | null
+  meta: Prisma.JsonValue | null
 }
 
 type Props = {
