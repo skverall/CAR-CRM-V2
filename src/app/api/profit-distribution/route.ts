@@ -24,8 +24,8 @@ export async function GET(request: NextRequest) {
     const { data: incomeData, error: incomeError } = await supabase
       .from('transactions')
       .select('amount_usd')
-      .eq('type', 'income')
-      .eq('is_personal', false)
+      .eq('type' as any, 'income' as any)
+      .eq('is_personal' as any, false as any)
 
     if (incomeError) {
       console.error('Error fetching income data:', incomeError)
@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
     const { data: expenseData, error: expenseError } = await supabase
       .from('transactions')
       .select('amount_usd, is_personal')
-      .eq('type', 'expense')
+      .eq('type' as any, 'expense' as any)
 
     if (expenseError) {
       console.error('Error fetching expense data:', expenseError)
@@ -43,20 +43,26 @@ export async function GET(request: NextRequest) {
     }
 
     // Calculate totals
-    const totalIncome = incomeData?.reduce((sum, transaction) => 
-      sum + parseFloat(transaction.amount_usd.toString()), 0) || 0
+    const totalIncome = incomeData?.reduce((sum, transaction) => {
+      const t = transaction as any
+      return sum + parseFloat(t.amount_usd?.toString?.() ?? `${t.amount_usd ?? 0}`)
+    }, 0) || 0
 
-    const businessExpenses = expenseData?.reduce((sum, transaction) => 
-      !transaction.is_personal ? sum + parseFloat(transaction.amount_usd.toString()) : sum, 0) || 0
+    const businessExpenses = expenseData?.reduce((sum, transaction) => {
+      const t = transaction as any
+      return !t.is_personal ? sum + parseFloat(t.amount_usd?.toString?.() ?? `${t.amount_usd ?? 0}`) : sum
+    }, 0) || 0
 
-    const personalExpenses = expenseData?.reduce((sum, transaction) => 
-      transaction.is_personal ? sum + parseFloat(transaction.amount_usd.toString()) : sum, 0) || 0
+    const personalExpenses = expenseData?.reduce((sum, transaction) => {
+      const t = transaction as any
+      return t.is_personal ? sum + parseFloat(t.amount_usd?.toString?.() ?? `${t.amount_usd ?? 0}`) : sum
+    }, 0) || 0
 
     const totalExpenses = businessExpenses + personalExpenses
     const netProfit = totalIncome - businessExpenses
 
     // Get profit distribution from the result
-    const distribution = profitData?.[0] || {
+    const distribution = (profitData as any)?.[0] || {
       total_profit: 0,
       investor_share: 0,
       owner_share: 0,
