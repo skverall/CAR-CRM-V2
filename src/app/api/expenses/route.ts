@@ -41,18 +41,18 @@ export async function GET(request: NextRequest) {
         car:cars(id, vin, brand, model, year),
         user:users(id, email, full_name)
       `, { count: 'exact' })
-      .eq('type', 'expense')
+      .eq('type' as any, 'expense' as any)
       .order('date', { ascending: false })
       .order('created_at', { ascending: false })
       .range(offset, offset + limit - 1)
 
     // Apply filters
     if (category) {
-      query = query.eq('category', category)
+      query = query.eq('category' as any, category as any)
     }
 
     if (carId) {
-      query = query.eq('car_id', carId)
+      query = query.eq('car_id' as any, carId as any)
     }
 
     if (startDate) {
@@ -64,7 +64,7 @@ export async function GET(request: NextRequest) {
     }
 
     if (isPersonal !== null) {
-      query = query.eq('is_personal', isPersonal === 'true')
+      query = query.eq('is_personal' as any, (isPersonal === 'true') as any)
     }
 
     const { data: expenseTransactions, error, count } = await query
@@ -75,14 +75,20 @@ export async function GET(request: NextRequest) {
     }
 
     // Calculate summary statistics
-    const totalExpenses = expenseTransactions?.reduce((sum, transaction) => 
-      sum + parseFloat(transaction.amount_usd.toString()), 0) || 0
+    const totalExpenses = expenseTransactions?.reduce((sum, transaction) => {
+      const t = transaction as any
+      return sum + parseFloat(t.amount_usd?.toString?.() ?? `${t.amount_usd ?? 0}`)
+    }, 0) || 0
 
-    const businessExpenses = expenseTransactions?.reduce((sum, transaction) => 
-      !transaction.is_personal ? sum + parseFloat(transaction.amount_usd.toString()) : sum, 0) || 0
+    const businessExpenses = expenseTransactions?.reduce((sum, transaction) => {
+      const t = transaction as any
+      return !t.is_personal ? sum + parseFloat(t.amount_usd?.toString?.() ?? `${t.amount_usd ?? 0}`) : sum
+    }, 0) || 0
 
-    const personalExpenses = expenseTransactions?.reduce((sum, transaction) => 
-      transaction.is_personal ? sum + parseFloat(transaction.amount_usd.toString()) : sum, 0) || 0
+    const personalExpenses = expenseTransactions?.reduce((sum, transaction) => {
+      const t = transaction as any
+      return t.is_personal ? sum + parseFloat(t.amount_usd?.toString?.() ?? `${t.amount_usd ?? 0}`) : sum
+    }, 0) || 0
 
     return NextResponse.json({
       expenses: expenseTransactions,
@@ -120,10 +126,10 @@ export async function POST(request: NextRequest) {
     const { data: profile } = await supabase
       .from('users')
       .select('role')
-      .eq('id', user.id)
+      .eq('id' as any, user.id as any)
       .single()
 
-    if (!profile || !['owner', 'assistant'].includes(profile.role)) {
+    if (!profile || !['owner', 'assistant'].includes((profile as any).role)) {
       return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 })
     }
 
@@ -139,14 +145,14 @@ export async function POST(request: NextRequest) {
       const { data: rateData } = await supabase
         .from('exchange_rates')
         .select('rate_to_usd')
-        .eq('currency', validatedData.currency)
+        .eq('currency' as any, validatedData.currency as any)
         .lte('date', validatedData.date)
         .order('date', { ascending: false })
         .limit(1)
         .single()
 
       if (rateData) {
-        exchangeRate = rateData.rate_to_usd
+        exchangeRate = (rateData as any).rate_to_usd
         amountUsd = validatedData.amount * exchangeRate
       }
     }
@@ -156,7 +162,7 @@ export async function POST(request: NextRequest) {
       const { data: car, error: carError } = await supabase
         .from('cars')
         .select('id')
-        .eq('id', validatedData.carId)
+        .eq('id' as any, validatedData.carId as any)
         .single()
 
       if (carError || !car) {
@@ -179,7 +185,7 @@ export async function POST(request: NextRequest) {
         car_id: validatedData.carId,
         user_id: user.id,
         is_personal: validatedData.isPersonal,
-      })
+      } as any)
       .select(`
         *,
         car:cars(id, vin, brand, model, year),

@@ -42,7 +42,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Calculate distribution percentages
-    const totalProfit = capital?.total_capital || 0
+    const totalProfit = (capital as any)?.total_capital || 0
     const distributionRules = {
       investor: 50, // 50%
       owner: 25,    // 25%
@@ -51,15 +51,15 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       capital: {
-        id: capital?.id,
-        totalCapital: capital?.total_capital || 0,
-        investorShare: capital?.investor_share || 0,
-        ownerShare: capital?.owner_share || 0,
-        assistantShare: capital?.assistant_share || 0,
-        updatedAt: capital?.updated_at,
+        id: (capital as any)?.id,
+        totalCapital: (capital as any)?.total_capital || 0,
+        investorShare: (capital as any)?.investor_share || 0,
+        ownerShare: (capital as any)?.owner_share || 0,
+        assistantShare: (capital as any)?.assistant_share || 0,
+        updatedAt: (capital as any)?.updated_at,
       },
       distributionRules,
-      calculatedDistribution: profitData?.[0] || {
+      calculatedDistribution: (profitData as any)?.[0] || {
         total_profit: 0,
         investor_share: 0,
         owner_share: 0,
@@ -87,10 +87,10 @@ export async function PUT(request: NextRequest) {
     const { data: profile } = await supabase
       .from('users')
       .select('role')
-      .eq('id', user.id)
+      .eq('id' as any, user.id as any)
       .single()
 
-    if (!profile || profile.role !== 'owner') {
+    if (!profile || (profile as any).role !== 'owner') {
       return NextResponse.json({ error: 'Only owners can update capital distribution' }, { status: 403 })
     }
 
@@ -122,12 +122,12 @@ export async function PUT(request: NextRequest) {
 
     return NextResponse.json({
       capital: {
-        id: capital.id,
-        totalCapital: capital.total_capital,
-        investorShare: capital.investor_share,
-        ownerShare: capital.owner_share,
-        assistantShare: capital.assistant_share,
-        updatedAt: capital.updated_at,
+        id: (capital as any).id,
+        totalCapital: (capital as any).total_capital,
+        investorShare: (capital as any).investor_share,
+        ownerShare: (capital as any).owner_share,
+        assistantShare: (capital as any).assistant_share,
+        updatedAt: (capital as any).updated_at,
       }
     })
   } catch (error) {

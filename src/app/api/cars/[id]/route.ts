@@ -30,7 +30,7 @@ export async function GET(
     const { data: car, error } = await supabase
       .from('cars')
       .select('*')
-      .eq('id', params.id)
+      .eq('id' as any, params.id as any)
       .single()
 
     if (error) {
@@ -65,10 +65,10 @@ export async function PUT(
     const { data: profile } = await supabase
       .from('users')
       .select('role')
-      .eq('id', user.id)
+      .eq('id' as any, user.id as any)
       .single()
 
-    if (!profile || !['owner', 'assistant'].includes(profile.role)) {
+    if (!profile || !['owner', 'assistant'].includes((profile as any).role)) {
       return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 })
     }
 
@@ -80,7 +80,7 @@ export async function PUT(
     const { data: existingCar, error: fetchError } = await supabase
       .from('cars')
       .select('*')
-      .eq('id', params.id)
+      .eq('id' as any, params.id as any)
       .single()
 
     if (fetchError) {
@@ -91,12 +91,12 @@ export async function PUT(
     }
 
     // If VIN is being updated, check for duplicates
-    if (validatedData.vin && validatedData.vin !== existingCar.vin) {
+    if (validatedData.vin && validatedData.vin !== (existingCar as any).vin) {
       const { data: duplicateCar } = await supabase
         .from('cars')
         .select('id')
-        .eq('vin', validatedData.vin.toUpperCase())
-        .neq('id', params.id)
+        .eq('vin' as any, validatedData.vin.toUpperCase() as any)
+        .neq('id' as any, params.id as any)
         .single()
 
       if (duplicateCar) {
@@ -121,7 +121,7 @@ export async function PUT(
     const { data: car, error } = await supabase
       .from('cars')
       .update(updateData)
-      .eq('id', params.id)
+      .eq('id' as any, params.id as any)
       .select()
       .single()
 
@@ -161,10 +161,10 @@ export async function DELETE(
     const { data: profile } = await supabase
       .from('users')
       .select('role')
-      .eq('id', user.id)
+      .eq('id' as any, user.id as any)
       .single()
 
-    if (!profile || profile.role !== 'owner') {
+    if (!profile || (profile as any).role !== 'owner') {
       return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 })
     }
 
@@ -172,7 +172,7 @@ export async function DELETE(
     const { data: transactions, error: transactionError } = await supabase
       .from('transactions')
       .select('id')
-      .eq('car_id', params.id)
+      .eq('car_id' as any, params.id as any)
       .limit(1)
 
     if (transactionError) {
@@ -190,7 +190,7 @@ export async function DELETE(
     const { error } = await supabase
       .from('cars')
       .delete()
-      .eq('id', params.id)
+      .eq('id' as any, params.id as any)
 
     if (error) {
       console.error('Error deleting car:', error)

@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
         created_at,
         user:users(id, email, full_name, role)
       `)
-      .eq('table_name', 'capital')
+      .eq('table_name' as any, 'capital' as any)
       .order('created_at', { ascending: false })
       .limit(limit)
 
@@ -64,18 +64,19 @@ export async function GET(request: NextRequest) {
 
     // Format history entries
     const formattedHistory = auditHistory?.map(entry => {
-      const oldValues = entry.old_values as any
-      const newValues = entry.new_values as any
+      const e = entry as any
+      const oldValues = e.old_values as any
+      const newValues = e.new_values as any
 
       return {
-        id: entry.id,
-        action: entry.action,
-        timestamp: entry.created_at,
-        user: entry.user ? {
-          id: entry.user.id,
-          email: entry.user.email,
-          fullName: entry.user.full_name,
-          role: entry.user.role,
+        id: e.id,
+        action: e.action,
+        timestamp: e.created_at,
+        user: e.user ? {
+          id: e.user.id,
+          email: e.user.email,
+          fullName: e.user.full_name,
+          role: e.user.role,
         } : null,
         changes: {
           before: oldValues ? {
@@ -104,11 +105,11 @@ export async function GET(request: NextRequest) {
     const summary = {
       totalEntries: formattedHistory.length,
       currentState: {
-        totalCapital: currentCapital?.total_capital || 0,
-        investorShare: currentCapital?.investor_share || 0,
-        ownerShare: currentCapital?.owner_share || 0,
-        assistantShare: currentCapital?.assistant_share || 0,
-        lastUpdated: currentCapital?.updated_at,
+        totalCapital: (currentCapital as any)?.total_capital || 0,
+        investorShare: (currentCapital as any)?.investor_share || 0,
+        ownerShare: (currentCapital as any)?.owner_share || 0,
+        assistantShare: (currentCapital as any)?.assistant_share || 0,
+        lastUpdated: (currentCapital as any)?.updated_at,
       },
       distributionRules: {
         investor: 50, // 50%

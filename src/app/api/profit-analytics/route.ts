@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
     }
 
     if (carId) {
-      baseQuery = baseQuery.eq('car_id', carId)
+      baseQuery = baseQuery.eq('car_id' as any, carId as any)
     }
 
     const { data: transactions, error } = await baseQuery
@@ -56,9 +56,10 @@ export async function GET(request: NextRequest) {
     }> = {}
 
     transactions?.forEach(transaction => {
-      const amount = parseFloat(transaction.amount_usd.toString())
-      const date = new Date(transaction.date)
-      
+      const t = transaction as any
+      const amount = parseFloat(t.amount_usd?.toString?.() ?? `${t.amount_usd ?? 0}`)
+      const date = new Date(t.date)
+
       // Determine period key based on period type
       let periodKey: string
       switch (period) {
@@ -92,10 +93,10 @@ export async function GET(request: NextRequest) {
       const period_data = periodData[periodKey]
       period_data.transactionCount++
 
-      if (transaction.type === 'income') {
+      if (t.type === 'income') {
         period_data.income += amount
-      } else if (transaction.type === 'expense') {
-        if (transaction.is_personal) {
+      } else if (t.type === 'expense') {
+        if (t.is_personal) {
           period_data.personalExpenses += amount
         } else {
           period_data.businessExpenses += amount

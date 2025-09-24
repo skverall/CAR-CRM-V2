@@ -26,8 +26,9 @@ export async function GET(request: NextRequest) {
     // Get latest rate for each currency
     const latestRates = new Map()
     exchangeRates?.forEach(rate => {
-      if (!latestRates.has(rate.currency)) {
-        latestRates.set(rate.currency, rate)
+      const r = rate as any
+      if (!latestRates.has(r.currency)) {
+        latestRates.set(r.currency, r)
       }
     })
 

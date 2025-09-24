@@ -120,7 +120,7 @@ export default function DashboardPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-purple-600">
-                {formatCurrency(profitDistribution.investor_share)}
+                {formatCurrency(profitDistribution.investorShare ?? (profitDistribution as any).investor_share)}
               </div>
             </CardContent>
           </Card>
@@ -131,7 +131,7 @@ export default function DashboardPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-blue-600">
-                {formatCurrency(profitDistribution.owner_share)}
+                {formatCurrency(profitDistribution.ownerShare ?? (profitDistribution as any).owner_share)}
               </div>
             </CardContent>
           </Card>
@@ -142,7 +142,7 @@ export default function DashboardPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-green-600">
-                {formatCurrency(profitDistribution.assistant_share)}
+                {formatCurrency(profitDistribution.assistantShare ?? (profitDistribution as any).assistant_share)}
               </div>
             </CardContent>
           </Card>
@@ -176,11 +176,11 @@ export default function DashboardPage() {
                       <p className="text-sm text-gray-500">{car.vin}</p>
                     </div>
                     <div className="text-right">
-                      <p className={`font-medium ${(car.net_profit || 0) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                        {formatCurrency(car.net_profit || 0)}
+                      <p className={`font-medium ${((((car as any).net_profit ?? (car as any).netProfit ?? 0) >= 0) ? 'text-green-600' : 'text-red-600')}`}>
+                        {formatCurrency((((car as any).net_profit ?? (car as any).netProfit ?? 0) || 0))}
                       </p>
                       <p className="text-sm text-gray-500">
-                        {car.transaction_count || 0} транзакций
+                        {(car as any).transactionCount ?? (car as any).transaction_count ?? 0} транзакций
                       </p>
                     </div>
                   </div>

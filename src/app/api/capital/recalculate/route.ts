@@ -15,10 +15,10 @@ export async function POST(request: NextRequest) {
     const { data: profile } = await supabase
       .from('users')
       .select('role')
-      .eq('id', user.id)
+      .eq('id' as any, user.id as any)
       .single()
 
-    if (!profile || profile.role !== 'owner') {
+    if (!profile || (profile as any).role !== 'owner') {
       return NextResponse.json({ error: 'Only owners can trigger profit recalculation' }, { status: 403 })
     }
 
@@ -37,11 +37,12 @@ export async function POST(request: NextRequest) {
     let totalExpenses = 0
 
     transactions?.forEach(transaction => {
-      const amount = parseFloat(transaction.amount_usd.toString())
-      
-      if (transaction.type === 'income') {
+      const t = transaction as any
+      const amount = parseFloat(t.amount_usd?.toString?.() ?? `${t.amount_usd ?? 0}`)
+
+      if (t.type === 'income') {
         totalIncome += amount
-      } else if (transaction.type === 'expense' && !transaction.is_personal) {
+      } else if (t.type === 'expense' && !t.is_personal) {
         totalExpenses += amount
       }
     })
@@ -70,7 +71,7 @@ export async function POST(request: NextRequest) {
         owner_share: ownerShare,
         assistant_share: assistantShare,
         updated_at: new Date().toISOString(),
-      })
+      } as any)
       .order('updated_at', { ascending: false })
       .limit(1)
       .select()
@@ -88,7 +89,7 @@ export async function POST(request: NextRequest) {
         user_id: user.id,
         action: 'RECALCULATE',
         table_name: 'capital',
-        record_id: capital.id,
+        record_id: (capital as any).id,
         old_values: null,
         new_values: {
           total_capital: netProfit,
@@ -100,7 +101,7 @@ export async function POST(request: NextRequest) {
           total_income: totalIncome,
           total_expenses: totalExpenses,
         },
-      })
+      } as any)
 
     if (auditError) {
       console.error('Error logging recalculation:', auditError)
@@ -118,15 +119,15 @@ export async function POST(request: NextRequest) {
         ownerShare,
         assistantShare,
         transactionCount: transactions?.length || 0,
-        recalculatedAt: capital.updated_at,
+        recalculatedAt: (capital as any).updated_at,
       },
       capital: {
-        id: capital.id,
-        totalCapital: capital.total_capital,
-        investorShare: capital.investor_share,
-        ownerShare: capital.owner_share,
-        assistantShare: capital.assistant_share,
-        updatedAt: capital.updated_at,
+        id: (capital as any).id,
+        totalCapital: (capital as any).total_capital,
+        investorShare: (capital as any).investor_share,
+        ownerShare: (capital as any).owner_share,
+        assistantShare: (capital as any).assistant_share,
+        updatedAt: (capital as any).updated_at,
       }
     })
   } catch (error) {

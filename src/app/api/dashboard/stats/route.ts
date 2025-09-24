@@ -68,7 +68,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       stats,
-      profitDistribution: profitData?.[0] || {
+      profitDistribution: (profitData as any)?.[0] || {
         total_profit: 0,
         investor_share: 0,
         owner_share: 0,

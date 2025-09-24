@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
 
     // Apply filters
     if (status && ['active', 'sold'].includes(status)) {
-      query = query.eq('status', status)
+      query = query.eq('status' as any, status as any)
     }
 
     if (search) {
@@ -81,10 +81,10 @@ export async function POST(request: NextRequest) {
     const { data: profile } = await supabase
       .from('users')
       .select('role')
-      .eq('id', user.id)
+      .eq('id' as any, user.id as any)
       .single()
 
-    if (!profile || !['owner', 'assistant'].includes(profile.role)) {
+    if (!profile || !['owner', 'assistant'].includes((profile as any).role)) {
       return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 })
     }
 
@@ -96,7 +96,7 @@ export async function POST(request: NextRequest) {
     const { data: existingCar } = await supabase
       .from('cars')
       .select('id')
-      .eq('vin', validatedData.vin.toUpperCase())
+      .eq('vin' as any, validatedData.vin.toUpperCase() as any)
       .single()
 
     if (existingCar) {
@@ -113,7 +113,7 @@ export async function POST(request: NextRequest) {
         year: validatedData.year,
         purchase_price: validatedData.purchasePrice,
         purchase_date: validatedData.purchaseDate,
-      })
+      } as any)
       .select()
       .single()
 

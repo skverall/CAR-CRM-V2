@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from 'react'
 import { User } from '@supabase/auth-helpers-nextjs'
-import { createClient } from '@/lib/auth'
+import { createClient } from '@/lib/auth-client'
 import { User as UserProfile, UserRole } from '@/types'
 
 interface AuthContextType {

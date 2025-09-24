@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
 
     // Apply filters
     if (currency) {
-      query = query.eq('currency', currency.toUpperCase())
+      query = query.eq('currency' as any, currency.toUpperCase() as any)
     }
 
     if (startDate) {
@@ -75,10 +75,10 @@ export async function POST(request: NextRequest) {
     const { data: profile } = await supabase
       .from('users')
       .select('role')
-      .eq('id', user.id)
+      .eq('id' as any, user.id as any)
       .single()
 
-    if (!profile || profile.role !== 'owner') {
+    if (!profile || (profile as any).role !== 'owner') {
       return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 })
     }
 
@@ -93,7 +93,7 @@ export async function POST(request: NextRequest) {
         currency: validatedData.currency.toUpperCase(),
         rate_to_usd: validatedData.rate,
         date: validatedData.date,
-      })
+      } as any)
       .select()
       .single()
 
