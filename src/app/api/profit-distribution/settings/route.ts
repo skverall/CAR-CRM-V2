@@ -50,7 +50,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Failed to fetch current profit' }, { status: 500 })
     }
 
-    const currentProfit = profitData?.[0]?.total_profit || 0
+    const currentProfit = (profitData as any)?.[0]?.total_profit || 0
 
     // Calculate what the distribution would be with current settings
     const projectedDistribution = {
@@ -82,13 +82,13 @@ export async function PUT(request: NextRequest) {
     }
 
     // Check permissions - only owners can change distribution settings
-    const { data: profile } = await supabase
+    const { data: profile } = await (supabase as any)
       .from('users')
       .select('role')
-      .eq('id', user.id)
+      .eq('id' as any, user.id as any)
       .single()
 
-    if (!profile || profile.role !== 'owner') {
+    if (!profile || (profile as any).role !== 'owner') {
       return NextResponse.json({ error: 'Only owners can modify profit distribution settings' }, { status: 403 })
     }
 
@@ -122,7 +122,7 @@ export async function PUT(request: NextRequest) {
           changed_by: user.id,
           change_reason: 'Manual settings update',
         },
-      })
+      } as any)
 
     if (auditError) {
       console.error('Error logging settings change:', auditError)
@@ -133,7 +133,7 @@ export async function PUT(request: NextRequest) {
     const { data: profitData, error: profitError } = await supabase
       .rpc('get_profit_distribution')
 
-    const currentProfit = profitData?.[0]?.total_profit || 0
+    const currentProfit = (profitData as any)?.[0]?.total_profit || 0
 
     // Calculate projected distribution with new settings
     const projectedDistribution = {

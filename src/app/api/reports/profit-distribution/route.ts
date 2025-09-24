@@ -19,10 +19,10 @@ export async function GET(request: NextRequest) {
     const includePersonalExpenses = searchParams.get('includePersonalExpenses') === 'true'
 
     // Get user profile for role-based access
-    const { data: profile } = await supabase
+    const { data: profile } = await (supabase as any)
       .from('users')
       .select('role, full_name, email')
-      .eq('id', user.id)
+      .eq('id' as any, user.id as any)
       .single()
 
     // Build transactions query
@@ -82,38 +82,39 @@ export async function GET(request: NextRequest) {
     const carBreakdown: Record<string, { income: number, expenses: number, netProfit: number, carInfo: any }> = {}
 
     transactions?.forEach(transaction => {
-      const amount = parseFloat(transaction.amount_usd.toString())
-      const month = transaction.date.substring(0, 7) // YYYY-MM
-      const carId = transaction.car?.id || 'no-car'
+      const t = transaction as any
+      const amount = parseFloat(t.amount_usd?.toString?.() ?? `${t.amount_usd ?? 0}`)
+      const month = (t.date as string).substring(0, 7) // YYYY-MM
+      const carId = t.car?.id || 'no-car'
 
       // Initialize breakdowns
-      if (!categoryBreakdown[transaction.category]) {
-        categoryBreakdown[transaction.category] = { income: 0, expense: 0, count: 0 }
+      if (!categoryBreakdown[t.category]) {
+        categoryBreakdown[t.category] = { income: 0, expense: 0, count: 0 }
       }
       if (!monthlyBreakdown[month]) {
         monthlyBreakdown[month] = { income: 0, businessExpenses: 0, personalExpenses: 0, netProfit: 0 }
       }
       if (!carBreakdown[carId]) {
-        carBreakdown[carId] = { 
-          income: 0, 
-          expenses: 0, 
-          netProfit: 0, 
-          carInfo: transaction.car || { id: null, vin: 'N/A', brand: 'No Car', model: '', year: null }
+        carBreakdown[carId] = {
+          income: 0,
+          expenses: 0,
+          netProfit: 0,
+          carInfo: t.car || { id: null, vin: 'N/A', brand: 'No Car', model: '', year: null }
         }
       }
 
-      categoryBreakdown[transaction.category].count++
+      categoryBreakdown[t.category].count++
 
-      if (transaction.type === 'income') {
+      if (t.type === 'income') {
         totalIncome += amount
-        categoryBreakdown[transaction.category].income += amount
+        categoryBreakdown[t.category].income += amount
         monthlyBreakdown[month].income += amount
         if (carId !== 'no-car') {
           carBreakdown[carId].income += amount
         }
-      } else if (transaction.type === 'expense') {
-        categoryBreakdown[transaction.category].expense += amount
-        if (transaction.is_personal) {
+      } else if (t.type === 'expense') {
+        categoryBreakdown[t.category].expense += amount
+        if (t.is_personal) {
           totalPersonalExpenses += amount
           monthlyBreakdown[month].personalExpenses += amount
         } else {
@@ -153,9 +154,9 @@ export async function GET(request: NextRequest) {
         generatedAt: new Date().toISOString(),
         generatedBy: {
           id: user.id,
-          email: profile?.email,
-          fullName: profile?.full_name,
-          role: profile?.role,
+          email: (profile as any)?.email,
+          fullName: (profile as any)?.full_name,
+          role: (profile as any)?.role,
         },
         period: {
           startDate: startDate || 'all time',
@@ -171,11 +172,11 @@ export async function GET(request: NextRequest) {
         netProfit,
         profitDistribution,
         currentCapitalState: {
-          totalCapital: capital?.total_capital || 0,
-          investorShare: capital?.investor_share || 0,
-          ownerShare: capital?.owner_share || 0,
-          assistantShare: capital?.assistant_share || 0,
-          lastUpdated: capital?.updated_at,
+          totalCapital: (capital as any)?.total_capital || 0,
+          investorShare: (capital as any)?.investor_share || 0,
+          ownerShare: (capital as any)?.owner_share || 0,
+          assistantShare: (capital as any)?.assistant_share || 0,
+          lastUpdated: (capital as any)?.updated_at,
         }
       },
       breakdowns: {
@@ -221,16 +222,19 @@ export async function GET(request: NextRequest) {
         'User'
       ].join(',')
 
-      const csvRows = transactions?.map(transaction => [
-        transaction.date,
-        transaction.type,
-        transaction.category,
-        transaction.amount_usd,
-        `"${transaction.description || ''}"`,
-        transaction.car?.vin || 'N/A',
-        transaction.is_personal,
-        transaction.user?.full_name || transaction.user?.email || 'Unknown'
-      ].join(',')) || []
+      const csvRows = transactions?.map(transaction => {
+        const t = transaction as any
+        return [
+          t.date,
+          t.type,
+          t.category,
+          t.amount_usd,
+          `"${t.description || ''}"`,
+          t.car?.vin || 'N/A',
+          t.is_personal,
+          t.user?.full_name || t.user?.email || 'Unknown'
+        ].join(',')
+      }) || []
 
       const csvContent = [csvHeaders, ...csvRows].join('\n')
 

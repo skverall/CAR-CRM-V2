@@ -4,7 +4,11 @@ import { createBrowserClient } from '@supabase/ssr'
 import { Database } from '@/types/database'
 import { UserRole } from '@/types'
 
-export const createClient = () => createBrowserClient<Database>()
+export const createClient = () =>
+  createBrowserClient<Database>(
+    process.env.NEXT_PUBLIC_SUPABASE_URL as string,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string
+  )
 
 export async function signUp(email: string, password: string, fullName: string, role: UserRole = 'assistant') {
   const supabase = createClient()

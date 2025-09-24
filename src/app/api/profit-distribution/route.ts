@@ -6,13 +6,13 @@ export async function GET(request: NextRequest) {
     const supabase = createServerClient()
     
     // Check authentication
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    const { data: { user }, error: authError } = await (supabase as any).auth.getUser()
     if (authError || !user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     // Get current profit distribution from the database function
-    const { data: profitData, error: profitError } = await supabase
+    const { data: profitData, error: profitError } = await (supabase as any)
       .rpc('get_profit_distribution')
 
     if (profitError) {
@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Get detailed breakdown of income and expenses
-    const { data: incomeData, error: incomeError } = await supabase
+    const { data: incomeData, error: incomeError } = await (supabase as any)
       .from('transactions')
       .select('amount_usd')
       .eq('type' as any, 'income' as any)
@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Failed to fetch income data' }, { status: 500 })
     }
 
-    const { data: expenseData, error: expenseError } = await supabase
+    const { data: expenseData, error: expenseError } = await (supabase as any)
       .from('transactions')
       .select('amount_usd, is_personal')
       .eq('type' as any, 'expense' as any)
@@ -43,17 +43,17 @@ export async function GET(request: NextRequest) {
     }
 
     // Calculate totals
-    const totalIncome = incomeData?.reduce((sum, transaction) => {
+    const totalIncome = incomeData?.reduce((sum: any, transaction: any) => {
       const t = transaction as any
       return sum + parseFloat(t.amount_usd?.toString?.() ?? `${t.amount_usd ?? 0}`)
     }, 0) || 0
 
-    const businessExpenses = expenseData?.reduce((sum, transaction) => {
+    const businessExpenses = expenseData?.reduce((sum: any, transaction: any) => {
       const t = transaction as any
       return !t.is_personal ? sum + parseFloat(t.amount_usd?.toString?.() ?? `${t.amount_usd ?? 0}`) : sum
     }, 0) || 0
 
-    const personalExpenses = expenseData?.reduce((sum, transaction) => {
+    const personalExpenses = expenseData?.reduce((sum: any, transaction: any) => {
       const t = transaction as any
       return t.is_personal ? sum + parseFloat(t.amount_usd?.toString?.() ?? `${t.amount_usd ?? 0}`) : sum
     }, 0) || 0

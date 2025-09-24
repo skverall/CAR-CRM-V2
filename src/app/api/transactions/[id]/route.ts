@@ -26,14 +26,14 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { data: transaction, error } = await supabase
+    const { data: transaction, error } = await (supabase as any)
       .from('transactions')
       .select(`
         *,
         car:cars(id, vin, brand, model, year),
         user:users(id, email, full_name)
       `)
-      .eq('id', params.id)
+      .eq('id' as any, params.id as any)
       .single()
 
     if (error) {
@@ -65,10 +65,10 @@ export async function PUT(
     }
 
     // Get existing transaction
-    const { data: existingTransaction, error: fetchError } = await supabase
+    const { data: existingTransaction, error: fetchError } = await (supabase as any)
       .from('transactions')
       .select('*')
-      .eq('id', params.id)
+      .eq('id' as any, params.id as any)
       .single()
 
     if (fetchError) {
@@ -79,14 +79,14 @@ export async function PUT(
     }
 
     // Check permissions
-    const { data: profile } = await supabase
+    const { data: profile } = await (supabase as any)
       .from('users')
       .select('role')
-      .eq('id', user.id)
+      .eq('id' as any, user.id as any)
       .single()
 
-    const canEdit = profile?.role === 'owner' || 
-                   (profile?.role === 'assistant' && existingTransaction.user_id === user.id)
+    const canEdit = (profile as any)?.role === 'owner' ||
+                   ((profile as any)?.role === 'assistant' && (existingTransaction as any).user_id === user.id)
 
     if (!canEdit) {
       return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 })
@@ -108,9 +108,9 @@ export async function PUT(
 
     // Handle amount and currency changes
     if (validatedData.amount || validatedData.currency) {
-      const amount = validatedData.amount || existingTransaction.amount
-      const currency = validatedData.currency || existingTransaction.currency
-      const date = validatedData.date || existingTransaction.date
+      const amount = validatedData.amount || (existingTransaction as any).amount
+      const currency = validatedData.currency || (existingTransaction as any).currency
+      const date = validatedData.date || (existingTransaction as any).date
 
       updateData.amount = amount
       updateData.currency = currency
@@ -120,17 +120,17 @@ export async function PUT(
       let amountUsd = amount
 
       if (currency !== 'USD') {
-        const { data: rateData } = await supabase
+        const { data: rateData } = await (supabase as any)
           .from('exchange_rates')
           .select('rate_to_usd')
-          .eq('currency', currency)
+          .eq('currency' as any, currency as any)
           .lte('date', date)
           .order('date', { ascending: false })
           .limit(1)
           .single()
 
         if (rateData) {
-          exchangeRate = rateData.rate_to_usd
+          exchangeRate = (rateData as any).rate_to_usd
           amountUsd = amount * exchangeRate
         }
       }
@@ -141,10 +141,10 @@ export async function PUT(
 
     // Validate car exists if carId is provided
     if (validatedData.carId) {
-      const { data: car, error: carError } = await supabase
+      const { data: car, error: carError } = await (supabase as any)
         .from('cars')
         .select('id')
-        .eq('id', validatedData.carId)
+        .eq('id' as any, validatedData.carId as any)
         .single()
 
       if (carError || !car) {
@@ -153,10 +153,10 @@ export async function PUT(
     }
 
     // Update transaction
-    const { data: transaction, error } = await supabase
+    const { data: transaction, error } = await (supabase as any)
       .from('transactions')
       .update(updateData)
-      .eq('id', params.id)
+      .eq('id' as any, params.id as any)
       .select(`
         *,
         car:cars(id, vin, brand, model, year),
@@ -197,10 +197,10 @@ export async function DELETE(
     }
 
     // Get existing transaction
-    const { data: existingTransaction, error: fetchError } = await supabase
+    const { data: existingTransaction, error: fetchError } = await (supabase as any)
       .from('transactions')
       .select('user_id')
-      .eq('id', params.id)
+      .eq('id' as any, params.id as any)
       .single()
 
     if (fetchError) {
@@ -211,24 +211,24 @@ export async function DELETE(
     }
 
     // Check permissions
-    const { data: profile } = await supabase
+    const { data: profile } = await (supabase as any)
       .from('users')
       .select('role')
-      .eq('id', user.id)
+      .eq('id' as any, user.id as any)
       .single()
 
-    const canDelete = profile?.role === 'owner' || 
-                     (profile?.role === 'assistant' && existingTransaction.user_id === user.id)
+    const canDelete = (profile as any)?.role === 'owner' ||
+                     ((profile as any)?.role === 'assistant' && (existingTransaction as any).user_id === user.id)
 
     if (!canDelete) {
       return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 })
     }
 
     // Delete transaction
-    const { error } = await supabase
+    const { error } = await (supabase as any)
       .from('transactions')
       .delete()
-      .eq('id', params.id)
+      .eq('id' as any, params.id as any)
 
     if (error) {
       console.error('Error deleting transaction:', error)

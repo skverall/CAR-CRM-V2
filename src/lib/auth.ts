@@ -4,7 +4,17 @@ import { Database } from '@/types/database'
 import { UserRole } from '@/types'
 
 export const createServerClient = () =>
-  createSupabaseServerClient<Database>({ cookies })
+  createSupabaseServerClient<Database>(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    {
+      cookies: {
+        get(name: string) {
+          return cookies().get(name)?.value
+        },
+      },
+    }
+  )
 
 export async function getUser() {
   const supabase = createServerClient()
@@ -13,10 +23,10 @@ export async function getUser() {
     if (error || !user) {
       return null
     }
-    const { data: profile } = await supabase
+    const { data: profile } = await (supabase as any)
       .from('users')
       .select('*')
-      .eq('id', user.id)
+      .eq('id' as any, user.id as any)
       .single()
     return { ...user, profile }
   } catch (error) {
@@ -28,10 +38,10 @@ export async function getUser() {
 export async function getUserRole(userId: string): Promise<UserRole | null> {
   const supabase = createServerClient()
   try {
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from('users')
       .select('role')
-      .eq('id', userId)
+      .eq('id' as any, userId as any)
       .single()
     if (error || !data) return null
     return data.role as UserRole

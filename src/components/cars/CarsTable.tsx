@@ -40,7 +40,7 @@ export function CarsTable({ onEditCar, onViewCar }: CarsTableProps) {
     limit: 10,
   })
 
-  const { data, isLoading, error } = useCars(filters)
+  const { data, isLoading, error } = useCars(filters as any)
   const deleteCarMutation = useDeleteCar()
 
   const handleSearch = (search: string) => {

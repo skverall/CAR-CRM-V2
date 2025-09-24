@@ -43,7 +43,7 @@ export function TransactionsTable({ onEditTransaction, onViewTransaction }: Tran
     limit: 10,
   })
 
-  const { data, isLoading, error } = useTransactions(filters)
+  const { data, isLoading, error } = useTransactions(filters as any)
   const deleteTransactionMutation = useDeleteTransaction()
 
   const handleSearch = (search: string) => {

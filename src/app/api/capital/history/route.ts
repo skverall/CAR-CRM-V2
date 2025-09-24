@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
     const endDate = searchParams.get('endDate')
 
     // Get capital history from audit log
-    let auditQuery = supabase
+    let auditQuery = (supabase as any)
       .from('audit_log')
       .select(`
         id,
@@ -63,7 +63,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Format history entries
-    const formattedHistory = auditHistory?.map(entry => {
+    const formattedHistory = auditHistory?.map((entry: any) => {
       const e = entry as any
       const oldValues = e.old_values as any
       const newValues = e.new_values as any

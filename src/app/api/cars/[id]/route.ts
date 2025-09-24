@@ -22,12 +22,12 @@ export async function GET(
     const supabase = createServerClient()
     
     // Check authentication
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    const { data: { user }, error: authError } = await (supabase as any).auth.getUser()
     if (authError || !user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { data: car, error } = await supabase
+    const { data: car, error } = await (supabase as any)
       .from('cars')
       .select('*')
       .eq('id' as any, params.id as any)
@@ -56,13 +56,13 @@ export async function PUT(
     const supabase = createServerClient()
     
     // Check authentication
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    const { data: { user }, error: authError } = await (supabase as any).auth.getUser()
     if (authError || !user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     // Check permissions
-    const { data: profile } = await supabase
+    const { data: profile } = await (supabase as any)
       .from('users')
       .select('role')
       .eq('id' as any, user.id as any)
@@ -77,7 +77,7 @@ export async function PUT(
     const validatedData = updateCarSchema.parse(body)
 
     // Check if car exists
-    const { data: existingCar, error: fetchError } = await supabase
+    const { data: existingCar, error: fetchError } = await (supabase as any)
       .from('cars')
       .select('*')
       .eq('id' as any, params.id as any)
@@ -92,7 +92,7 @@ export async function PUT(
 
     // If VIN is being updated, check for duplicates
     if (validatedData.vin && validatedData.vin !== (existingCar as any).vin) {
-      const { data: duplicateCar } = await supabase
+      const { data: duplicateCar } = await (supabase as any)
         .from('cars')
         .select('id')
         .eq('vin' as any, validatedData.vin.toUpperCase() as any)
@@ -118,7 +118,7 @@ export async function PUT(
     if (validatedData.saleDate !== undefined) updateData.sale_date = validatedData.saleDate
 
     // Update car
-    const { data: car, error } = await supabase
+    const { data: car, error } = await (supabase as any)
       .from('cars')
       .update(updateData)
       .eq('id' as any, params.id as any)
@@ -152,13 +152,13 @@ export async function DELETE(
     const supabase = createServerClient()
     
     // Check authentication
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    const { data: { user }, error: authError } = await (supabase as any).auth.getUser()
     if (authError || !user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     // Check permissions (only owner can delete cars)
-    const { data: profile } = await supabase
+    const { data: profile } = await (supabase as any)
       .from('users')
       .select('role')
       .eq('id' as any, user.id as any)
@@ -169,7 +169,7 @@ export async function DELETE(
     }
 
     // Check if car has transactions
-    const { data: transactions, error: transactionError } = await supabase
+    const { data: transactions, error: transactionError } = await (supabase as any)
       .from('transactions')
       .select('id')
       .eq('car_id' as any, params.id as any)
@@ -187,7 +187,7 @@ export async function DELETE(
     }
 
     // Delete car
-    const { error } = await supabase
+    const { error } = await (supabase as any)
       .from('cars')
       .delete()
       .eq('id' as any, params.id as any)

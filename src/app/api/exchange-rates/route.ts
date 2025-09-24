@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '50')
 
     // Build query
-    let query = supabase
+    let query = (supabase as any)
       .from('exchange_rates')
       .select('*')
       .order('date', { ascending: false })
@@ -72,7 +72,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check permissions - only owners can manage exchange rates
-    const { data: profile } = await supabase
+    const { data: profile } = await (supabase as any)
       .from('users')
       .select('role')
       .eq('id' as any, user.id as any)

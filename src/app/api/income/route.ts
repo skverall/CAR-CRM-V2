@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
     const offset = (page - 1) * limit
 
     // Build query for income transactions only
-    let query = supabase
+    let query = (supabase as any)
       .from('transactions')
       .select(`
         *,
@@ -69,7 +69,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Calculate summary statistics
-    const totalIncome = incomeTransactions?.reduce((sum, transaction) => {
+    const totalIncome = incomeTransactions?.reduce((sum: any, transaction: any) => {
       const t = transaction as any
       return sum + parseFloat(t.amount_usd?.toString?.() ?? `${t.amount_usd ?? 0}`)
     }, 0) || 0
@@ -105,7 +105,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check permissions
-    const { data: profile } = await supabase
+    const { data: profile } = await (supabase as any)
       .from('users')
       .select('role')
       .eq('id' as any, user.id as any)
@@ -124,7 +124,7 @@ export async function POST(request: NextRequest) {
     let amountUsd = validatedData.amount
 
     if (validatedData.currency !== 'USD') {
-      const { data: rateData } = await supabase
+      const { data: rateData } = await (supabase as any)
         .from('exchange_rates')
         .select('rate_to_usd')
         .eq('currency' as any, validatedData.currency as any)
@@ -141,7 +141,7 @@ export async function POST(request: NextRequest) {
 
     // Validate car exists if carId is provided
     if (validatedData.carId) {
-      const { data: car, error: carError } = await supabase
+      const { data: car, error: carError } = await (supabase as any)
         .from('cars')
         .select('id')
         .eq('id' as any, validatedData.carId as any)

@@ -19,25 +19,25 @@ export async function GET(request: NextRequest) {
     const isPersonal = searchParams.get('isPersonal')
 
     // Build base query for transactions
-    let baseQuery = supabase
+    let baseQuery = (supabase as any)
       .from('transactions')
       .select('type, amount_usd, is_personal, car_id, date, category')
 
     // Apply filters
     if (startDate) {
-      baseQuery = baseQuery.gte('date', startDate)
+      baseQuery = baseQuery.gte('date' as any, startDate as any)
     }
 
     if (endDate) {
-      baseQuery = baseQuery.lte('date', endDate)
+      baseQuery = baseQuery.lte('date' as any, endDate as any)
     }
 
     if (carId) {
-      baseQuery = baseQuery.eq('car_id', carId)
+      baseQuery = baseQuery.eq('car_id' as any, carId as any)
     }
 
     if (isPersonal !== null) {
-      baseQuery = baseQuery.eq('is_personal', isPersonal === 'true')
+      baseQuery = baseQuery.eq('is_personal' as any, (isPersonal === 'true') as any)
     }
 
     const { data: transactions, error } = await baseQuery
@@ -62,9 +62,9 @@ export async function GET(request: NextRequest) {
       monthlyBreakdown: {} as Record<string, { income: number, expense: number, profit: number }>
     }
 
-    transactions?.forEach(transaction => {
-      const amount = parseFloat(transaction.amount_usd.toString())
-      const month = transaction.date.substring(0, 7) // YYYY-MM format
+    transactions?.forEach((transaction: any) => {
+      const amount = parseFloat(((transaction as any).amount_usd as any).toString())
+      const month = (transaction as any).date.substring(0, 7) // YYYY-MM format
 
       // Initialize monthly breakdown if not exists
       if (!stats.monthlyBreakdown[month]) {
@@ -72,23 +72,23 @@ export async function GET(request: NextRequest) {
       }
 
       // Initialize category breakdown if not exists
-      if (!stats.categoryBreakdown[transaction.category]) {
-        stats.categoryBreakdown[transaction.category] = { income: 0, expense: 0 }
+      if (!stats.categoryBreakdown[(transaction as any).category]) {
+        stats.categoryBreakdown[(transaction as any).category] = { income: 0, expense: 0 }
       }
 
-      if (transaction.type === 'income') {
+      if ((transaction as any).type === 'income') {
         stats.totalIncome += amount
         stats.businessIncome += amount
         stats.incomeTransactions++
         stats.monthlyBreakdown[month].income += amount
-        stats.categoryBreakdown[transaction.category].income += amount
-      } else if (transaction.type === 'expense') {
+        stats.categoryBreakdown[(transaction as any).category].income += amount
+      } else if ((transaction as any).type === 'expense') {
         stats.totalExpenses += amount
         stats.expenseTransactions++
         stats.monthlyBreakdown[month].expense += amount
-        stats.categoryBreakdown[transaction.category].expense += amount
+        stats.categoryBreakdown[(transaction as any).category].expense += amount
 
-        if (transaction.is_personal) {
+        if ((transaction as any).is_personal) {
           stats.personalExpenses += amount
         } else {
           stats.businessExpenses += amount

@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
     const offset = (page - 1) * limit
 
     // Build query
-    let query = supabase
+    let query = (supabase as any)
       .from('transactions')
       .select(`
         *,
@@ -49,27 +49,27 @@ export async function GET(request: NextRequest) {
 
     // Apply filters
     if (type && ['income', 'expense'].includes(type)) {
-      query = query.eq('type', type)
+      query = query.eq('type' as any, type as any)
     }
 
     if (category) {
-      query = query.eq('category', category)
+      query = query.eq('category' as any, category as any)
     }
 
     if (carId) {
-      query = query.eq('car_id', carId)
+      query = query.eq('car_id' as any, carId as any)
     }
 
     if (startDate) {
-      query = query.gte('date', startDate)
+      query = query.gte('date' as any, startDate as any)
     }
 
     if (endDate) {
-      query = query.lte('date', endDate)
+      query = query.lte('date' as any, endDate as any)
     }
 
     if (isPersonal !== null) {
-      query = query.eq('is_personal', isPersonal === 'true')
+      query = query.eq('is_personal' as any, (isPersonal === 'true') as any)
     }
 
     const { data: transactions, error, count } = await query
@@ -105,13 +105,13 @@ export async function POST(request: NextRequest) {
     }
 
     // Check permissions
-    const { data: profile } = await supabase
+    const { data: profile } = await (supabase as any)
       .from('users')
       .select('role')
-      .eq('id', user.id)
+      .eq('id' as any, user.id as any)
       .single()
 
-    if (!profile || !['owner', 'assistant'].includes(profile.role)) {
+    if (!profile || !['owner', 'assistant'].includes((profile as any).role)) {
       return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 })
     }
 
@@ -124,27 +124,27 @@ export async function POST(request: NextRequest) {
     let amountUsd = validatedData.amount
 
     if (validatedData.currency !== 'USD') {
-      const { data: rateData } = await supabase
+      const { data: rateData } = await (supabase as any)
         .from('exchange_rates')
         .select('rate_to_usd')
-        .eq('currency', validatedData.currency)
-        .lte('date', validatedData.date)
+        .eq('currency' as any, validatedData.currency as any)
+        .lte('date' as any, validatedData.date as any)
         .order('date', { ascending: false })
         .limit(1)
         .single()
 
       if (rateData) {
-        exchangeRate = rateData.rate_to_usd
+        exchangeRate = (rateData as any).rate_to_usd
         amountUsd = validatedData.amount * exchangeRate
       }
     }
 
     // Validate car exists if carId is provided
     if (validatedData.carId) {
-      const { data: car, error: carError } = await supabase
+      const { data: car, error: carError } = await (supabase as any)
         .from('cars')
         .select('id')
-        .eq('id', validatedData.carId)
+        .eq('id' as any, validatedData.carId as any)
         .single()
 
       if (carError || !car) {
@@ -156,18 +156,18 @@ export async function POST(request: NextRequest) {
     const { data: transaction, error } = await supabase
       .from('transactions')
       .insert({
-        type: validatedData.type,
-        category: validatedData.category,
-        amount: validatedData.amount,
-        currency: validatedData.currency,
-        exchange_rate: exchangeRate,
-        amount_usd: amountUsd,
-        description: validatedData.description,
-        date: validatedData.date,
-        car_id: validatedData.carId,
-        user_id: user.id,
-        is_personal: validatedData.isPersonal,
-      })
+        type: validatedData.type as any,
+        category: validatedData.category as any,
+        amount: validatedData.amount as any,
+        currency: validatedData.currency as any,
+        exchange_rate: exchangeRate as any,
+        amount_usd: amountUsd as any,
+        description: (validatedData.description as any),
+        date: validatedData.date as any,
+        car_id: (validatedData.carId as any),
+        user_id: user.id as any,
+        is_personal: validatedData.isPersonal as any,
+      } as any)
       .select(`
         *,
         car:cars(id, vin, brand, model, year),

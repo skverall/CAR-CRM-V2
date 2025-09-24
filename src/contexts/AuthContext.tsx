@@ -1,7 +1,7 @@
 'use client'
 
 import { createContext, useContext, useEffect, useState } from 'react'
-import { User } from '@supabase/auth-helpers-nextjs'
+import type { User } from '@supabase/supabase-js'
 import { createClient } from '@/lib/auth-client'
 import { User as UserProfile, UserRole } from '@/types'
 
@@ -23,7 +23,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const fetchProfile = async (userId: string) => {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('users')
         .select('*')
         .eq('id', userId)
@@ -44,7 +44,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const refreshProfile = async () => {
     if (user) {
       const profileData = await fetchProfile(user.id)
-      setProfile(profileData)
+      setProfile(profileData as any)
     }
   }
 
@@ -55,7 +55,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (session?.user) {
         setUser(session.user)
         const profileData = await fetchProfile(session.user.id)
-        setProfile(profileData)
+        setProfile(profileData as any)
       }
       
       setLoading(false)
@@ -68,7 +68,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (session?.user) {
           setUser(session.user)
           const profileData = await fetchProfile(session.user.id)
-          setProfile(profileData)
+          setProfile(profileData as any)
         } else {
           setUser(null)
           setProfile(null)

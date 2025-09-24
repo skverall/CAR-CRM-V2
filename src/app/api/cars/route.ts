@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
     const offset = (page - 1) * limit
 
     // Build query
-    let query = supabase
+    let query = (supabase as any)
       .from('cars')
       .select('*', { count: 'exact' })
       .order('created_at', { ascending: false })
@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check permissions (only owner and assistant can create cars)
-    const { data: profile } = await supabase
+    const { data: profile } = await (supabase as any)
       .from('users')
       .select('role')
       .eq('id' as any, user.id as any)
@@ -93,7 +93,7 @@ export async function POST(request: NextRequest) {
     const validatedData = createCarSchema.parse(body)
 
     // Check if VIN already exists
-    const { data: existingCar } = await supabase
+    const { data: existingCar } = await (supabase as any)
       .from('cars')
       .select('id')
       .eq('vin' as any, validatedData.vin.toUpperCase() as any)
@@ -104,7 +104,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Create car
-    const { data: car, error } = await supabase
+    const { data: car, error } = await (supabase as any)
       .from('cars')
       .insert({
         vin: validatedData.vin.toUpperCase(),

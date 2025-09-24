@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check permissions - only owners can trigger recalculation
-    const { data: profile } = await supabase
+    const { data: profile } = await (supabase as any)
       .from('users')
       .select('role')
       .eq('id' as any, user.id as any)

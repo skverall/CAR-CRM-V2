@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
     const carId = searchParams.get('carId')
 
     // Build base query for transactions
-    let baseQuery = supabase
+    let baseQuery = (supabase as any)
       .from('transactions')
       .select('type, amount_usd, is_personal, car_id, date, category, created_at')
 
@@ -55,7 +55,7 @@ export async function GET(request: NextRequest) {
       transactionCount: number
     }> = {}
 
-    transactions?.forEach(transaction => {
+    transactions?.forEach((transaction: any) => {
       const t = transaction as any
       const amount = parseFloat(t.amount_usd?.toString?.() ?? `${t.amount_usd ?? 0}`)
       const date = new Date(t.date)
