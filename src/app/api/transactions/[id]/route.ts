@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@/lib/auth'
 import { z } from 'zod'
 
+export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
+
 const updateTransactionSchema = z.object({
   type: z.enum(['income', 'expense']).optional(),
   category: z.string().min(1, 'Категория обязательна').optional(),

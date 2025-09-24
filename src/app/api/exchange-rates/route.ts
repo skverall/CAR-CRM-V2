@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@/lib/auth'
 import { z } from 'zod'
 
+export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
+
 const createExchangeRateSchema = z.object({
   currency: z.string().min(3).max(3),
   rate: z.number().positive('Курс должен быть положительным'),

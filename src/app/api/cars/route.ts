@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@/lib/auth'
 import { z } from 'zod'
 
+export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
+
 const createCarSchema = z.object({
   vin: z.string().length(17, 'VIN должен содержать 17 символов'),
   brand: z.string().min(1, 'Марка обязательна'),

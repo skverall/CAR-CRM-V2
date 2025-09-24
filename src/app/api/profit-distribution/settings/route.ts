@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@/lib/auth'
 import { z } from 'zod'
 
+export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
+
 const distributionSettingsSchema = z.object({
   investorPercentage: z.number().min(0).max(100),
   ownerPercentage: z.number().min(0).max(100),
