@@ -4,6 +4,8 @@ import { useState } from 'react'
 import { TransactionWithCar, TransactionType } from '@/types'
 import { useAuth } from '@/contexts/AuthContext'
 import { TransactionForm } from '@/components/transactions/TransactionForm'
+import { TransactionsTable } from '@/components/transactions/TransactionsTable'
+import { ProfitDistributionCard } from '@/components/profit/ProfitDistributionCard'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -81,55 +83,28 @@ export default function TransactionsPage() {
         </div>
       </div>
 
-      {/* Quick Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg text-green-600">Доходы</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-green-600">$0</div>
-            <p className="text-sm text-gray-500">За текущий месяц</p>
-          </CardContent>
-        </Card>
+      {/* Main Content */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        {/* Transactions Table */}
+        <div className="lg:col-span-2">
+          <Card>
+            <CardHeader>
+              <CardTitle>Список транзакций</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <TransactionsTable
+                onEditTransaction={handleEditTransaction}
+                onViewTransaction={handleViewTransaction}
+              />
+            </CardContent>
+          </Card>
+        </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg text-red-600">Расходы</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-red-600">$0</div>
-            <p className="text-sm text-gray-500">За текущий месяц</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg text-blue-600">Прибыль</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-blue-600">$0</div>
-            <p className="text-sm text-gray-500">За текущий месяц</p>
-          </CardContent>
-        </Card>
+        {/* Profit Distribution */}
+        <div className="lg:col-span-1">
+          <ProfitDistributionCard />
+        </div>
       </div>
-
-      {/* Transactions Table Placeholder */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Список транзакций</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-center py-8">
-            <p className="text-gray-500 mb-4">Транзакции будут отображаться здесь</p>
-            {canManage && (
-              <Button onClick={handleCreateTransaction}>
-                Добавить первую транзакцию
-              </Button>
-            )}
-          </div>
-        </CardContent>
-      </Card>
 
       <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
         <DialogContent className="max-w-4xl">

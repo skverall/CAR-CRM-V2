@@ -39,6 +39,92 @@ export interface ProfitDistribution {
   investorShare: number
   ownerShare: number
   assistantShare: number
+  investorPercentage?: number
+  ownerPercentage?: number
+  assistantPercentage?: number
+}
+
+export interface CapitalState {
+  id?: string
+  totalCapital: number
+  investorShare: number
+  ownerShare: number
+  assistantShare: number
+  updatedAt?: string
+}
+
+export interface ProfitDistributionBreakdown {
+  totalIncome: number
+  businessExpenses: number
+  personalExpenses: number
+  totalExpenses: number
+  netProfit: number
+}
+
+export interface DistributionRules {
+  investor: number // percentage
+  owner: number    // percentage
+  assistant: number // percentage
+}
+
+export interface PeriodDistribution {
+  totalIncome: number
+  totalBusinessExpenses: number
+  totalPersonalExpenses: number
+  netProfit: number
+  investorShare: number
+  ownerShare: number
+  assistantShare: number
+  transactionCount: number
+}
+
+export interface MonthlyProfitSummary {
+  month: string
+  totalIncome: number
+  totalBusinessExpenses: number
+  totalPersonalExpenses: number
+  netProfit: number
+  investorShare: number
+  ownerShare: number
+  assistantShare: number
+  transactionCount: number
+}
+
+export interface CarProfitDistribution {
+  carId: string
+  carVin: string
+  carBrand: string
+  carModel: string
+  carYear: number
+  totalIncome: number
+  totalExpenses: number
+  netProfit: number
+  investorShare: number
+  ownerShare: number
+  assistantShare: number
+  transactionCount: number
+}
+
+export interface CapitalHistoryEntry {
+  id: string
+  action: string
+  timestamp: string
+  user: {
+    id: string
+    email: string
+    fullName: string
+    role: string
+  } | null
+  changes: {
+    before: CapitalState | null
+    after: CapitalState | null
+  }
+  metadata?: {
+    recalculationTrigger?: string
+    transactionCount?: number
+    totalIncome?: number
+    totalExpenses?: number
+  }
 }
 
 export interface TransactionCategory {

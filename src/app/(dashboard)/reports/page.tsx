@@ -2,7 +2,10 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Download, FileText, BarChart3, PieChart } from 'lucide-react'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { FinancialChart } from '@/components/reports/FinancialChart'
+import { ProfitDistributionCard } from '@/components/profit/ProfitDistributionCard'
+import { Download, FileText, BarChart3, PieChart, TrendingUp } from 'lucide-react'
 
 export default function ReportsPage() {
   return (
@@ -74,30 +77,88 @@ export default function ReportsPage() {
         </Card>
       </div>
 
-      {/* Quick Analytics */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Тренды по месяцам</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="h-64 flex items-center justify-center text-gray-500">
-              График будет отображаться здесь
-            </div>
-          </CardContent>
-        </Card>
+      {/* Analytics Tabs */}
+      <Tabs defaultValue="overview" className="space-y-6">
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="overview">Обзор</TabsTrigger>
+          <TabsTrigger value="trends">Тренды</TabsTrigger>
+          <TabsTrigger value="categories">Категории</TabsTrigger>
+          <TabsTrigger value="profit">Прибыль</TabsTrigger>
+        </TabsList>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Категории расходов</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="h-64 flex items-center justify-center text-gray-500">
-              Диаграмма категорий будет отображаться здесь
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+        <TabsContent value="overview" className="space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <FinancialChart
+              type="line"
+              title="Финансовые тренды по месяцам"
+              dataType="monthly"
+              height={350}
+            />
+            <FinancialChart
+              type="pie"
+              title="Распределение по категориям"
+              dataType="categories"
+              height={350}
+            />
+          </div>
+        </TabsContent>
+
+        <TabsContent value="trends" className="space-y-6">
+          <div className="grid grid-cols-1 gap-6">
+            <FinancialChart
+              type="line"
+              title="Детальные тренды доходов и расходов"
+              dataType="monthly"
+              height={400}
+            />
+            <FinancialChart
+              type="bar"
+              title="Сравнение по месяцам"
+              dataType="monthly"
+              height={350}
+            />
+          </div>
+        </TabsContent>
+
+        <TabsContent value="categories" className="space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <FinancialChart
+              type="bar"
+              title="Расходы по категориям"
+              dataType="categories"
+              height={400}
+            />
+            <FinancialChart
+              type="pie"
+              title="Доля категорий в общих расходах"
+              dataType="categories"
+              height={400}
+            />
+          </div>
+        </TabsContent>
+
+        <TabsContent value="profit" className="space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <ProfitDistributionCard />
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <TrendingUp className="mr-2 h-5 w-5" />
+                  Динамика прибыли
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <FinancialChart
+                  type="line"
+                  title=""
+                  dataType="monthly"
+                  height={300}
+                />
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+      </Tabs>
     </div>
   )
 }

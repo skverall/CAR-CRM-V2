@@ -5,7 +5,9 @@ import { useAuth } from '@/contexts/AuthContext'
 import { formatCurrency } from '@/lib/utils'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Loader2, Car, TrendingUp, TrendingDown, DollarSign } from 'lucide-react'
+import { ProfitDistributionCard } from '@/components/profit/ProfitDistributionCard'
+import { FinancialChart } from '@/components/reports/FinancialChart'
+import { Loader2, Car, TrendingUp, TrendingDown, DollarSign, Receipt, Users } from 'lucide-react'
 
 export default function DashboardPage() {
   const { profile } = useAuth()
@@ -146,6 +148,17 @@ export default function DashboardPage() {
           </Card>
         </div>
       )}
+
+      {/* Charts and Analytics */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <FinancialChart
+          type="line"
+          title="Тренды за последние месяцы"
+          dataType="monthly"
+          height={300}
+        />
+        <ProfitDistributionCard />
+      </div>
 
       {/* Recent Activity */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
