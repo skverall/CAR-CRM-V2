@@ -113,7 +113,7 @@ function dispatch(action: ToastActionType) {
   })
 }
 
-function toast({ ...props }: ToastProps) {
+function toast({ ...props }: Omit<ToasterToast, "id">) {
   const id = crypto.randomUUID()
 
   const update = (props: ToastProps) =>
