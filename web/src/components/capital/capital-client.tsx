@@ -11,7 +11,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { CapitalTxnReason } from '@prisma/client'
 
 function formatCurrency(value: number) {
   return new Intl.NumberFormat('en-AE', {
@@ -139,7 +138,7 @@ export function CapitalClient({ accounts, transactions }: Props) {
                 <PlusCircle className='mr-2 h-4 w-4' /> Депозит инвестора
               </Button>
             }
-            reason={CapitalTxnReason.DEPOSIT_INVESTOR}
+            reason='DEPOSIT_INVESTOR'
             lockReason
             dialogTitle='Депозит инвестора'
             description='Зачисление средств от инвестора в AED.'
@@ -152,7 +151,7 @@ export function CapitalClient({ accounts, transactions }: Props) {
                 <Wallet className='mr-2 h-4 w-4' /> Вывод владельца
               </Button>
             }
-            reason={CapitalTxnReason.WITHDRAW_OWNER}
+            reason='WITHDRAW_OWNER'
             lockReason
             dialogTitle='Вывод владельца'
             description='Списание средств в пользу владельца.'

@@ -1,6 +1,5 @@
 'use client'
 
-import { CapitalTxnReason } from '@prisma/client'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Loader2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
@@ -16,18 +15,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea'
 import { useToast } from '@/components/ui/use-toast'
 
-const reasonOptions = [
-  CapitalTxnReason.DEPOSIT_INVESTOR,
-  CapitalTxnReason.WITHDRAW_OWNER,
-  CapitalTxnReason.ADJUST,
-  CapitalTxnReason.OTHER,
-] as const
+const REASON_OPTIONS = ['DEPOSIT_INVESTOR', 'WITHDRAW_OWNER', 'ADJUST', 'OTHER'] as const
+const FORM_REASON_ENUM = z.enum(REASON_OPTIONS)
+type ReasonOption = (typeof REASON_OPTIONS)[number]
 
 const formSchema = z.object({
   accountId: z.string().min(1, 'Выберите счёт'),
   amountAed: z.coerce.number().refine((value) => value !== 0, 'Сумма не может быть 0'),
   date: z.string().min(1, 'Дата обязательна'),
-  reason: z.nativeEnum(CapitalTxnReason),
+  reason: FORM_REASON_ENUM,
   note: z.string().optional(),
 })
 
@@ -44,7 +40,7 @@ type Props = {
   trigger?: ReactNode
   triggerLabel?: string
   triggerVariant?: 'default' | 'secondary' | 'outline' | 'ghost'
-  reason?: CapitalTxnReason
+  reason?: ReasonOption
   lockReason?: boolean
   defaultAmountAed?: number
   dialogTitle?: string
@@ -57,7 +53,7 @@ export function ManualTxnDialog({
   trigger,
   triggerLabel = 'Manual transaction',
   triggerVariant = 'outline',
-  reason = CapitalTxnReason.ADJUST,
+  reason = 'ADJUST',
   lockReason = false,
   defaultAmountAed = 0,
   dialogTitle = 'Manual transaction',
@@ -187,7 +183,7 @@ export function ManualTxnDialog({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {reasonOptions.map((option) => (
+                      {REASON_OPTIONS.map((option) => (
                         <SelectItem key={option} value={option}>
                           {option.toLowerCase()}
                         </SelectItem>
