@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
     }
 
     const result: any = {
-      periodDistribution: periodDistribution?.[0] || {
+      periodDistribution: (periodDistribution as any)?.[0] || {
         total_income: 0,
         total_business_expenses: 0,
         total_personal_expenses: 0,
@@ -98,11 +98,11 @@ export async function GET(request: NextRequest) {
     }
 
     result.currentCapitalState = {
-      totalCapital: currentCapital?.total_capital || 0,
-      investorShare: currentCapital?.investor_share || 0,
-      ownerShare: currentCapital?.owner_share || 0,
-      assistantShare: currentCapital?.assistant_share || 0,
-      lastUpdated: currentCapital?.updated_at,
+      totalCapital: (currentCapital as any)?.total_capital || 0,
+      investorShare: (currentCapital as any)?.investor_share || 0,
+      ownerShare: (currentCapital as any)?.owner_share || 0,
+      assistantShare: (currentCapital as any)?.assistant_share || 0,
+      lastUpdated: (currentCapital as any)?.updated_at,
     }
 
     // Calculate summary statistics
