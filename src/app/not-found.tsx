@@ -23,4 +23,8 @@ export default function NotFound() {
       </div>
     </div>
   )
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 66a6530c83082a77c294a9266523d687b6d4d377
