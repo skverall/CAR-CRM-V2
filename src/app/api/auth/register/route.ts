@@ -83,4 +83,8 @@ export async function POST(request: NextRequest) {
     console.error('Error in POST /api/auth/register:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> afeb4d09d3417e18d086219f3017de312ec8f0b1
