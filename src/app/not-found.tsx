@@ -1,9 +1,6 @@
-import { setRequestLocale } from 'next-intl/server'
+import Link from 'next/link'
 
 export default function NotFound() {
-  // Enable static rendering
-  setRequestLocale('uz')
-  
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="text-center">
@@ -14,12 +11,12 @@ export default function NotFound() {
         <p className="text-gray-600 mb-8">
           Siz qidirayotgan sahifa mavjud emas yoki ko&apos;chirilgan.
         </p>
-        <a
+        <Link
           href="/"
           className="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
         >
           Bosh sahifaga qaytish
-        </a>
+        </Link>
       </div>
     </div>
   )
