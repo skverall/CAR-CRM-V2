@@ -240,13 +240,11 @@
     "invalidEmail": "To'g'ri email kiriting",
     "passwordMin": "Parol kamida 6 ta belgidan iborat bo'lishi kerak",
     "fullNameMin": "Ism kamida 2 ta belgidan iborat bo'lishi kerak"
-  }
-,
+  },
   "test": {
     "title": "Supabase ga ulanish testi",
     "deployed": "Deploy muvaffaqiyatli yakunlandi"
-  }
-,
+  },
   "testConnection": {
     "title": "Supabase ga ulanish testi",
     "testing": "Ulanish sinovdan o‘tkazilmoqda...",

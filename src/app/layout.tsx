@@ -1,10 +1,12 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
-import { cookies } from 'next/headers'
+import { cookies, headers } from 'next/headers'
 import { NextIntlClientProvider } from 'next-intl'
 import { AuthProvider } from '@/contexts/AuthContext'
 import { QueryProvider } from '@/providers/QueryProvider'
 import { Toaster } from '@/components/ui/toaster'
+import uzMessages from '@/messages/uz.json'
+import ruMessages from '@/messages/ru.json'
 import './globals.css'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -19,8 +21,13 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  const locale = cookies().get('locale')?.value || 'uz'
-  const messages = (await import(`@/messages/${locale}.json`)).default
+  // Get locale from cookie or header, default to 'uz'
+  const locale = cookies().get('locale')?.value ||
+                 headers().get('x-locale') ||
+                 'uz'
+
+  // Use static imports for better reliability
+  const messages = locale === 'ru' ? ruMessages : uzMessages
 
   return (
     <html lang={locale}>
