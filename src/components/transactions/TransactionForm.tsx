@@ -15,11 +15,12 @@ import { Textarea } from '@/components/ui/textarea'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Loader2 } from 'lucide-react'
+import {useTranslations} from 'next-intl'
 
-const transactionSchema = z.object({
+const makeSchema = (t: any) => z.object({
   type: z.enum(['income', 'expense'] as const),
-  category: z.string().min(1, 'Категория обязательна'),
-  amount: z.number().positive('Сумма должна быть положительной'),
+  category: z.string().min(1, t('transactions.form.validation.categoryRequired')),
+  amount: z.number().positive(t('transactions.form.validation.amountPositive')),
   currency: z.string().default('USD'),
   description: z.string().optional(),
   date: z.string(),
@@ -27,7 +28,7 @@ const transactionSchema = z.object({
   isPersonal: z.boolean().default(false),
 })
 
-type TransactionFormData = z.infer<typeof transactionSchema>
+type TransactionFormData = z.infer<ReturnType<typeof makeSchema>>
 
 interface TransactionFormProps {
   transaction?: TransactionWithCar
@@ -43,6 +44,7 @@ export function TransactionForm({ transaction, onSuccess, onCancel }: Transactio
 
   const isEditing = !!transaction
   const isLoading = createTransactionMutation.isPending || updateTransactionMutation.isPending
+const t = useTranslations()
 
   const {
     register,
@@ -51,7 +53,7 @@ export function TransactionForm({ transaction, onSuccess, onCancel }: Transactio
     watch,
     formState: { errors },
   } = useForm<TransactionFormData>({
-    resolver: zodResolver(transactionSchema),
+    resolver: zodResolver(makeSchema(t)),
     defaultValues: transaction ? {
       type: transaction.type,
       category: transaction.category,
@@ -105,7 +107,7 @@ export function TransactionForm({ transaction, onSuccess, onCancel }: Transactio
 
       onSuccess?.()
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Произошла ошибка')
+      setError(err instanceof Error ? err.message : t('common.errorGeneric'))
     }
   }
 
@@ -115,17 +117,17 @@ export function TransactionForm({ transaction, onSuccess, onCancel }: Transactio
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="type">Тип операции</Label>
+          <Label htmlFor="type">{t('transactions.form.fields.type')}</Label>
           <Select 
             onValueChange={(value) => setValue('type', value as TransactionType)} 
             defaultValue={transaction?.type || 'expense'}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Выберите тип" />
+              <SelectValue placeholder={t('transactions.form.placeholders.type')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="income">Доход</SelectItem>
-              <SelectItem value="expense">Расход</SelectItem>
+              <SelectItem value="income">{t('transactions.filter.type.income')}</SelectItem>
+              <SelectItem value="expense">{t('transactions.filter.type.expense')}</SelectItem>
             </SelectContent>
           </Select>
           {errors.type && (
@@ -134,13 +136,13 @@ export function TransactionForm({ transaction, onSuccess, onCancel }: Transactio
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="category">Категория</Label>
+          <Label htmlFor="category">{t('transactions.form.fields.category')}</Label>
           <Select 
             onValueChange={(value) => setValue('category', value)} 
             defaultValue={transaction?.category}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Выберите категорию" />
+              <SelectValue placeholder={t('transactions.form.placeholders.category')} />
             </SelectTrigger>
             <SelectContent>
               {availableCategories.map((category) => (
@@ -156,7 +158,7 @@ export function TransactionForm({ transaction, onSuccess, onCancel }: Transactio
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="amount">Сумма</Label>
+          <Label htmlFor="amount">{t('transactions.form.fields.amount')}</Label>
           <Input
             id="amount"
             type="number"
@@ -171,13 +173,13 @@ export function TransactionForm({ transaction, onSuccess, onCancel }: Transactio
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="currency">Валюта</Label>
+          <Label htmlFor="currency">{t('transactions.form.fields.currency')}</Label>
           <Select 
             onValueChange={(value) => setValue('currency', value)} 
             defaultValue={transaction?.currency || 'USD'}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Выберите валюту" />
+              <SelectValue placeholder={t('transactions.form.placeholders.currency')} />
             </SelectTrigger>
             <SelectContent>
               {CURRENCIES.map((currency) => (
@@ -193,7 +195,7 @@ export function TransactionForm({ transaction, onSuccess, onCancel }: Transactio
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="date">Дата</Label>
+          <Label htmlFor="date">{t('transactions.form.fields.date')}</Label>
           <Input
             id="date"
             type="date"
@@ -207,16 +209,16 @@ export function TransactionForm({ transaction, onSuccess, onCancel }: Transactio
 
         {!watchedIsPersonal && (
           <div className="space-y-2">
-            <Label htmlFor="carId">Автомобиль</Label>
+            <Label htmlFor="carId">{t('transactions.form.fields.car')}</Label>
             <Select 
               onValueChange={(value) => setValue('carId', value === 'none' ? undefined : value)} 
               defaultValue={transaction?.car_id || 'none'}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Выберите автомобиль" />
+                <SelectValue placeholder={t('transactions.form.placeholders.car')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="none">Общие расходы</SelectItem>
+                <SelectItem value="none">{t('transactions.form.generalExpenses')}</SelectItem>
                 {carsData?.cars.map((car) => (
                   <SelectItem key={car.id} value={car.id}>
                     {car.brand} {car.model} ({car.vin})
@@ -232,10 +234,10 @@ export function TransactionForm({ transaction, onSuccess, onCancel }: Transactio
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="description">Описание</Label>
+        <Label htmlFor="description">{t('transactions.form.fields.description')}</Label>
         <Textarea
           id="description"
-          placeholder="Дополнительная информация о транзакции..."
+          placeholder={t('transactions.form.placeholders.description')}
           {...register('description')}
           disabled={isLoading}
         />
@@ -251,7 +253,7 @@ export function TransactionForm({ transaction, onSuccess, onCancel }: Transactio
           onCheckedChange={(checked) => setValue('isPersonal', !!checked)}
           disabled={isLoading}
         />
-        <Label htmlFor="isPersonal">Личный расход</Label>
+        <Label htmlFor="isPersonal">{t('transactions.form.fields.isPersonal')}</Label>
       </div>
 
       {error && (
@@ -263,12 +265,12 @@ export function TransactionForm({ transaction, onSuccess, onCancel }: Transactio
       <div className="flex justify-end space-x-2">
         {onCancel && (
           <Button type="button" variant="outline" onClick={onCancel} disabled={isLoading}>
-            Отмена
+            {t('common.cancel')}
           </Button>
         )}
         <Button type="submit" disabled={isLoading}>
           {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          {isEditing ? 'Обновить' : 'Создать'}
+          {isEditing ? t('common.update') : t('common.create')}
         </Button>
       </div>
     </form>

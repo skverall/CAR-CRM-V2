@@ -10,21 +10,22 @@ import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
 } from '@/components/ui/table'
-import { 
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Edit, Trash2, MoreHorizontal, Eye, Loader2, Search, Filter } from 'lucide-react'
+import {useTranslations} from 'next-intl'
 
 interface TransactionsTableProps {
   onEditTransaction?: (transaction: TransactionWithCar) => void
@@ -33,6 +34,7 @@ interface TransactionsTableProps {
 
 export function TransactionsTable({ onEditTransaction, onViewTransaction }: TransactionsTableProps) {
   const { profile } = useAuth()
+  const t = useTranslations()
   const [filters, setFilters] = useState({
     search: '',
     type: '' as TransactionType | '',
@@ -59,7 +61,7 @@ export function TransactionsTable({ onEditTransaction, onViewTransaction }: Tran
   }
 
   const handleDeleteTransaction = async (id: string) => {
-    if (window.confirm('Вы уверены, что хотите удалить эту транзакцию?')) {
+    if (window.confirm(t('transactions.confirmDelete'))) {
       try {
         await deleteTransactionMutation.mutateAsync(id)
       } catch (error) {
@@ -75,7 +77,7 @@ export function TransactionsTable({ onEditTransaction, onViewTransaction }: Tran
     return (
       <Alert variant="destructive">
         <AlertDescription>
-          Ошибка при загрузке транзакций: {error.message}
+          {t('transactions.loadError', {message: error.message})}
         </AlertDescription>
       </Alert>
     )
@@ -88,7 +90,7 @@ export function TransactionsTable({ onEditTransaction, onViewTransaction }: Tran
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
           <Input
-            placeholder="Поиск по описанию..."
+            placeholder={t('transactions.searchPlaceholder')}
             value={filters.search}
             onChange={(e) => handleSearch(e.target.value)}
             className="pl-10"
@@ -96,17 +98,17 @@ export function TransactionsTable({ onEditTransaction, onViewTransaction }: Tran
         </div>
         <Select value={filters.type} onValueChange={handleTypeFilter}>
           <SelectTrigger className="w-full sm:w-[180px]">
-            <SelectValue placeholder="Тип транзакции" />
+            <SelectValue placeholder={t('transactions.filter.type.placeholder')} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">Все типы</SelectItem>
-            <SelectItem value="income">Доходы</SelectItem>
-            <SelectItem value="expense">Расходы</SelectItem>
+            <SelectItem value="">{t('transactions.filter.type.all')}</SelectItem>
+            <SelectItem value="income">{t('transactions.filter.type.income')}</SelectItem>
+            <SelectItem value="expense">{t('transactions.filter.type.expense')}</SelectItem>
           </SelectContent>
         </Select>
         <Button variant="outline" size="sm">
           <Filter className="mr-2 h-4 w-4" />
-          Фильтры
+          {t('common.filters')}
         </Button>
       </div>
 
@@ -115,15 +117,15 @@ export function TransactionsTable({ onEditTransaction, onViewTransaction }: Tran
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Дата</TableHead>
-              <TableHead>Тип</TableHead>
-              <TableHead>Категория</TableHead>
-              <TableHead>Описание</TableHead>
-              <TableHead>Автомобиль</TableHead>
-              <TableHead>Сумма</TableHead>
-              <TableHead>Валюта</TableHead>
-              <TableHead>Личное</TableHead>
-              <TableHead className="w-[100px]">Действия</TableHead>
+              <TableHead>{t('transactions.table.headers.date')}</TableHead>
+              <TableHead>{t('transactions.table.headers.type')}</TableHead>
+              <TableHead>{t('transactions.table.headers.category')}</TableHead>
+              <TableHead>{t('transactions.table.headers.description')}</TableHead>
+              <TableHead>{t('transactions.table.headers.car')}</TableHead>
+              <TableHead>{t('transactions.table.headers.amount')}</TableHead>
+              <TableHead>{t('transactions.table.headers.currency')}</TableHead>
+              <TableHead>{t('transactions.table.headers.personal')}</TableHead>
+              <TableHead className="w-[100px]">{t('transactions.table.headers.actions')}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -131,13 +133,13 @@ export function TransactionsTable({ onEditTransaction, onViewTransaction }: Tran
               <TableRow>
                 <TableCell colSpan={9} className="text-center py-8">
                   <Loader2 className="h-6 w-6 animate-spin mx-auto" />
-                  <p className="mt-2 text-sm text-gray-500">Загрузка...</p>
+                  <p className="mt-2 text-sm text-gray-500">{t('common.loading')}</p>
                 </TableCell>
               </TableRow>
             ) : data?.transactions.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={9} className="text-center py-8">
-                  <p className="text-gray-500">Транзакции не найдены</p>
+                  <p className="text-gray-500">{t('transactions.empty')}</p>
                 </TableCell>
               </TableRow>
             ) : (
@@ -148,7 +150,7 @@ export function TransactionsTable({ onEditTransaction, onViewTransaction }: Tran
                   </TableCell>
                   <TableCell>
                     <Badge variant={transaction.type === 'income' ? 'default' : 'secondary'}>
-                      {transaction.type === 'income' ? 'Доход' : 'Расход'}
+                      {transaction.type === 'income' ? t('transactions.typeLabel.income') : t('transactions.typeLabel.expense')}
                     </Badge>
                   </TableCell>
                   <TableCell>{transaction.category}</TableCell>
@@ -170,7 +172,7 @@ export function TransactionsTable({ onEditTransaction, onViewTransaction }: Tran
                   <TableCell>{transaction.currency}</TableCell>
                   <TableCell>
                     {transaction.is_personal ? (
-                      <Badge variant="outline">Личное</Badge>
+                      <Badge variant="outline">{t('transactions.personal')}</Badge>
                     ) : (
                       <span className="text-gray-500">-</span>
                     )}
@@ -185,12 +187,12 @@ export function TransactionsTable({ onEditTransaction, onViewTransaction }: Tran
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem onClick={() => onViewTransaction?.(transaction)}>
                           <Eye className="mr-2 h-4 w-4" />
-                          Просмотр
+                          {t('common.view')}
                         </DropdownMenuItem>
                         {canEdit && (
                           <DropdownMenuItem onClick={() => onEditTransaction?.(transaction)}>
                             <Edit className="mr-2 h-4 w-4" />
-                            Редактировать
+                            {t('common.edit')}
                           </DropdownMenuItem>
                         )}
                         {canDelete && (
@@ -199,7 +201,7 @@ export function TransactionsTable({ onEditTransaction, onViewTransaction }: Tran
                             className="text-red-600"
                           >
                             <Trash2 className="mr-2 h-4 w-4" />
-                            Удалить
+                            {t('common.delete')}
                           </DropdownMenuItem>
                         )}
                       </DropdownMenuContent>
@@ -216,7 +218,7 @@ export function TransactionsTable({ onEditTransaction, onViewTransaction }: Tran
       {data && data.pagination.totalPages > 1 && (
         <div className="flex items-center justify-between">
           <p className="text-sm text-gray-500">
-            Показано {data.transactions.length} из {data.pagination.total} транзакций
+            {t('transactions.pagination.summary', {count: data.transactions.length, total: data.pagination.total})}
           </p>
           <div className="flex space-x-2">
             <Button
@@ -225,7 +227,7 @@ export function TransactionsTable({ onEditTransaction, onViewTransaction }: Tran
               onClick={() => handlePageChange(filters.page - 1)}
               disabled={filters.page <= 1}
             >
-              Предыдущая
+              {t('common.prev')}
             </Button>
             <Button
               variant="outline"
@@ -233,7 +235,7 @@ export function TransactionsTable({ onEditTransaction, onViewTransaction }: Tran
               onClick={() => handlePageChange(filters.page + 1)}
               disabled={filters.page >= data.pagination.totalPages}
             >
-              Следующая
+              {t('common.next')}
             </Button>
           </div>
         </div>

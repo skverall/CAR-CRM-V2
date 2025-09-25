@@ -13,24 +13,25 @@ import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Loader2 } from 'lucide-react'
+import {useTranslations} from 'next-intl'
 
-const carSchema = z.object({
+const makeSchema = (t: any) => z.object({
   vin: z.string()
-    .length(17, 'VIN должен содержать 17 символов')
-    .refine(validateVIN, 'Некорректный VIN номер'),
-  brand: z.string().min(1, 'Марка обязательна'),
-  model: z.string().min(1, 'Модель обязательна'),
+    .length(17, t('cars.form.validation.vinLength'))
+    .refine(validateVIN, t('cars.form.validation.vinInvalid')),
+  brand: z.string().min(1, t('cars.form.validation.brandRequired')),
+  model: z.string().min(1, t('cars.form.validation.modelRequired')),
   year: z.number()
-    .min(1900, 'Год должен быть больше 1900')
-    .max(new Date().getFullYear() + 1, 'Год не может быть в будущем'),
+    .min(1900, t('cars.form.validation.yearMin'))
+    .max(new Date().getFullYear() + 1, t('cars.form.validation.yearMax')),
   status: z.enum(['active', 'sold'] as const).optional(),
-  purchasePrice: z.number().positive('Цена должна быть положительной').optional(),
+  purchasePrice: z.number().positive(t('cars.form.validation.pricePositive')).optional(),
   purchaseDate: z.string().optional(),
-  salePrice: z.number().positive('Цена должна быть положительной').optional(),
+  salePrice: z.number().positive(t('cars.form.validation.pricePositive')).optional(),
   saleDate: z.string().optional(),
 })
 
-type CarFormData = z.infer<typeof carSchema>
+type CarFormData = z.infer<ReturnType<typeof makeSchema>>
 
 interface CarFormProps {
   car?: Car
@@ -45,6 +46,7 @@ export function CarForm({ car, onSuccess, onCancel }: CarFormProps) {
 
   const isEditing = !!car
   const isLoading = createCarMutation.isPending || updateCarMutation.isPending
+const t = useTranslations()
 
   const {
     register,
@@ -53,7 +55,7 @@ export function CarForm({ car, onSuccess, onCancel }: CarFormProps) {
     watch,
     formState: { errors },
   } = useForm<CarFormData>({
-    resolver: zodResolver(carSchema),
+    resolver: zodResolver(makeSchema(t)),
     defaultValues: car ? {
       vin: car.vin,
       brand: car.brand,
@@ -103,7 +105,7 @@ export function CarForm({ car, onSuccess, onCancel }: CarFormProps) {
 
       onSuccess?.()
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Произошла ошибка')
+      setError(err instanceof Error ? err.message : t('common.errorGeneric'))
     }
   }
 
@@ -111,7 +113,7 @@ export function CarForm({ car, onSuccess, onCancel }: CarFormProps) {
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="vin">VIN номер</Label>
+          <Label htmlFor="vin">{t('cars.form.fields.vin')}</Label>
           <Input
             id="vin"
             placeholder="1HGBH41JXMN109186"
@@ -125,7 +127,7 @@ export function CarForm({ car, onSuccess, onCancel }: CarFormProps) {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="brand">Марка</Label>
+          <Label htmlFor="brand">{t('cars.form.fields.brand')}</Label>
           <Input
             id="brand"
             placeholder="Toyota"
@@ -138,7 +140,7 @@ export function CarForm({ car, onSuccess, onCancel }: CarFormProps) {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="model">Модель</Label>
+          <Label htmlFor="model">{t('cars.form.fields.model')}</Label>
           <Input
             id="model"
             placeholder="Camry"
@@ -151,7 +153,7 @@ export function CarForm({ car, onSuccess, onCancel }: CarFormProps) {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="year">Год выпуска</Label>
+          <Label htmlFor="year">{t('cars.form.fields.year')}</Label>
           <Input
             id="year"
             type="number"
@@ -166,17 +168,17 @@ export function CarForm({ car, onSuccess, onCancel }: CarFormProps) {
 
         {isEditing && (
           <div className="space-y-2">
-            <Label htmlFor="status">Статус</Label>
+            <Label htmlFor="status">{t('cars.form.fields.status')}</Label>
             <Select 
               onValueChange={(value) => setValue('status', value as CarStatus)} 
               defaultValue={car?.status}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Выберите статус" />
+                <SelectValue placeholder={t('cars.form.status.placeholder')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="active">Активен</SelectItem>
-                <SelectItem value="sold">Продан</SelectItem>
+                <SelectItem value="active">{t('cars.statusLabel.active')}</SelectItem>
+                <SelectItem value="sold">{t('cars.statusLabel.sold')}</SelectItem>
               </SelectContent>
             </Select>
             {errors.status && (
@@ -186,7 +188,7 @@ export function CarForm({ car, onSuccess, onCancel }: CarFormProps) {
         )}
 
         <div className="space-y-2">
-          <Label htmlFor="purchasePrice">Цена покупки</Label>
+          <Label htmlFor="purchasePrice">{t('cars.form.fields.purchasePrice')}</Label>
           <Input
             id="purchasePrice"
             type="number"
@@ -201,7 +203,7 @@ export function CarForm({ car, onSuccess, onCancel }: CarFormProps) {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="purchaseDate">Дата покупки</Label>
+          <Label htmlFor="purchaseDate">{t('cars.form.fields.purchaseDate')}</Label>
           <Input
             id="purchaseDate"
             type="date"
@@ -216,7 +218,7 @@ export function CarForm({ car, onSuccess, onCancel }: CarFormProps) {
         {watchedStatus === 'sold' && (
           <>
             <div className="space-y-2">
-              <Label htmlFor="salePrice">Цена продажи</Label>
+              <Label htmlFor="salePrice">{t('cars.form.fields.salePrice')}</Label>
               <Input
                 id="salePrice"
                 type="number"
@@ -231,7 +233,7 @@ export function CarForm({ car, onSuccess, onCancel }: CarFormProps) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="saleDate">Дата продажи</Label>
+              <Label htmlFor="saleDate">{t('cars.form.fields.saleDate')}</Label>
               <Input
                 id="saleDate"
                 type="date"
@@ -255,12 +257,12 @@ export function CarForm({ car, onSuccess, onCancel }: CarFormProps) {
       <div className="flex justify-end space-x-2">
         {onCancel && (
           <Button type="button" variant="outline" onClick={onCancel} disabled={isLoading}>
-            Отмена
+            {t('common.cancel')}
           </Button>
         )}
         <Button type="submit" disabled={isLoading}>
           {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          {isEditing ? 'Обновить' : 'Создать'}
+          {isEditing ? t('common.update') : t('common.create')}
         </Button>
       </div>
     </form>

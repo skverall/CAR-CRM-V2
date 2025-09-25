@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { createClient } from '@supabase/supabase-js'
+import {useTranslations} from 'next-intl'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -9,6 +10,7 @@ const supabase = createClient(
 )
 
 export default function TestConnectionPage() {
+  const t = useTranslations()
   const [connectionStatus, setConnectionStatus] = useState<'testing' | 'success' | 'error'>('testing')
   const [tables, setTables] = useState<any[]>([])
   const [stats, setStats] = useState<any>(null)
@@ -91,7 +93,7 @@ export default function TestConnectionPage() {
         <div className="max-w-4xl mx-auto">
           <div className="bg-white rounded-lg shadow-lg p-8">
             <h1 className="text-3xl font-bold text-center mb-8">
-              🧪 Тест подключения к Supabase
+              {t('testConnection.title')}
             </h1>
 
             {/* Статус подключения */}
@@ -99,28 +101,28 @@ export default function TestConnectionPage() {
               {connectionStatus === 'testing' && (
                 <div className="flex items-center justify-center">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mr-3"></div>
-                  <span className="text-lg">Тестируем подключение...</span>
+                  <span className="text-lg">{t('testConnection.testing')}</span>
                 </div>
               )}
               
               {connectionStatus === 'success' && (
                 <div className="text-green-600">
                   <div className="text-6xl mb-4">✅</div>
-                  <div className="text-xl font-semibold">Подключение успешно!</div>
-                  <div className="text-gray-600 mt-2">Все таблицы и представления работают корректно</div>
+                  <div className="text-xl font-semibold">{t('testConnection.successTitle')}</div>
+                  <div className="text-gray-600 mt-2">{t('testConnection.successSubtitle')}</div>
                 </div>
               )}
               
               {connectionStatus === 'error' && (
                 <div className="text-red-600">
                   <div className="text-6xl mb-4">❌</div>
-                  <div className="text-xl font-semibold">Ошибка подключения</div>
+                  <div className="text-xl font-semibold">{t('testConnection.errorTitle')}</div>
                   <div className="text-gray-600 mt-2">{error}</div>
                   <button 
                     onClick={testConnection}
                     className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
                   >
-                    Повторить тест
+                    {t('testConnection.retry')}
                   </button>
                 </div>
               )}
@@ -129,13 +131,13 @@ export default function TestConnectionPage() {
             {/* Информация о таблицах */}
             {tables.length > 0 && (
               <div className="mb-8">
-                <h2 className="text-xl font-semibold mb-4">📊 Состояние таблиц</h2>
+                <h2 className="text-xl font-semibold mb-4">{t('testConnection.tablesTitle')}</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                   {tables.map((table) => (
                     <div key={table.name} className="bg-gray-50 p-4 rounded-lg">
                       <div className="font-medium text-gray-900">{table.name}</div>
                       <div className="text-2xl font-bold text-blue-600">{table.count}</div>
-                      <div className="text-sm text-gray-500">записей</div>
+                      <div className="text-sm text-gray-500">{t('testConnection.records')}</div>
                     </div>
                   ))}
                 </div>
@@ -145,7 +147,7 @@ export default function TestConnectionPage() {
             {/* Статистика дашборда */}
             {stats && (
               <div className="mb-8">
-                <h2 className="text-xl font-semibold mb-4">📈 Статистика дашборда</h2>
+                <h2 className="text-xl font-semibold mb-4">{t('testConnection.dashboardStatsTitle')}</h2>
                 <div className="bg-gray-50 p-4 rounded-lg">
                   <pre className="text-sm overflow-x-auto">
                     {JSON.stringify(stats, null, 2)}
@@ -156,7 +158,7 @@ export default function TestConnectionPage() {
 
             {/* Конфигурация */}
             <div className="border-t pt-6">
-              <h2 className="text-xl font-semibold mb-4">⚙️ Конфигурация</h2>
+              <h2 className="text-xl font-semibold mb-4">{t('testConnection.configTitle')}</h2>
               <div className="space-y-2 text-sm">
                 <div>
                   <span className="font-medium">Supabase URL:</span>{' '}
@@ -180,19 +182,19 @@ export default function TestConnectionPage() {
                   onClick={testConnection}
                   className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
                 >
-                  🔄 Повторить тест
+                  {`🔄 ${t('testConnection.retry')}`}
                 </button>
                 <a 
                   href="/auth/register"
                   className="px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700 inline-block"
                 >
-                  👤 Зарегистрироваться
+                  {`👤 ${t('auth.register.title')}`}
                 </a>
                 <a 
                   href="/dashboard"
                   className="px-6 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 inline-block"
                 >
-                  🏠 Перейти к дашборду
+                  {`🏠 ${t('testConnection.gotoDashboard')}`}
                 </a>
               </div>
             </div>

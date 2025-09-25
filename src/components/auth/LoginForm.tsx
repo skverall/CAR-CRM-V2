@@ -11,15 +11,17 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Loader2 } from 'lucide-react'
-
-const loginSchema = z.object({
-  email: z.string().email('Введите корректный email'),
-  password: z.string().min(6, 'Пароль должен содержать минимум 6 символов'),
-})
-
-type LoginFormData = z.infer<typeof loginSchema>
+import {useTranslations} from 'next-intl'
 
 export function LoginForm() {
+  const t = useTranslations()
+
+  const loginSchema = z.object({
+    email: z.string().email(t('errors.invalidEmail')),
+    password: z.string().min(6, t('errors.passwordMin')),
+  })
+
+  type LoginFormData = z.infer<typeof loginSchema>
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
@@ -46,7 +48,7 @@ export function LoginForm() {
         router.refresh()
       }
     } catch (err) {
-      setError('Произошла ошибка при входе')
+      setError(t('auth.login.errorGeneric'))
     } finally {
       setIsLoading(false)
     }
@@ -55,15 +57,15 @@ export function LoginForm() {
   return (
     <div className="w-full max-w-md space-y-6">
       <div className="text-center">
-        <h1 className="text-2xl font-bold">Вход в систему</h1>
+        <h1 className="text-2xl font-bold">{t('auth.login.title')}</h1>
         <p className="text-gray-600 mt-2">
-          Введите ваши данные для входа
+          {t('auth.login.subtitle')}
         </p>
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="email">Email</Label>
+          <Label htmlFor="email">{t('auth.login.email')}</Label>
           <Input
             id="email"
             type="email"
@@ -77,7 +79,7 @@ export function LoginForm() {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="password">Пароль</Label>
+          <Label htmlFor="password">{t('auth.login.password')}</Label>
           <Input
             id="password"
             type="password"
@@ -98,7 +100,7 @@ export function LoginForm() {
 
         <Button type="submit" className="w-full" disabled={isLoading}>
           {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Войти
+          {t('auth.login.submit')}
         </Button>
       </form>
 
@@ -108,7 +110,7 @@ export function LoginForm() {
           onClick={() => router.push('/register')}
           disabled={isLoading}
         >
-          Нет аккаунта? Зарегистрироваться
+          {t('auth.login.noAccount')}
         </Button>
       </div>
     </div>

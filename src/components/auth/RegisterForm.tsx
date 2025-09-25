@@ -6,43 +6,39 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { signUp } from '@/lib/auth-client'
-import { UserRole } from '@/types'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Loader2 } from 'lucide-react'
+import {useTranslations} from 'next-intl'
 
-const registerSchema = z.object({
-  email: z.string().email('Введите корректный email'),
-  password: z.string().min(6, 'Пароль должен содержать минимум 6 символов'),
-  confirmPassword: z.string(),
-  fullName: z.string().min(2, 'Имя должно содержать минимум 2 символа'),
-  role: z.enum(['owner', 'investor', 'assistant'] as const),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Пароли не совпадают",
-  path: ["confirmPassword"],
-})
-
-type RegisterFormData = z.infer<typeof registerSchema>
 
 export function RegisterForm() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
   const router = useRouter()
+  const t = useTranslations()
+
+  const registerSchema = z.object({
+    email: z.string().email(t('errors.invalidEmail')),
+    password: z.string().min(6, t('errors.passwordMin')),
+    confirmPassword: z.string(),
+    fullName: z.string().min(2, t('errors.fullNameMin')),
+  }).refine((data) => data.password === data.confirmPassword, {
+    message: t('auth.register.passwordsDontMatch'),
+    path: ['confirmPassword'],
+  })
+
+  type RegisterFormData = z.infer<typeof registerSchema>
 
   const {
     register,
     handleSubmit,
-    setValue,
     formState: { errors },
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
-    defaultValues: {
-      role: 'assistant',
-    },
   })
 
   const onSubmit = async (data: RegisterFormData) => {
@@ -50,7 +46,7 @@ export function RegisterForm() {
     setError(null)
 
     try {
-      const { error } = await signUp(data.email, data.password, data.fullName, data.role)
+      const { error } = await signUp(data.email, data.password, data.fullName)
 
       if (error) {
         setError(error.message)
@@ -61,7 +57,7 @@ export function RegisterForm() {
         }, 2000)
       }
     } catch (err) {
-      setError('Произошла ошибка при регистрации')
+      setError(t('auth.register.errorGeneric'))
     } finally {
       setIsLoading(false)
     }
@@ -72,8 +68,7 @@ export function RegisterForm() {
       <div className="w-full max-w-md space-y-6">
         <Alert>
           <AlertDescription>
-            Регистрация успешна! Проверьте вашу почту для подтверждения аккаунта.
-            Перенаправление на страницу входа...
+            {t('auth.register.success')}
           </AlertDescription>
         </Alert>
       </div>
@@ -83,18 +78,18 @@ export function RegisterForm() {
   return (
     <div className="w-full max-w-md space-y-6">
       <div className="text-center">
-        <h1 className="text-2xl font-bold">Регистрация</h1>
+        <h1 className="text-2xl font-bold">{t('auth.register.title')}</h1>
         <p className="text-gray-600 mt-2">
-          Создайте новый аккаунт
+          {t('auth.register.subtitle')}
         </p>
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="fullName">Полное имя</Label>
+          <Label htmlFor="fullName">{t('auth.register.fullName')}</Label>
           <Input
             id="fullName"
-            placeholder="Иван Иванов"
+            placeholder={t('auth.register.fullNamePlaceholder')}
             {...register('fullName')}
             disabled={isLoading}
           />
@@ -104,7 +99,7 @@ export function RegisterForm() {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="email">Email</Label>
+          <Label htmlFor="email">{t('auth.register.email')}</Label>
           <Input
             id="email"
             type="email"
@@ -117,25 +112,9 @@ export function RegisterForm() {
           )}
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="role">Роль</Label>
-          <Select onValueChange={(value) => setValue('role', value as UserRole)} defaultValue="assistant">
-            <SelectTrigger>
-              <SelectValue placeholder="Выберите роль" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="assistant">Помощник</SelectItem>
-              <SelectItem value="investor">Инвестор</SelectItem>
-              <SelectItem value="owner">Владелец</SelectItem>
-            </SelectContent>
-          </Select>
-          {errors.role && (
-            <p className="text-sm text-red-600">{errors.role.message}</p>
-          )}
-        </div>
 
         <div className="space-y-2">
-          <Label htmlFor="password">Пароль</Label>
+          <Label htmlFor="password">{t('auth.register.password')}</Label>
           <Input
             id="password"
             type="password"
@@ -149,7 +128,7 @@ export function RegisterForm() {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="confirmPassword">Подтвердите пароль</Label>
+          <Label htmlFor="confirmPassword">{t('auth.register.confirmPassword')}</Label>
           <Input
             id="confirmPassword"
             type="password"
@@ -170,7 +149,7 @@ export function RegisterForm() {
 
         <Button type="submit" className="w-full" disabled={isLoading}>
           {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Зарегистрироваться
+          {t('auth.register.submit')}
         </Button>
       </form>
 
@@ -180,7 +159,7 @@ export function RegisterForm() {
           onClick={() => router.push('/login')}
           disabled={isLoading}
         >
-          Уже есть аккаунт? Войти
+          {t('auth.register.haveAccount')}
         </Button>
       </div>
     </div>

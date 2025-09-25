@@ -21,16 +21,19 @@ import {
   LogOut
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import {useTranslations} from 'next-intl'
+import { LanguageSwitcher } from './LanguageSwitcher'
 
 const navigation = [
-  { name: 'Панель управления', href: '/dashboard', icon: LayoutDashboard },
-  { name: 'Автомобили', href: '/cars', icon: Car },
-  { name: 'Транзакции', href: '/transactions', icon: Receipt },
-  { name: 'Отчёты', href: '/reports', icon: BarChart3 },
+  { nameKey: 'nav.dashboard', href: '/dashboard', icon: LayoutDashboard },
+  { nameKey: 'nav.cars', href: '/cars', icon: Car },
+  { nameKey: 'nav.transactions', href: '/transactions', icon: Receipt },
+  { nameKey: 'nav.reports', href: '/reports', icon: BarChart3 },
 ]
 
 export function Navigation() {
   const pathname = usePathname()
+  const t = useTranslations()
   const { user, profile, signOut } = useAuth()
 
   if (!user || !profile) {
@@ -44,11 +47,11 @@ export function Navigation() {
   const getRoleLabel = (role: string) => {
     switch (role) {
       case 'owner':
-        return 'Владелец'
+        return t('roles.owner')
       case 'investor':
-        return 'Инвестор'
+        return t('roles.investor')
       case 'assistant':
-        return 'Помощник'
+        return t('roles.assistant')
       default:
         return role
     }
@@ -61,7 +64,7 @@ export function Navigation() {
           {/* Logo */}
           <div className="flex items-center">
             <Link href="/dashboard" className="text-xl font-bold text-gray-900">
-              Car Expense Tracker
+              {t('common.appTitle')}
             </Link>
           </div>
 
@@ -71,7 +74,7 @@ export function Navigation() {
               const isActive = pathname === item.href
               return (
                 <Link
-                  key={item.name}
+                  key={item.nameKey}
                   href={item.href}
                   className={cn(
                     'flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors',
@@ -81,7 +84,7 @@ export function Navigation() {
                   )}
                 >
                   <item.icon className="mr-2 h-4 w-4" />
-                  {item.name}
+                  {t(item.nameKey as any)}
                 </Link>
               )
             })}
@@ -89,6 +92,7 @@ export function Navigation() {
 
           {/* User Menu */}
           <div className="flex items-center">
+            <LanguageSwitcher />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="flex items-center space-x-2">
@@ -107,13 +111,13 @@ export function Navigation() {
                 <DropdownMenuItem asChild>
                   <Link href="/profile" className="flex items-center">
                     <Settings className="mr-2 h-4 w-4" />
-                    Настройки профиля
+                    {t('profile.settings')}
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleSignOut} className="text-red-600">
                   <LogOut className="mr-2 h-4 w-4" />
-                  Выйти
+                  {t('auth.logout')}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -127,7 +131,7 @@ export function Navigation() {
               const isActive = pathname === item.href
               return (
                 <Link
-                  key={item.name}
+                  key={item.nameKey}
                   href={item.href}
                   className={cn(
                     'flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors',
@@ -137,7 +141,7 @@ export function Navigation() {
                   )}
                 >
                   <item.icon className="mr-2 h-4 w-4" />
-                  {item.name}
+                  {t(item.nameKey as any)}
                 </Link>
               )
             })}

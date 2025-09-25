@@ -10,21 +10,23 @@ import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
 } from '@/components/ui/table'
-import { 
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Edit, Trash2, MoreHorizontal, Eye, Loader2 } from 'lucide-react'
+import {useTranslations} from 'next-intl'
+
 
 interface CarsTableProps {
   onEditCar?: (car: Car) => void
@@ -33,6 +35,8 @@ interface CarsTableProps {
 
 export function CarsTable({ onEditCar, onViewCar }: CarsTableProps) {
   const { profile } = useAuth()
+  const t = useTranslations()
+
   const [filters, setFilters] = useState({
     search: '',
     status: '' as CarStatus | '',
@@ -56,7 +60,7 @@ export function CarsTable({ onEditCar, onViewCar }: CarsTableProps) {
   }
 
   const handleDeleteCar = async (car: Car) => {
-    if (!confirm(`Вы уверены, что хотите удалить автомобиль ${car.brand} ${car.model}?`)) {
+    if (!confirm(t('cars.confirmDelete', {brand: car.brand, model: car.model}))) {
       return
     }
 
@@ -74,7 +78,7 @@ export function CarsTable({ onEditCar, onViewCar }: CarsTableProps) {
     return (
       <Alert variant="destructive">
         <AlertDescription>
-          Ошибка при загрузке автомобилей: {error.message}
+          {t('cars.loadError', {message: error.message})}
         </AlertDescription>
       </Alert>
     )
@@ -86,7 +90,7 @@ export function CarsTable({ onEditCar, onViewCar }: CarsTableProps) {
       <div className="flex flex-col sm:flex-row gap-4">
         <div className="flex-1">
           <Input
-            placeholder="Поиск по VIN, марке или модели..."
+            placeholder={t('cars.searchPlaceholder')}
             value={filters.search}
             onChange={(e) => handleSearch(e.target.value)}
           />
@@ -94,12 +98,12 @@ export function CarsTable({ onEditCar, onViewCar }: CarsTableProps) {
         <div className="w-full sm:w-48">
           <Select value={filters.status} onValueChange={handleStatusFilter}>
             <SelectTrigger>
-              <SelectValue placeholder="Все статусы" />
+              <SelectValue placeholder={t('cars.filter.status.placeholder')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Все статусы</SelectItem>
-              <SelectItem value="active">Активные</SelectItem>
-              <SelectItem value="sold">Проданные</SelectItem>
+              <SelectItem value="">{t('cars.filter.status.all')}</SelectItem>
+              <SelectItem value="active">{t('cars.filter.status.active')}</SelectItem>
+              <SelectItem value="sold">{t('cars.filter.status.sold')}</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -111,13 +115,13 @@ export function CarsTable({ onEditCar, onViewCar }: CarsTableProps) {
           <TableHeader>
             <TableRow>
               <TableHead>VIN</TableHead>
-              <TableHead>Автомобиль</TableHead>
-              <TableHead>Год</TableHead>
-              <TableHead>Статус</TableHead>
-              <TableHead>Цена покупки</TableHead>
-              <TableHead>Дата покупки</TableHead>
-              <TableHead>Цена продажи</TableHead>
-              <TableHead className="w-[100px]">Действия</TableHead>
+              <TableHead>{t('cars.table.headers.car')}</TableHead>
+              <TableHead>{t('cars.table.headers.year')}</TableHead>
+              <TableHead>{t('cars.table.headers.status')}</TableHead>
+              <TableHead>{t('cars.table.headers.purchasePrice')}</TableHead>
+              <TableHead>{t('cars.table.headers.purchaseDate')}</TableHead>
+              <TableHead>{t('cars.table.headers.salePrice')}</TableHead>
+              <TableHead className="w-[100px]">{t('cars.table.headers.actions')}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -125,13 +129,13 @@ export function CarsTable({ onEditCar, onViewCar }: CarsTableProps) {
               <TableRow>
                 <TableCell colSpan={8} className="text-center py-8">
                   <Loader2 className="h-6 w-6 animate-spin mx-auto" />
-                  <p className="mt-2 text-sm text-gray-500">Загрузка...</p>
+                  <p className="mt-2 text-sm text-gray-500">{t('common.loading')}</p>
                 </TableCell>
               </TableRow>
             ) : data?.cars.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={8} className="text-center py-8">
-                  <p className="text-sm text-gray-500">Автомобили не найдены</p>
+                  <p className="text-sm text-gray-500">{t('cars.empty')}</p>
                 </TableCell>
               </TableRow>
             ) : (
@@ -148,7 +152,7 @@ export function CarsTable({ onEditCar, onViewCar }: CarsTableProps) {
                   <TableCell>{car.year}</TableCell>
                   <TableCell>
                     <Badge variant={car.status === 'active' ? 'default' : 'secondary'}>
-                      {car.status === 'active' ? 'Активен' : 'Продан'}
+                      {car.status === 'active' ? t('cars.statusLabel.active') : t('cars.statusLabel.sold')}
                     </Badge>
                   </TableCell>
                   <TableCell>
@@ -170,22 +174,22 @@ export function CarsTable({ onEditCar, onViewCar }: CarsTableProps) {
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem onClick={() => onViewCar?.(car)}>
                           <Eye className="mr-2 h-4 w-4" />
-                          Просмотр
+                          {t('common.view')}
                         </DropdownMenuItem>
                         {canManage && (
                           <DropdownMenuItem onClick={() => onEditCar?.(car)}>
                             <Edit className="mr-2 h-4 w-4" />
-                            Редактировать
+                            {t('common.edit')}
                           </DropdownMenuItem>
                         )}
                         {canDelete && (
-                          <DropdownMenuItem 
+                          <DropdownMenuItem
                             onClick={() => handleDeleteCar(car)}
                             className="text-red-600"
                             disabled={deleteCarMutation.isPending}
                           >
                             <Trash2 className="mr-2 h-4 w-4" />
-                            Удалить
+                            {t('common.delete')}
                           </DropdownMenuItem>
                         )}
                       </DropdownMenuContent>
@@ -202,7 +206,7 @@ export function CarsTable({ onEditCar, onViewCar }: CarsTableProps) {
       {data && data.pagination.totalPages > 1 && (
         <div className="flex items-center justify-between">
           <p className="text-sm text-gray-500">
-            Показано {data.cars.length} из {data.pagination.total} автомобилей
+            {t('cars.pagination.summary', {count: data.cars.length, total: data.pagination.total})}
           </p>
           <div className="flex items-center space-x-2">
             <Button
@@ -211,10 +215,10 @@ export function CarsTable({ onEditCar, onViewCar }: CarsTableProps) {
               onClick={() => handlePageChange(filters.page - 1)}
               disabled={filters.page <= 1}
             >
-              Назад
+              {t('common.prev')}
             </Button>
             <span className="text-sm">
-              Страница {filters.page} из {data.pagination.totalPages}
+              {t('cars.pagination.pageXofY', {page: filters.page, totalPages: data.pagination.totalPages})}
             </span>
             <Button
               variant="outline"
@@ -222,7 +226,7 @@ export function CarsTable({ onEditCar, onViewCar }: CarsTableProps) {
               onClick={() => handlePageChange(filters.page + 1)}
               disabled={filters.page >= data.pagination.totalPages}
             >
-              Вперед
+              {t('common.next')}
             </Button>
           </div>
         </div>
