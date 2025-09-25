@@ -46,15 +46,23 @@ export function RegisterForm() {
     setError(null)
 
     try {
-      const { error } = await signUp(data.email, data.password, data.fullName)
+      const { data: authData, error } = await signUp(data.email, data.password, data.fullName)
 
       if (error) {
         setError(error.message)
       } else {
-        setSuccess(true)
-        setTimeout(() => {
-          router.push('/login')
-        }, 2000)
+        // Since mailer_autoconfirm is true, user should be automatically logged in
+        if (authData?.user && authData?.session) {
+          // User is automatically logged in, redirect to dashboard
+          router.push('/dashboard')
+          router.refresh()
+        } else {
+          // Fallback: show success message and redirect to login
+          setSuccess(true)
+          setTimeout(() => {
+            router.push('/login')
+          }, 2000)
+        }
       }
     } catch (err) {
       setError(t('auth.register.errorGeneric'))
