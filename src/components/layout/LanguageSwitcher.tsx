@@ -13,6 +13,10 @@ export function LanguageSwitcher() {
   const setLocale = (nextLocale: 'uz' | 'ru') => {
     if (nextLocale === locale) return
     document.cookie = `locale=${nextLocale}; path=/; max-age=${60 * 60 * 24 * 365}`
+
+    // Dispatch custom event to notify I18nProvider
+    window.dispatchEvent(new CustomEvent('localeChange'))
+
     startTransition(() => {
       router.refresh()
     })
