@@ -16,6 +16,20 @@ export const createServerClient = () =>
     }
   )
 
+// Static version without cookies for static rendering
+export const createStaticServerClient = () =>
+  createSupabaseServerClient<Database>(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    {
+      cookies: {
+        get() {
+          return undefined
+        },
+      },
+    }
+  )
+
 export async function getUser() {
   const supabase = createServerClient()
   try {
