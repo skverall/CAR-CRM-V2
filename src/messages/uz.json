@@ -176,6 +176,66 @@
   "meta": {
     "description": "Avtomobillar bo'yicha daromad va xarajatlarni yuritish uchun zamonaviy veb-ilova"
   },
+  "dashboard": {
+    "loading": "Statistika yuklanmoqda...",
+    "loadError": "Statistikani yuklashda xatolik",
+    "title": "Boshqaruv paneli",
+    "welcome": "Xush kelibsiz",
+    "cards": {
+      "totalCars": "Jami avtomobillar",
+      "active": "Faol",
+      "sold": "Sotilgan",
+      "totalIncome": "Umumiy daromad",
+      "totalExpenses": "Umumiy xarajatlar",
+      "netProfit": "Sof foyda"
+    },
+    "monthly": "Oylik",
+    "profit": {
+      "investor": "Investor ulushi (50%)",
+      "owner": "Ega ulushi (25%)",
+      "assistant": "Yordamchi ulushi (25%)"
+    },
+    "charts": {
+      "trendsTitle": "Oxirgi oylar tendensiyalari"
+    },
+    "topCars": "Foydasi bo‘yicha top avtomobillar",
+    "transactionsSuffix": "tranzaksiya",
+    "noData": "Ko‘rsatish uchun ma’lumot yo‘q",
+    "expenseCategories": "Xarajat kategoriyalari",
+    "average": "O‘rtacha"
+  },
+  "reports": {
+    "title": "Hisobotlar va tahlil",
+    "subtitle": "Avtomobillar va moliya bo‘yicha batafsil tahlil",
+    "export": "Ma’lumotlarni eksport qilish",
+    "cards": {
+      "financial": "Moliyaviy hisobot",
+      "cars": "Avtomobillar bo‘yicha tahlil",
+      "profitDistribution": "Foyda taqsimoti"
+    },
+    "descriptions": {
+      "financial": "Barcha avtomobillar bo‘yicha daromad, xarajat va foydaning umumiy tahlili",
+      "cars": "Avtoparkdagi har bir avtomobilning batafsil rentabelligi",
+      "profitDistribution": "Investor, egasi va yordamchi ulushlarini hisoblash"
+    },
+    "open": "Hisobotni ochish",
+    "tabs": {
+      "overview": "Umumiy",
+      "trends": "Tendensiyalar",
+      "categories": "Kategoriyalar",
+      "profit": "Foyda"
+    },
+    "charts": {
+      "monthlyTrends": "Oylik moliyaviy tendensiyalar",
+      "byCategories": "Kategoriyalar bo‘yicha taqsimot",
+      "incomeExpenseTrends": "Daromad va xarajatlarning batafsil tendensiyalari",
+      "monthlyCompare": "Oylik solishtirish",
+      "expensesByCategory": "Kategoriyalar bo‘yicha xarajatlar",
+      "categoryShareExpenses": "Umumiy xarajatlardagi kategoriyalar ulushi",
+      "profitDynamics": "Foyda dinamikasi"
+    }
+  },
+
   "errors": {
     "invalidEmail": "To'g'ri email kiriting",
     "passwordMin": "Parol kamida 6 ta belgidan iborat bo'lishi kerak",

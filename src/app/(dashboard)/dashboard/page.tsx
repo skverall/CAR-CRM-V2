@@ -8,10 +8,12 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { ProfitDistributionCard } from '@/components/profit/ProfitDistributionCard'
 import { FinancialChart } from '@/components/reports/FinancialChart'
 import { Loader2, Car, TrendingUp, TrendingDown, DollarSign, Receipt, Users } from 'lucide-react'
+import {useTranslations} from 'next-intl'
 
 export default function DashboardPage() {
   const { profile } = useAuth()
   const { data, isLoading, error } = useDashboardStats()
+  const t = useTranslations()
 
   if (isLoading) {
     return (
@@ -19,7 +21,7 @@ export default function DashboardPage() {
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
             <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
-            <p className="text-gray-500">Загрузка статистики...</p>
+            <p className="text-gray-500">{t('dashboard.loading')}</p>
           </div>
         </div>
       </div>
@@ -31,7 +33,7 @@ export default function DashboardPage() {
       <div className="container mx-auto py-8">
         <Alert variant="destructive">
           <AlertDescription>
-            Ошибка при загрузке статистики: {error.message}
+            {t('dashboard.loadError')}: {error.message}
           </AlertDescription>
         </Alert>
       </div>
@@ -44,9 +46,9 @@ export default function DashboardPage() {
   return (
     <div className="container mx-auto py-8">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold">Панель управления</h1>
+        <h1 className="text-3xl font-bold">{t('dashboard.title')}</h1>
         <p className="text-gray-600 mt-2">
-          Добро пожаловать, {profile?.full_name || profile?.email}!
+          {t('dashboard.welcome')}, {profile?.full_name || profile?.email}!
         </p>
       </div>
 
@@ -54,20 +56,20 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Всего автомобилей</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('dashboard.cards.totalCars')}</CardTitle>
             <Car className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats?.totalCars || 0}</div>
             <p className="text-xs text-muted-foreground">
-              Активных: {stats?.activeCars || 0}, Проданных: {stats?.soldCars || 0}
+              {t('dashboard.cards.active')}: {stats?.activeCars || 0}, {t('dashboard.cards.sold')}: {stats?.soldCars || 0}
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Общий доход</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('dashboard.cards.totalIncome')}</CardTitle>
             <TrendingUp className="h-4 w-4 text-green-600" />
           </CardHeader>
           <CardContent>
@@ -75,14 +77,14 @@ export default function DashboardPage() {
               {formatCurrency(stats?.totalIncome || 0)}
             </div>
             <p className="text-xs text-muted-foreground">
-              За месяц: {formatCurrency(stats?.monthlyIncome || 0)}
+              {t('dashboard.monthly')}: {formatCurrency(stats?.monthlyIncome || 0)}
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Общие расходы</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('dashboard.cards.totalExpenses')}</CardTitle>
             <TrendingDown className="h-4 w-4 text-red-600" />
           </CardHeader>
           <CardContent>
@@ -90,14 +92,14 @@ export default function DashboardPage() {
               {formatCurrency(stats?.totalExpenses || 0)}
             </div>
             <p className="text-xs text-muted-foreground">
-              За месяц: {formatCurrency(stats?.monthlyExpenses || 0)}
+              {t('dashboard.monthly')}: {formatCurrency(stats?.monthlyExpenses || 0)}
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Чистая прибыль</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('dashboard.cards.netProfit')}</CardTitle>
             <DollarSign className="h-4 w-4 text-blue-600" />
           </CardHeader>
           <CardContent>
@@ -105,7 +107,7 @@ export default function DashboardPage() {
               {formatCurrency(stats?.totalProfit || 0)}
             </div>
             <p className="text-xs text-muted-foreground">
-              За месяц: {formatCurrency(stats?.monthlyProfit || 0)}
+              {t('dashboard.monthly')}: {formatCurrency(stats?.monthlyProfit || 0)}
             </p>
           </CardContent>
         </Card>
@@ -116,7 +118,7 @@ export default function DashboardPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">Доля инвестора (50%)</CardTitle>
+              <CardTitle className="text-lg">{t('dashboard.profit.investor')}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-purple-600">
@@ -127,7 +129,7 @@ export default function DashboardPage() {
 
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">Доля владельца (25%)</CardTitle>
+              <CardTitle className="text-lg">{t('dashboard.profit.owner')}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-blue-600">
@@ -138,7 +140,7 @@ export default function DashboardPage() {
 
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">Доля помощника (25%)</CardTitle>
+              <CardTitle className="text-lg">{t('dashboard.profit.assistant')}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-green-600">
@@ -153,7 +155,7 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         <FinancialChart
           type="line"
-          title="Тренды за последние месяцы"
+          title={t('dashboard.charts.trendsTitle')}
           dataType="monthly"
           height={300}
         />
@@ -164,7 +166,7 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>Топ автомобили по прибыли</CardTitle>
+            <CardTitle>{t('dashboard.topCars')}</CardTitle>
           </CardHeader>
           <CardContent>
             {data?.topCars && data.topCars.length > 0 ? (
@@ -180,21 +182,21 @@ export default function DashboardPage() {
                         {formatCurrency((((car as any).net_profit ?? (car as any).netProfit ?? 0) || 0))}
                       </p>
                       <p className="text-sm text-gray-500">
-                        {(car as any).transactionCount ?? (car as any).transaction_count ?? 0} транзакций
+                        {(car as any).transactionCount ?? (car as any).transaction_count ?? 0} {t('dashboard.transactionsSuffix')}
                       </p>
                     </div>
                   </div>
                 ))}
               </div>
             ) : (
-              <p className="text-gray-500">Нет данных для отображения</p>
+              <p className="text-gray-500">{t('dashboard.noData')}</p>
             )}
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle>Категории расходов</CardTitle>
+            <CardTitle>{t('dashboard.expenseCategories')}</CardTitle>
           </CardHeader>
           <CardContent>
             {data?.categoryBreakdown && data.categoryBreakdown.length > 0 ? (
@@ -207,7 +209,7 @@ export default function DashboardPage() {
                       <div>
                         <p className="font-medium">{category.category}</p>
                         <p className="text-sm text-gray-500">
-                          {category.transaction_count} транзакций
+                          {category.transaction_count} {t('dashboard.transactionsSuffix')}
                         </p>
                       </div>
                       <div className="text-right">
@@ -215,14 +217,14 @@ export default function DashboardPage() {
                           {formatCurrency(category.total_amount)}
                         </p>
                         <p className="text-sm text-gray-500">
-                          Средняя: {formatCurrency(category.average_amount)}
+                          {t('dashboard.average')}: {formatCurrency(category.average_amount)}
                         </p>
                       </div>
                     </div>
                   ))}
               </div>
             ) : (
-              <p className="text-gray-500">Нет данных для отображения</p>
+              <p className="text-gray-500">{t('dashboard.noData')}</p>
             )}
           </CardContent>
         </Card>

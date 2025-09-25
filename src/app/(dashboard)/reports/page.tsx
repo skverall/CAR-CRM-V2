@@ -6,20 +6,22 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { FinancialChart } from '@/components/reports/FinancialChart'
 import { ProfitDistributionCard } from '@/components/profit/ProfitDistributionCard'
 import { Download, FileText, BarChart3, PieChart, TrendingUp } from 'lucide-react'
+import {useTranslations} from 'next-intl'
 
 export default function ReportsPage() {
+  const t = useTranslations()
   return (
     <div className="container mx-auto py-8">
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-3xl font-bold">Отчёты и аналитика</h1>
+          <h1 className="text-3xl font-bold">{t('reports.title')}</h1>
           <p className="text-gray-600 mt-2">
-            Детальная аналитика по автомобилям и финансам
+            {t('reports.subtitle')}
           </p>
         </div>
         <Button>
           <Download className="mr-2 h-4 w-4" />
-          Экспорт данных
+          {t('reports.export')}
         </Button>
       </div>
 
@@ -29,15 +31,15 @@ export default function ReportsPage() {
           <CardHeader>
             <CardTitle className="flex items-center">
               <BarChart3 className="mr-2 h-5 w-5 text-blue-600" />
-              Финансовый отчёт
+              {t('reports.cards.financial')}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-gray-600 mb-4">
-              Общий анализ доходов, расходов и прибыли по всем автомобилям
+              {t('reports.descriptions.financial')}
             </p>
             <Button variant="outline" className="w-full">
-              Открыть отчёт
+              {t('reports.open')}
             </Button>
           </CardContent>
         </Card>
@@ -46,15 +48,15 @@ export default function ReportsPage() {
           <CardHeader>
             <CardTitle className="flex items-center">
               <PieChart className="mr-2 h-5 w-5 text-green-600" />
-              Анализ по автомобилям
+              {t('reports.cards.cars')}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-gray-600 mb-4">
-              Детальная прибыльность каждого автомобиля в автопарке
+              {t('reports.descriptions.cars')}
             </p>
             <Button variant="outline" className="w-full">
-              Открыть отчёт
+              {t('reports.open')}
             </Button>
           </CardContent>
         </Card>
@@ -63,15 +65,15 @@ export default function ReportsPage() {
           <CardHeader>
             <CardTitle className="flex items-center">
               <FileText className="mr-2 h-5 w-5 text-purple-600" />
-              Распределение прибыли
+              {t('reports.cards.profitDistribution')}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-gray-600 mb-4">
-              Расчёт долей инвестора, владельца и помощника
+              {t('reports.descriptions.profitDistribution')}
             </p>
             <Button variant="outline" className="w-full">
-              Открыть отчёт
+              {t('reports.open')}
             </Button>
           </CardContent>
         </Card>
@@ -80,23 +82,23 @@ export default function ReportsPage() {
       {/* Analytics Tabs */}
       <Tabs defaultValue="overview" className="space-y-6">
         <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="overview">Обзор</TabsTrigger>
-          <TabsTrigger value="trends">Тренды</TabsTrigger>
-          <TabsTrigger value="categories">Категории</TabsTrigger>
-          <TabsTrigger value="profit">Прибыль</TabsTrigger>
+          <TabsTrigger value="overview">{t('reports.tabs.overview')}</TabsTrigger>
+          <TabsTrigger value="trends">{t('reports.tabs.trends')}</TabsTrigger>
+          <TabsTrigger value="categories">{t('reports.tabs.categories')}</TabsTrigger>
+          <TabsTrigger value="profit">{t('reports.tabs.profit')}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <FinancialChart
               type="line"
-              title="Финансовые тренды по месяцам"
+              title={t('reports.charts.monthlyTrends')}
               dataType="monthly"
               height={350}
             />
             <FinancialChart
               type="pie"
-              title="Распределение по категориям"
+              title={t('reports.charts.byCategories')}
               dataType="categories"
               height={350}
             />
@@ -107,13 +109,13 @@ export default function ReportsPage() {
           <div className="grid grid-cols-1 gap-6">
             <FinancialChart
               type="line"
-              title="Детальные тренды доходов и расходов"
+              title={t('reports.charts.incomeExpenseTrends')}
               dataType="monthly"
               height={400}
             />
             <FinancialChart
               type="bar"
-              title="Сравнение по месяцам"
+              title={t('reports.charts.monthlyCompare')}
               dataType="monthly"
               height={350}
             />
@@ -124,13 +126,13 @@ export default function ReportsPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <FinancialChart
               type="bar"
-              title="Расходы по категориям"
+              title={t('reports.charts.expensesByCategory')}
               dataType="categories"
               height={400}
             />
             <FinancialChart
               type="pie"
-              title="Доля категорий в общих расходах"
+              title={t('reports.charts.categoryShareExpenses')}
               dataType="categories"
               height={400}
             />
@@ -144,7 +146,7 @@ export default function ReportsPage() {
               <CardHeader>
                 <CardTitle className="flex items-center">
                   <TrendingUp className="mr-2 h-5 w-5" />
-                  Динамика прибыли
+                  {t('reports.charts.profitDynamics')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
