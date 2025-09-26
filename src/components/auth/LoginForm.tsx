@@ -37,17 +37,32 @@ export function LoginForm() {
   const onSubmit = async (data: LoginFormData) => {
     setIsLoading(true)
     setError(null)
+    console.log('[Login] submit', { email: data.email })
+
+    // Fallback in case the Supabase request hangs (network, protection, CSP, etc.)
+    const timeoutMs = 12000
+    const timeoutPromise = new Promise<{ data: any; error: any }>((resolve) => {
+      setTimeout(() =>
+        resolve({ data: null, error: { message: 'Login request timed out. Please try again.' } }),
+      timeoutMs)
+    })
 
     try {
-      const { error } = await signIn(data.email, data.password)
+      const result = await Promise.race([
+        signIn(data.email, data.password),
+        timeoutPromise,
+      ])
 
-      if (error) {
-        setError(error.message)
+      console.log('[Login] result', result)
+
+      if (result?.error) {
+        setError(result.error.message || 'Login error')
       } else {
         router.push('/dashboard')
         router.refresh()
       }
     } catch (err) {
+      console.error('[Login] unexpected error', err)
       setError(t('auth.login.errorGeneric'))
     } finally {
       setIsLoading(false)
