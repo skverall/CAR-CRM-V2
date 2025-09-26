@@ -3,7 +3,8 @@ import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 
 async function checkTable(name: string) {
   const db = getSupabaseAdmin();
-  const { error } = await db.from(name as any).select("count").limit(1);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { error } = await (db.from as any)(name).select("count").limit(1);
   return { name, ok: !error, error: error?.message };
 }
 
