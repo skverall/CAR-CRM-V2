@@ -23,6 +23,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const fetchProfile = useCallback(async (userId: string) => {
     try {
+      console.log('[AuthContext] Fetching profile for user:', userId)
+
       const { data, error } = await (supabase as any)
         .from('users')
         .select('*')
@@ -30,13 +32,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         .single()
 
       if (error) {
-        console.error('Error fetching profile:', error)
+        console.error('[AuthContext] Error fetching profile:', error)
+        // Не блокируем авторизацию из-за ошибок профиля
+        // Пользователь может войти, но без профиля
         return null
       }
 
+      console.log('[AuthContext] Profile fetched successfully:', data)
       return data
     } catch (error) {
-      console.error('Error fetching profile:', error)
+      console.error('[AuthContext] Exception fetching profile:', error)
       return null
     }
   }, [supabase])
@@ -50,14 +55,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const getInitialSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
-      
-      if (session?.user) {
-        setUser(session.user)
-        const profileData = await fetchProfile(session.user.id)
-        setProfile(profileData as any)
+      console.log('[AuthContext] Getting initial session...')
+
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession()
+
+        if (error) {
+          console.error('[AuthContext] Error getting session:', error)
+          setLoading(false)
+          return
+        }
+
+        if (session?.user) {
+          console.log('[AuthContext] Found existing session for:', session.user.email)
+          setUser(session.user)
+
+          // Загружаем профиль асинхронно, не блокируя авторизацию
+          fetchProfile(session.user.id).then(profileData => {
+            setProfile(profileData as any)
+          })
+        }
+      } catch (error) {
+        console.error('[AuthContext] Exception getting initial session:', error)
       }
-      
+
       setLoading(false)
     }
 
@@ -65,10 +86,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
+        console.log('[AuthContext] Auth state changed:', event, session?.user?.email)
+
         if (session?.user) {
           setUser(session.user)
-          const profileData = await fetchProfile(session.user.id)
-          setProfile(profileData as any)
+
+          // Загружаем профиль асинхронно, не блокируя авторизацию
+          fetchProfile(session.user.id).then(profileData => {
+            setProfile(profileData as any)
+          })
         } else {
           setUser(null)
           setProfile(null)
