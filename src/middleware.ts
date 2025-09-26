@@ -1,17 +1,11 @@
-import createMiddleware from 'next-intl/middleware'
+import { NextResponse, type NextRequest } from 'next/server'
 
-export default createMiddleware({
-  // A list of all locales that are supported
-  locales: ['uz', 'ru'],
+// Temporarily disable i18n routing to fix 404s
+export default function middleware(_req: NextRequest) {
+  return NextResponse.next()
+}
 
-  // Used when no locale matches
-  defaultLocale: 'uz',
-
-  // Don't use locale prefix for default locale
-  localePrefix: 'never'
-})
-
+// Disable matching so this middleware is effectively a no-op
 export const config = {
-  // Match only internationalized pathnames but exclude API routes
-  matcher: ['/((?!api|_next|_vercel|.*\\..*).*)']
+  matcher: []
 }
