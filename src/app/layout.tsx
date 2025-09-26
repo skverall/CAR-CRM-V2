@@ -33,6 +33,7 @@ export default function RootLayout({
             <Link href="/cars">Авто</Link>
             <Link href="/expenses">Расходы</Link>
             <Link href="/incomes">Доходы</Link>
+            <Link href="/fx">Курсы</Link>
             <Link href="/capital">Капитал</Link>
             <Link href="/reports">Отчёты</Link>
             <LanguageSwitcher />

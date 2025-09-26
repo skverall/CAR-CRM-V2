@@ -1,4 +1,5 @@
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
+import RatePrefill from "@/app/components/RatePrefill";
 export const dynamic = "force-dynamic";
 
 
@@ -45,6 +46,7 @@ export default async function IncomesPage() {
     <div className="grid gap-6">
       <h1 className="text-2xl font-semibold">Income</h1>
       <form action={addIncome} className="grid grid-cols-2 sm:grid-cols-4 gap-2 border p-4 rounded">
+        <RatePrefill currencyName="currency" dateName="occurred_at" rateName="rate_to_aed" />
         <input name="occurred_at" type="date" required className="border px-2 py-1 rounded" />
         <input name="amount" type="number" step="0.01" required placeholder="Amount" className="border px-2 py-1 rounded" />
         <input name="currency" required placeholder="Currency" className="border px-2 py-1 rounded" />

@@ -4,7 +4,12 @@ export default function ReportsPage() {
   return (
     <div className="grid gap-4">
       <h1 className="text-2xl font-semibold">Отчёты</h1>
-      <p className="text-gray-600">Экспорт и расширенные отчёты будут добавлены на следующем шаге.</p>
+      <div className="grid gap-2">
+        <a className="underline text-blue-600" href="/api/export?type=cars">Скачать CSV — Авто</a>
+        <a className="underline text-blue-600" href="/api/export?type=expenses">Скачать CSV — Расходы</a>
+        <a className="underline text-blue-600" href="/api/export?type=incomes">Скачать CSV — Доходы</a>
+        <a className="underline text-blue-600" href="/api/export?type=movements">Скачать CSV — Движение капитала</a>
+      </div>
     </div>
   );
 }

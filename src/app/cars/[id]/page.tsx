@@ -8,7 +8,7 @@ type Car = {
   make: string | null;
   model: string | null;
   model_year: number | null;
-  status: string;
+  status: "available" | "repair" | "listed" | "sold" | "archived";
   purchase_price: number;
   purchase_currency: string;
   purchase_rate_to_aed: number;
@@ -41,6 +41,23 @@ async function distribute(formData: FormData) {
   redirect(`/cars/${carId}`);
 }
 
+async function changeStatus(formData: FormData) {
+  "use server";
+  const carId = String(formData.get("car_id"));
+  const next = String(formData.get("next_status")) as Car["status"];
+  const db = getSupabaseAdmin();
+  const { data: car } = await db.from("au_cars").select("status").eq("id", carId).single();
+  if (!car) throw new Error("Car not found");
+  const order: Car["status"][] = ["available","repair","listed","sold","archived"];
+  const curIdx = order.indexOf(car.status);
+  const nextIdx = order.indexOf(next);
+  if (nextIdx < 0 || nextIdx < curIdx || nextIdx - curIdx > 1) {
+    throw new Error("Недопустимый переход статуса");
+  }
+  await db.from("au_cars").update({ status: next }).eq("id", carId);
+  redirect(`/cars/${carId}`);
+}
+
 export default async function CarPage({ params }: { params: { id: string } }) {
   const id = params.id;
   const db = getSupabaseAdmin();
@@ -54,26 +71,46 @@ export default async function CarPage({ params }: { params: { id: string } }) {
   const profit = Number(Array.isArray(profitRes) ? profitRes[0] : profitRes);
   const canDistribute = carRow.status === "sold" && profit > 0 && (distributions || []).length === 0;
 
+  const purchaseAED = Number(carRow.purchase_price) * Number(carRow.purchase_rate_to_aed);
+  const expensesAED = ((expenses as unknown as Expense[] | null) || []).reduce((a, e) => a + Number(e.amount_aed || 0), 0);
+  const incomesAED = ((incomes as unknown as Income[] | null) || []).reduce((a, i) => a + Number(i.amount_aed || 0), 0);
+
+  const order: Car["status"][] = ["available","repair","listed","sold","archived"];
+  const curIdx = order.indexOf(carRow.status);
+  const next = curIdx >= 0 && curIdx < order.length - 1 ? order[curIdx + 1] : null;
+
   return (
     <div className="grid gap-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold">{carRow.vin} - {carRow.make} {carRow.model} {carRow.model_year || ""}</h1>
-        {canDistribute && (
-          <form action={distribute}>
-            <input type="hidden" name="car_id" value={id} />
-            <button className="bg-green-600 text-white px-3 py-2 rounded">Distribute Profit</button>
-          </form>
-        )}
+        <div className="flex items-center gap-2">
+          {next && (
+            <form action={changeStatus} className="flex items-center gap-2">
+              <input type="hidden" name="car_id" value={id} />
+              <input type="hidden" name="next_status" value={next} />
+              <button className="bg-blue-600 text-white px-3 py-2 rounded">Статус: {carRow.status} → {next}</button>
+            </form>
+          )}
+          {canDistribute && (
+            <form action={distribute}>
+              <input type="hidden" name="car_id" value={id} />
+              <button className="bg-green-600 text-white px-3 py-2 rounded">Распределить прибыль</button>
+            </form>
+          )}
+        </div>
       </div>
 
       <div className="grid gap-2">
-        <div><b>Покупка</b>: {carRow.purchase_price} {carRow.purchase_currency} (AED {(carRow.purchase_price * carRow.purchase_rate_to_aed).toFixed(2)})</div>
-        <div><b>Profit (AED)</b>: {profit.toFixed(2)} AED</div>
+        <div><b>Покупка</b>: {carRow.purchase_price} {carRow.purchase_currency} (AED {purchaseAED.toFixed(2)})</div>
+        <div className="text-sm text-gray-600">
+          Прибыль = Выручка (AED {incomesAED.toFixed(2)}) − (Цена покупки AED {purchaseAED.toFixed(2)} + Связанные расходы AED {expensesAED.toFixed(2)})
+        </div>
+        <div><b>Итоговая прибыль (AED)</b>: {profit.toFixed(2)} AED</div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <div>
-          <h2 className="font-semibold mb-2">Expenses</h2>
+          <h2 className="font-semibold mb-2">Расходы</h2>
           <ul className="space-y-1">
             {(expenses as unknown as Expense[] || []).map((e: Expense) => (
               <li key={e.id} className="border rounded p-2 text-sm">
@@ -83,7 +120,7 @@ export default async function CarPage({ params }: { params: { id: string } }) {
           </ul>
         </div>
         <div>
-          <h2 className="font-semibold mb-2">Income</h2>
+          <h2 className="font-semibold mb-2">Доход</h2>
           <ul className="space-y-1">
             {(incomes as unknown as Income[] || []).map((i: Income) => (
               <li key={i.id} className="border rounded p-2 text-sm">
@@ -96,7 +133,7 @@ export default async function CarPage({ params }: { params: { id: string } }) {
 
       {(distributions || []).length > 0 && (
         <div className="border rounded p-3">
-          <h2 className="font-semibold mb-2">Profit distribution</h2>
+          <h2 className="font-semibold mb-2">Распределение прибыли</h2>
           <pre className="text-sm">
             {JSON.stringify(distributions?.[0], null, 2)}
           </pre>
