@@ -14,6 +14,35 @@ type Movement = {
   distribution_id?: string | null;
 };
 
+async function addMovement(formData: FormData) {
+  "use server";
+  const occurred_at = String(formData.get("occurred_at"));
+  const account = String(formData.get("account")) as Movement["account"];
+  const kind = String(formData.get("kind")); // deposit | withdraw | adjust
+  const amount_abs = Math.abs(Number(formData.get("amount_abs")) || 0);
+  const reason = String(formData.get("reason") || "");
+
+  if (!occurred_at) throw new Error("Date is required");
+  if (!account) throw new Error("Account is required");
+  if (!(amount_abs > 0)) throw new Error("Amount must be > 0");
+
+  const db = getSupabaseAdmin();
+  const today = new Date().toISOString().slice(0,10);
+  if (occurred_at > today) throw new Error("Date cannot be in the future");
+
+  let amount_aed = amount_abs;
+  if (kind === "withdraw") amount_aed = -amount_abs;
+  if (kind === "deposit") amount_aed = amount_abs;
+  if (kind === "adjust") {
+    // allow sign from input using a hidden field? for now use provided sign in amount_abs? keep positive and rely on reason
+    // To allow negative adjustments, user should select withdraw.
+  }
+
+  await db.from("au_capital_movements").insert([
+    { occurred_at, account, amount_aed, reason: reason || kind }
+  ]);
+}
+
 export default async function CapitalPage() {
   const db = getSupabaseAdmin();
   const { data: movements } = await db.from("au_capital_movements").select("*").order("occurred_at", { ascending: false }).limit(100);
@@ -25,6 +54,25 @@ export default async function CapitalPage() {
   return (
     <div className="grid gap-6">
       <h1 className="text-2xl font-semibold">Capital & Movements</h1>
+
+      <form action={addMovement} className="grid grid-cols-2 sm:grid-cols-6 gap-2 border p-4 rounded">
+        <input name="occurred_at" type="date" required className="border px-2 py-1 rounded col-span-2 sm:col-span-2" />
+        <select name="account" className="border px-2 py-1 rounded">
+          <option value="investor">investor</option>
+          <option value="business">business</option>
+          <option value="owner">owner</option>
+          <option value="assistant">assistant</option>
+        </select>
+        <select name="kind" className="border px-2 py-1 rounded">
+          <option value="deposit">Deposit</option>
+          <option value="withdraw">Withdraw</option>
+          <option value="adjust">Adjust</option>
+        </select>
+        <input name="amount_abs" type="number" step="0.01" min="0.01" placeholder="Amount AED" required className="border px-2 py-1 rounded" />
+        <input name="reason" placeholder="Comment" className="border px-2 py-1 rounded col-span-2 sm:col-span-2" />
+        <button className="col-span-2 sm:col-span-1 bg-black text-white px-3 py-2 rounded">Add</button>
+      </form>
+
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {(["investor","business","owner","assistant"] as const).map((k) => (
           <div key={k} className="rounded border p-4">

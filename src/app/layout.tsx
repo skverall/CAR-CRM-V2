@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Link from "next/link";
+import LanguageSwitcher from "./components/LanguageSwitcher";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -34,6 +35,7 @@ export default function RootLayout({
             <Link href="/incomes">Доходы</Link>
             <Link href="/capital">Капитал</Link>
             <Link href="/reports">Отчёты</Link>
+            <LanguageSwitcher />
           </nav>
         </header>
         <main className="mx-auto max-w-6xl px-4 py-6">

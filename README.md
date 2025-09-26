@@ -34,3 +34,30 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+
+## Setup (Supabase + Local)
+
+1. Create a Supabase project (already provisioned in this repo). Set env vars:
+
+```
+NEXT_PUBLIC_SUPABASE_URL=...      # public URL
+NEXT_PUBLIC_SUPABASE_ANON_KEY=... # anon key
+SUPABASE_SERVICE_ROLE=...         # service key (server only)
+```
+
+2. Apply DB schema (done automatically by our migration step via Augment). If needed, re-apply using Supabase SQL editor with scripts in this repo history.
+
+3. Seed demo data:
+
+```
+npm run seed
+```
+
+4. Start dev server:
+
+```
+npm run dev
+```
+
+Open /debug-check to verify tables exist, and /debug-seed to generate a demo flow.
