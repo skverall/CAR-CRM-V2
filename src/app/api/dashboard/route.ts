@@ -94,7 +94,7 @@ export async function GET(request: NextRequest) {
 }
 
 // Create the required RPC functions
-export async function POST(request: NextRequest) {
+export async function POST() {
   try {
     const db = getSupabaseAdmin();
     

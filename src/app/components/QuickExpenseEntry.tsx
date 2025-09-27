@@ -41,7 +41,7 @@ export default function QuickExpenseEntry({ orgId, onSuccess }: QuickExpenseEntr
       const response = await fetch(`/api/cars?org_id=${orgId}&per_page=100`);
       const data = await response.json();
       if (data.success) {
-        setCars(data.data.cars.filter((car: any) => car.status !== 'sold' && car.status !== 'archived'));
+        setCars(data.data.cars.filter((car: Record<string, unknown>) => car.status !== 'sold' && car.status !== 'archived'));
       }
     } catch (error) {
       console.error('Failed to load cars:', error);
@@ -165,7 +165,7 @@ export default function QuickExpenseEntry({ orgId, onSuccess }: QuickExpenseEntr
       <button
         onClick={handleOpen}
         className="fixed bottom-6 right-6 bg-blue-600 text-white p-4 rounded-full shadow-lg hover:bg-blue-700 transition-colors z-50"
-        aria-label="Xarajat qo'shish"
+        aria-label="Xarajat qo&apos;shish"
       >
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -177,7 +177,7 @@ export default function QuickExpenseEntry({ orgId, onSuccess }: QuickExpenseEntr
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-end sm:items-center justify-center z-50">
           <div className="bg-white w-full sm:w-96 sm:rounded-lg max-h-[90vh] overflow-y-auto">
             <div className="sticky top-0 bg-white border-b px-4 py-3 flex justify-between items-center">
-              <h2 className="text-lg font-semibold">Tez xarajat qo'shish</h2>
+              <h2 className="text-lg font-semibold">Tez xarajat qo&apos;shish</h2>
               <button
                 onClick={handleClose}
                 className="text-gray-400 hover:text-gray-600"

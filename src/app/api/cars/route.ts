@@ -100,20 +100,20 @@ export async function GET(request: NextRequest) {
     }
 
     // Transform data to match API contract
-    const cars = (carsData || []).map((car: any) => ({
-      id: car.id,
-      vin: car.vin,
-      make: car.make,
-      model: car.model,
-      model_year: car.au_cars?.model_year || null,
-      status: car.status,
-      purchase_date: car.purchase_date,
-      cost_base_aed: car.total_cost_aed,
-      sold_price_aed: car.car_profit_view?.sold_price_aed || null,
-      profit_aed: car.car_profit_view?.profit_aed || null,
-      margin_pct: car.car_profit_view?.margin_pct || null,
-      days_on_lot: car.car_profit_view?.days_on_lot || null,
-      decision_tag: car.au_cars?.decision_tag || null
+    const cars = (carsData || []).map((car: Record<string, unknown>) => ({
+      id: car.id as string,
+      vin: car.vin as string,
+      make: car.make as string,
+      model: car.model as string,
+      model_year: (car as Record<string, unknown>).au_cars ? ((car as Record<string, unknown>).au_cars as Record<string, unknown>).model_year as number || null : null,
+      status: car.status as string,
+      purchase_date: car.purchase_date as string,
+      cost_base_aed: car.total_cost_aed as number,
+      sold_price_aed: (car as Record<string, unknown>).car_profit_view ? ((car as Record<string, unknown>).car_profit_view as Record<string, unknown>).sold_price_aed as number || null : null,
+      profit_aed: (car as Record<string, unknown>).car_profit_view ? ((car as Record<string, unknown>).car_profit_view as Record<string, unknown>).profit_aed as number || null : null,
+      margin_pct: (car as Record<string, unknown>).car_profit_view ? ((car as Record<string, unknown>).car_profit_view as Record<string, unknown>).margin_pct as number || null : null,
+      days_on_lot: (car as Record<string, unknown>).car_profit_view ? ((car as Record<string, unknown>).car_profit_view as Record<string, unknown>).days_on_lot as number || null : null,
+      decision_tag: (car as Record<string, unknown>).au_cars ? ((car as Record<string, unknown>).au_cars as Record<string, unknown>).decision_tag as string || null : null
     }));
 
     const response: ApiResponse<CarListResponse> = {

@@ -52,14 +52,14 @@ export async function GET(request: NextRequest) {
     }
 
     const response: ApiResponse<ExpenseResponse[]> = {
-      data: (expenses || []).map(exp => ({
-        id: exp.id,
-        occurred_at: exp.occurred_at,
-        amount_aed: exp.amount_aed,
-        scope: exp.scope,
-        category: exp.category,
-        description: exp.description,
-        car_vin: exp.au_cars?.vin || null
+      data: (expenses || []).map((exp: Record<string, unknown>) => ({
+        id: exp.id as string,
+        occurred_at: exp.occurred_at as string,
+        amount_aed: exp.amount_aed as number,
+        scope: exp.scope as string,
+        category: exp.category as string,
+        description: exp.description as string,
+        car_vin: (exp.au_cars as Record<string, unknown>)?.vin as string || null
       })),
       success: true,
       timestamp: new Date().toISOString()
@@ -197,10 +197,10 @@ export async function POST(request: NextRequest) {
 
         allocationPreview = {
           method: currentRule?.[0]?.method || 'per_car',
-          affected_cars: preview.map((p: any) => ({
-            vin: p.car_vin,
-            allocation_ratio: p.allocation_ratio,
-            allocated_amount_aed: p.allocated_amount_aed
+          affected_cars: preview.map((p: Record<string, unknown>) => ({
+            vin: p.car_vin as string,
+            allocation_ratio: p.allocation_ratio as number,
+            allocated_amount_aed: p.allocated_amount_aed as number
           }))
         };
       }

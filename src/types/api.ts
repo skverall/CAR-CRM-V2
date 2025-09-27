@@ -248,14 +248,14 @@ export interface ImportPreview {
     field: string;
     message: string;
   }>;
-  sample_data: Array<Record<string, any>>;
+  sample_data: Array<Record<string, unknown>>;
 }
 
 export interface ExportOptions {
   type: 'cars' | 'expenses' | 'profit_report';
   format: 'csv' | 'excel';
   date_range?: [string, string];
-  filters?: Record<string, any>;
+  filters?: Record<string, unknown>;
 }
 
 // =====================================================
@@ -272,7 +272,7 @@ export interface ApiResponse<T> {
 export interface ApiError {
   success: false;
   error: string;
-  details?: Record<string, any>;
+  details?: Record<string, unknown>;
   timestamp: string;
 }
 

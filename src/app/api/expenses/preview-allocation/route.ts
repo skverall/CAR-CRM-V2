@@ -45,12 +45,12 @@ export async function POST(request: NextRequest) {
     const allocationPreview: AllocationPreview = {
       expense_amount_aed,
       method: rule.method,
-      allocations: (previewData || []).map((item: any) => ({
-        car_vin: item.car_vin,
-        car_make: item.car_make,
-        car_model: item.car_model,
-        allocation_ratio: item.allocation_ratio,
-        allocated_amount_aed: item.allocated_amount_aed
+      allocations: (previewData || []).map((item: Record<string, unknown>) => ({
+        car_vin: item.car_vin as string,
+        car_make: item.car_make as string,
+        car_model: item.car_model as string,
+        allocation_ratio: item.allocation_ratio as number,
+        allocated_amount_aed: item.allocated_amount_aed as number
       }))
     };
 

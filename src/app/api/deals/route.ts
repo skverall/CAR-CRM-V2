@@ -174,18 +174,18 @@ export async function GET(request: NextRequest) {
     }
 
     const response: ApiResponse<any[]> = {
-      data: (deals || []).map(deal => ({
-        id: deal.id,
-        car_id: deal.car_id,
-        car_vin: deal.au_cars?.vin,
-        car_make: deal.au_cars?.make,
-        car_model: deal.au_cars?.model,
-        buyer_name: deal.buyer_name,
-        channel: deal.channel,
-        sold_price_aed: deal.sold_price_aed / 100, // Convert from fils
-        sold_date: deal.sold_date,
-        commission_aed: deal.commission_aed / 100, // Convert from fils
-        agent_id: deal.agent_id
+      data: (deals || []).map((deal: Record<string, unknown>) => ({
+        id: deal.id as string,
+        car_id: deal.car_id as string,
+        car_vin: (deal.au_cars as Record<string, unknown>)?.vin as string,
+        car_make: (deal.au_cars as Record<string, unknown>)?.make as string,
+        car_model: (deal.au_cars as Record<string, unknown>)?.model as string,
+        buyer_name: deal.buyer_name as string,
+        channel: deal.channel as string,
+        sold_price_aed: (deal.sold_price_aed as number) / 100, // Convert from fils
+        sold_date: deal.sold_date as string,
+        commission_aed: (deal.commission_aed as number) / 100, // Convert from fils
+        agent_id: deal.agent_id as string
       })),
       success: true,
       timestamp: new Date().toISOString()

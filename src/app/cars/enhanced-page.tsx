@@ -76,27 +76,27 @@ async function getCarsWithProfit(): Promise<CarWithProfit[]> {
     profitData = (profits || []).reduce((acc, profit) => {
       acc[profit.id] = profit;
       return acc;
-    }, {} as Record<string, any>);
+    }, {} as Record<string, Record<string, unknown>>);
   }
 
   // Combine data
-  return (carsWithCost || []).map(car => ({
-    id: car.id,
-    vin: car.vin,
-    make: car.make,
-    model: car.model,
-    model_year: car.au_cars.model_year,
-    status: car.status,
-    purchase_date: car.purchase_date,
-    purchase_price: car.au_cars.purchase_price,
-    purchase_currency: car.au_cars.purchase_currency,
-    purchase_rate_to_aed: car.au_cars.purchase_rate_to_aed,
-    decision_tag: car.au_cars.decision_tag,
-    total_cost_aed: car.total_cost_aed,
-    profit_aed: profitData[car.id]?.profit_aed || null,
-    margin_pct: profitData[car.id]?.margin_pct || null,
-    days_on_lot: profitData[car.id]?.days_on_lot || null,
-    sold_price_aed: car.au_cars.sold_price_aed ? car.au_cars.sold_price_aed / 100 : null
+  return (carsWithCost || []).map((car: Record<string, unknown>) => ({
+    id: car.id as string,
+    vin: car.vin as string,
+    make: car.make as string,
+    model: car.model as string,
+    model_year: (car.au_cars as Record<string, unknown>).model_year as number,
+    status: car.status as "in_transit" | "for_sale" | "reserved" | "sold" | "archived",
+    purchase_date: car.purchase_date as string,
+    purchase_price: (car.au_cars as Record<string, unknown>).purchase_price as number,
+    purchase_currency: (car.au_cars as Record<string, unknown>).purchase_currency as string,
+    purchase_rate_to_aed: (car.au_cars as Record<string, unknown>).purchase_rate_to_aed as number,
+    decision_tag: (car.au_cars as Record<string, unknown>).decision_tag as "take" | "skip" | null,
+    total_cost_aed: car.total_cost_aed as number,
+    profit_aed: profitData[car.id as string]?.profit_aed as number || null,
+    margin_pct: profitData[car.id as string]?.margin_pct as number || null,
+    days_on_lot: profitData[car.id as string]?.days_on_lot as number || null,
+    sold_price_aed: (car.au_cars as Record<string, unknown>).sold_price_aed ? ((car.au_cars as Record<string, unknown>).sold_price_aed as number) / 100 : null
   }));
 }
 
@@ -130,7 +130,7 @@ async function addCar(formData: FormData) {
 
 function getStatusBadge(status: string) {
   const statusConfig = {
-    in_transit: { label: "Yo'lda", color: "bg-blue-100 text-blue-800" },
+    in_transit: { label: "Yo&apos;lda", color: "bg-blue-100 text-blue-800" },
     for_sale: { label: "Sotuvda", color: "bg-green-100 text-green-800" },
     reserved: { label: "Band", color: "bg-yellow-100 text-yellow-800" },
     sold: { label: "Sotilgan", color: "bg-purple-100 text-purple-800" },
@@ -188,7 +188,7 @@ export default async function CarsPage() {
 
       {/* Add Car Form */}
       <div className="bg-white border rounded-lg p-6">
-        <h2 className="text-xl font-semibold mb-4">Yangi avtomobil qo'shish</h2>
+        <h2 className="text-xl font-semibold mb-4">Yangi avtomobil qo&apos;shish</h2>
         <form action={addCar} className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           <input name="vin" placeholder="VIN" required className="border px-3 py-2 rounded" />
           <input name="make" placeholder="Marka" required className="border px-3 py-2 rounded" />
@@ -207,7 +207,7 @@ export default async function CarsPage() {
           <input name="source" placeholder="Manba" className="border px-3 py-2 rounded" />
           <input name="notes" placeholder="Izohlar" className="border px-3 py-2 rounded col-span-2" />
           <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 col-span-2 sm:col-span-1">
-            Qo'shish
+            Qo&apos;shish
           </button>
         </form>
       </div>
@@ -294,7 +294,7 @@ export default async function CarsPage() {
                       href={`/cars/${car.id}`}
                       className="text-blue-600 hover:text-blue-900"
                     >
-                      Ko'rish
+                      Ko&apos;rish
                     </Link>
                   </td>
                 </tr>

@@ -22,7 +22,7 @@ async function getDashboardData(): Promise<DashboardData> {
   const db = getSupabaseAdmin();
 
   // For now, we'll use a default org_id - in production this would come from user context
-  const orgId = 'default-org'; // TODO: Get from user session
+  // const orgId = 'default-org'; // TODO: Get from user session
 
   const endDate = new Date().toISOString().split('T')[0];
   const startDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
@@ -182,7 +182,7 @@ export default async function Dashboard() {
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold">Avtomobil CRM Boshqaruv Paneli</h1>
         <div className="text-sm text-gray-500">
-          So'nggi 30 kun ma'lumotlari
+          So&apos;nggi 30 kun ma&apos;lumotlari
         </div>
       </div>
 
@@ -196,14 +196,14 @@ export default async function Dashboard() {
         </div>
 
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-          <div className="text-sm font-medium text-blue-600">O'rtacha marja</div>
+          <div className="text-sm font-medium text-blue-600">O&apos;rtacha marja</div>
           <div className="text-2xl font-bold text-blue-900">
             {dashboardData.kpis.avg_margin_pct.toFixed(1)}%
           </div>
         </div>
 
         <div className="bg-purple-50 border border-purple-200 rounded-lg p-6">
-          <div className="text-sm font-medium text-purple-600">O'rtacha sotish vaqti</div>
+          <div className="text-sm font-medium text-purple-600">O&apos;rtacha sotish vaqti</div>
           <div className="text-2xl font-bold text-purple-900">
             {dashboardData.kpis.median_days_to_sell} kun
           </div>
@@ -225,7 +225,7 @@ export default async function Dashboard() {
             <div className="text-2xl font-bold text-blue-600">
               {dashboardData.kpis.inventory_counts.in_transit}
             </div>
-            <div className="text-sm text-gray-600">Yo'lda</div>
+            <div className="text-sm text-gray-600">Yo&apos;lda</div>
           </div>
           <div className="text-center">
             <div className="text-2xl font-bold text-green-600">
@@ -273,7 +273,7 @@ export default async function Dashboard() {
                 </div>
               ))
             ) : (
-              <div className="text-gray-500 text-center py-4">Ma'lumot yo'q</div>
+              <div className="text-gray-500 text-center py-4">Ma&apos;lumot yo&apos;q</div>
             )}
           </div>
         </div>
@@ -296,7 +296,7 @@ export default async function Dashboard() {
                 </div>
               ))
             ) : (
-              <div className="text-gray-500 text-center py-4">Zarar yo'q 🎉</div>
+              <div className="text-gray-500 text-center py-4">Zarar yo&apos;q 🎉</div>
             )}
           </div>
         </div>
@@ -304,17 +304,17 @@ export default async function Dashboard() {
 
       {/* Brand Distribution */}
       <div className="bg-white border rounded-lg p-6">
-        <h2 className="text-xl font-semibold mb-4">Brendlar bo'yicha taqsimot</h2>
+        <h2 className="text-xl font-semibold mb-4">Brendlar bo&apos;yicha taqsimot</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {dashboardData.brandDistribution.slice(0, 6).map((brand) => (
             <div key={brand.brand} className="p-4 border rounded-lg">
               <div className="font-medium">{brand.brand}</div>
               <div className="text-sm text-gray-600">{brand.count} ta avtomobil</div>
               <div className="text-sm">
-                O'rtacha foyda: <span className="font-medium">{brand.avg_profit_aed.toLocaleString()} AED</span>
+                O&apos;rtacha foyda: <span className="font-medium">{brand.avg_profit_aed.toLocaleString()} AED</span>
               </div>
               <div className="text-sm">
-                O'rtacha marja: <span className="font-medium">{brand.avg_margin_pct.toFixed(1)}%</span>
+                O&apos;rtacha marja: <span className="font-medium">{brand.avg_margin_pct.toFixed(1)}%</span>
               </div>
             </div>
           ))}
@@ -323,7 +323,7 @@ export default async function Dashboard() {
 
       {/* Recent Activity */}
       <div className="bg-white border rounded-lg p-6">
-        <h2 className="text-xl font-semibold mb-4">So'nggi faoliyat</h2>
+        <h2 className="text-xl font-semibold mb-4">So&apos;nggi faoliyat</h2>
         <div className="space-y-2">
           {dashboardData.recentActivity.map((activity) => (
             <div key={activity.id} className="flex justify-between items-center p-3 hover:bg-gray-50 rounded">
