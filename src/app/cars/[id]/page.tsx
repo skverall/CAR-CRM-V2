@@ -52,7 +52,7 @@ async function changeStatus(formData: FormData) {
   const curIdx = order.indexOf(car.status);
   const nextIdx = order.indexOf(next);
   if (nextIdx < 0 || nextIdx < curIdx || nextIdx - curIdx > 1) {
-    throw new Error("Недопустимый переход статуса");
+    throw new Error("Holatni bunday o‘zgartirish mumkin emas");
   }
   await db.from("au_cars").update({ status: next }).eq("id", carId);
   redirect(`/cars/${carId}`);
@@ -88,29 +88,29 @@ export default async function CarPage({ params }: { params: { id: string } }) {
             <form action={changeStatus} className="flex items-center gap-2">
               <input type="hidden" name="car_id" value={id} />
               <input type="hidden" name="next_status" value={next} />
-              <button className="bg-blue-600 text-white px-3 py-2 rounded">Статус: {carRow.status} → {next}</button>
+              <button className="bg-blue-600 text-white px-3 py-2 rounded">Holat: {carRow.status} → {next}</button>
             </form>
           )}
           {canDistribute && (
             <form action={distribute}>
               <input type="hidden" name="car_id" value={id} />
-              <button className="bg-green-600 text-white px-3 py-2 rounded">Распределить прибыль</button>
+              <button className="bg-green-600 text-white px-3 py-2 rounded">Foydani taqsimlash</button>
             </form>
           )}
         </div>
       </div>
 
       <div className="grid gap-2">
-        <div><b>Покупка</b>: {carRow.purchase_price} {carRow.purchase_currency} (AED {purchaseAED.toFixed(2)})</div>
+        <div><b>Xarid</b>: {carRow.purchase_price} {carRow.purchase_currency} (AED {purchaseAED.toFixed(2)})</div>
         <div className="text-sm text-gray-600">
-          Прибыль = Выручка (AED {incomesAED.toFixed(2)}) − (Цена покупки AED {purchaseAED.toFixed(2)} + Связанные расходы AED {expensesAED.toFixed(2)})
+          Foyda = Tushum (AED {incomesAED.toFixed(2)}) − (Xarid narxi AED {purchaseAED.toFixed(2)} + Bog‘liq xarajatlar AED {expensesAED.toFixed(2)})
         </div>
-        <div><b>Итоговая прибыль (AED)</b>: {profit.toFixed(2)} AED</div>
+        <div><b>Yakuniy foyda (AED)</b>: {profit.toFixed(2)} AED</div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <div>
-          <h2 className="font-semibold mb-2">Расходы</h2>
+          <h2 className="font-semibold mb-2">Xarajatlar</h2>
           <ul className="space-y-1">
             {(expenses as unknown as Expense[] || []).map((e: Expense) => (
               <li key={e.id} className="border rounded p-2 text-sm">
@@ -120,7 +120,7 @@ export default async function CarPage({ params }: { params: { id: string } }) {
           </ul>
         </div>
         <div>
-          <h2 className="font-semibold mb-2">Доход</h2>
+          <h2 className="font-semibold mb-2">Daromad</h2>
           <ul className="space-y-1">
             {(incomes as unknown as Income[] || []).map((i: Income) => (
               <li key={i.id} className="border rounded p-2 text-sm">
@@ -133,7 +133,7 @@ export default async function CarPage({ params }: { params: { id: string } }) {
 
       {(distributions || []).length > 0 && (
         <div className="border rounded p-3">
-          <h2 className="font-semibold mb-2">Распределение прибыли</h2>
+          <h2 className="font-semibold mb-2">Foydani taqsimlash</h2>
           <pre className="text-sm">
             {JSON.stringify(distributions?.[0], null, 2)}
           </pre>

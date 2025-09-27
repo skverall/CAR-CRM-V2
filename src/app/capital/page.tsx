@@ -53,7 +53,7 @@ export default async function CapitalPage() {
   }, {});
   return (
     <div className="grid gap-6">
-      <h1 className="text-2xl font-semibold">Capital & Movements</h1>
+      <h1 className="text-2xl font-semibold">Kapital va harakatlar</h1>
 
       <form action={addMovement} className="grid grid-cols-2 sm:grid-cols-6 gap-2 border p-4 rounded">
         <input name="occurred_at" type="date" required className="border px-2 py-1 rounded col-span-2 sm:col-span-2" />
@@ -64,13 +64,13 @@ export default async function CapitalPage() {
           <option value="assistant">assistant</option>
         </select>
         <select name="kind" className="border px-2 py-1 rounded">
-          <option value="deposit">Deposit</option>
-          <option value="withdraw">Withdraw</option>
-          <option value="adjust">Adjust</option>
+          <option value="deposit">Kiritish</option>
+          <option value="withdraw">Chiqib olish</option>
+          <option value="adjust">Togrilash</option>
         </select>
-        <input name="amount_abs" type="number" step="0.01" min="0.01" placeholder="Amount AED" required className="border px-2 py-1 rounded" />
-        <input name="reason" placeholder="Comment" className="border px-2 py-1 rounded col-span-2 sm:col-span-2" />
-        <button className="col-span-2 sm:col-span-1 bg-black text-white px-3 py-2 rounded">Add</button>
+        <input name="amount_abs" type="number" step="0.01" min="0.01" placeholder="Miqdor (AED)" required className="border px-2 py-1 rounded" />
+        <input name="reason" placeholder="Izoh" className="border px-2 py-1 rounded col-span-2 sm:col-span-2" />
+        <button className="col-span-2 sm:col-span-1 bg-black text-white px-3 py-2 rounded">Qo‘shish</button>
       </form>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -86,11 +86,11 @@ export default async function CapitalPage() {
         <table className="min-w-full border">
           <thead className="bg-gray-50">
             <tr>
-              <th className="p-2 border">Date</th>
-              <th className="p-2 border">Account</th>
-              <th className="p-2 border">Amount (AED)</th>
-              <th className="p-2 border">Reason</th>
-              <th className="p-2 border">Refs</th>
+              <th className="p-2 border">Sana</th>
+              <th className="p-2 border">Hisob</th>
+              <th className="p-2 border">Miqdor (AED)</th>
+              <th className="p-2 border">Sabab</th>
+              <th className="p-2 border">Boglanmalar</th>
             </tr>
           </thead>
           <tbody>

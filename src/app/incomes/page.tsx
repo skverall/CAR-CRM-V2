@@ -49,25 +49,25 @@ export default async function IncomesPage() {
         <RatePrefill currencyName="currency" dateName="occurred_at" rateName="rate_to_aed" />
         <input name="occurred_at" type="date" required className="border px-2 py-1 rounded" />
         <input name="amount" type="number" step="0.01" required placeholder="Miqdor" className="border px-2 py-1 rounded" />
-        <input name="currency" required placeholder="Currency" className="border px-2 py-1 rounded" />
-        <input name="rate_to_aed" type="number" step="0.000001" required placeholder="Rate to AED" className="border px-2 py-1 rounded" />
-        <input name="description" placeholder="Description" className="border px-2 py-1 rounded" />
+        <input name="currency" required placeholder="Valyuta" className="border px-2 py-1 rounded" />
+        <input name="rate_to_aed" type="number" step="0.000001" required placeholder="AED ga kurs" className="border px-2 py-1 rounded" />
+        <input name="description" placeholder="Izoh" className="border px-2 py-1 rounded" />
         <select name="car_id" required className="border px-2 py-1 rounded">
           {(cars as CarRef[] || []).map((c: CarRef) => (
             <option key={c.id} value={c.id}>{c.vin}</option>
           ))}
         </select>
-        <button className="col-span-2 sm:col-span-1 bg-black text-white px-3 py-2 rounded">Add Income</button>
+        <button className="col-span-2 sm:col-span-1 bg-black text-white px-3 py-2 rounded">Daromad qoshish</button>
       </form>
 
       <div className="overflow-auto">
         <table className="min-w-full border">
           <thead className="bg-gray-50">
             <tr>
-              <th className="p-2 border">Date</th>
-              <th className="p-2 border">Amount</th>
-              <th className="p-2 border">Car</th>
-              <th className="p-2 border">Comment</th>
+              <th className="p-2 border">Sana</th>
+              <th className="p-2 border">Miqdor</th>
+              <th className="p-2 border">Avto</th>
+              <th className="p-2 border">Izoh</th>
             </tr>
           </thead>
           <tbody>

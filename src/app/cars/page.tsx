@@ -55,14 +55,14 @@ export default async function CarsPage() {
       <form action={addCar} className="grid grid-cols-2 sm:grid-cols-4 gap-2 border p-4 rounded">
         <input name="vin" required placeholder="VIN" className="border px-2 py-1 rounded" />
         <input name="make" placeholder="Marka" className="border px-2 py-1 rounded" />
-        <input name="model" placeholder="Модель" className="border px-2 py-1 rounded" />
-        <input name="model_year" type="number" placeholder="Год" className="border px-2 py-1 rounded" />
-        <input name="source" placeholder="Источник" className="border px-2 py-1 rounded" />
+        <input name="model" placeholder="Model" className="border px-2 py-1 rounded" />
+        <input name="model_year" type="number" placeholder="Yil" className="border px-2 py-1 rounded" />
+        <input name="source" placeholder="Manba" className="border px-2 py-1 rounded" />
         <input name="purchase_date" type="date" required className="border px-2 py-1 rounded" />
-        <input name="purchase_currency" placeholder="Валюта (например, USD)" required className="border px-2 py-1 rounded" />
-        <input name="purchase_rate_to_aed" type="number" step="0.000001" placeholder="Курс к AED" required className="border px-2 py-1 rounded" />
-        <input name="purchase_price" type="number" step="0.01" placeholder="Цена покупки" required className="border px-2 py-1 rounded" />
-        <button className="col-span-2 sm:col-span-1 bg-black text-white px-3 py-2 rounded">Добавить</button>
+        <input name="purchase_currency" placeholder="Valyuta (masalan, USD)" required className="border px-2 py-1 rounded" />
+        <input name="purchase_rate_to_aed" type="number" step="0.000001" placeholder="AED ga kurs" required className="border px-2 py-1 rounded" />
+        <input name="purchase_price" type="number" step="0.01" placeholder="Xarid narxi" required className="border px-2 py-1 rounded" />
+        <button className="col-span-2 sm:col-span-1 bg-black text-white px-3 py-2 rounded">Qo‘shish</button>
       </form>
 
       <div className="overflow-auto">
@@ -70,10 +70,10 @@ export default async function CarsPage() {
           <thead className="bg-gray-50">
             <tr>
               <th className="p-2 border">VIN</th>
-              <th className="p-2 border">Авто</th>
-              <th className="p-2 border">Покупка</th>
-              <th className="p-2 border">Статус</th>
-              <th className="p-2 border">Открыть</th>
+              <th className="p-2 border">Avto</th>
+              <th className="p-2 border">Xarid</th>
+              <th className="p-2 border">Holat</th>
+              <th className="p-2 border">Ochish</th>
             </tr>
           </thead>
           <tbody>
@@ -83,7 +83,7 @@ export default async function CarsPage() {
                 <td className="p-2 border">{c.make} {c.model} {c.model_year || ""}</td>
                 <td className="p-2 border">{c.purchase_price} {c.purchase_currency}</td>
                 <td className="p-2 border">{c.status}</td>
-                <td className="p-2 border"><Link className="text-blue-600 underline" href={`/cars/${c.id}`}>Детали</Link></td>
+                <td className="p-2 border"><Link className="text-blue-600 underline" href={`/cars/${c.id}`}>Tafsilotlar</Link></td>
               </tr>
             ))}
           </tbody>
