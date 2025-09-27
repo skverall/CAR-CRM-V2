@@ -29,22 +29,11 @@ direct_expenses AS (
     GROUP BY e.car_id
 ),
 allocated_overhead AS (
-    SELECT 
-        e.car_id,
-        COALESCE(SUM(
-            CASE 
-                WHEN e.allocation_method = 'per_car' THEN 
-                    COALESCE(e.amount_aed_fils, ROUND(e.amount * e.rate_to_aed * 100)::INTEGER) * COALESCE(e.allocation_ratio, 1.0)
-                WHEN e.allocation_method = 'per_day_on_lot' THEN
-                    COALESCE(e.amount_aed_fils, ROUND(e.amount * e.rate_to_aed * 100)::INTEGER) * COALESCE(e.allocation_ratio, 1.0)
-                WHEN e.allocation_method = 'per_value_share' THEN
-                    COALESCE(e.amount_aed_fils, ROUND(e.amount * e.rate_to_aed * 100)::INTEGER) * COALESCE(e.allocation_ratio, 1.0)
-                ELSE 0
-            END
-        ), 0) as total_fils
-    FROM au_expenses e
-    WHERE e.scope IN ('overhead', 'personal') AND e.car_id IS NOT NULL
-    GROUP BY e.car_id
+    SELECT
+        a.car_id,
+        COALESCE(SUM(a.allocated_amount_fils), 0)::NUMERIC as total_fils
+    FROM au_expense_allocations a
+    GROUP BY a.car_id
 )
 SELECT 
     cb.id,

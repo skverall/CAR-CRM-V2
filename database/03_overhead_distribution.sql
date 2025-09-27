@@ -61,7 +61,6 @@ BEGIN
         WHERE e.org_id = p_org_id
           AND e.scope IN ('overhead', 'personal')
           AND e.occurred_at BETWEEN p_start_date AND p_end_date
-          AND (e.allocation_method IS NULL OR e.allocation_method = 'none')
     LOOP
         -- Calculate allocation based on method
         CASE v_rule.method
@@ -176,33 +175,48 @@ LANGUAGE plpgsql
 AS $$
 DECLARE
     v_allocation RECORD;
-    v_updated_count INTEGER := 0;
+    v_method TEXT;
+    v_count INTEGER := 0;
 BEGIN
-    -- Apply allocations calculated by the allocation function
-    FOR v_allocation IN
-        SELECT * FROM allocate_overhead_expenses(p_org_id, p_start_date, p_end_date)
-    LOOP
-        -- Update the expense with allocation details
-        UPDATE au_expenses
-        SET 
-            car_id = v_allocation.car_id,
-            allocation_method = (
-                SELECT method 
-                FROM overhead_rules r
-                WHERE r.org_id = p_org_id
-                  AND r.active_from <= CURRENT_DATE
-                  AND (r.active_to IS NULL OR r.active_to >= CURRENT_DATE)
-                ORDER BY r.active_from DESC
-                LIMIT 1
-            ),
-            allocation_ratio = v_allocation.allocation_ratio,
-            updated_at = NOW()
-        WHERE id = v_allocation.expense_id;
+    IF p_start_date IS NULL THEN
+        p_start_date := CURRENT_DATE - INTERVAL '30 days';
+    END IF;
+    IF p_end_date IS NULL THEN
+        p_end_date := CURRENT_DATE;
+    END IF;
 
-        v_updated_count := v_updated_count + 1;
+    SELECT method INTO v_method
+    FROM overhead_rules r
+    WHERE r.org_id = p_org_id
+      AND r.active_from <= p_end_date
+      AND (r.active_to IS NULL OR r.active_to >= p_start_date)
+    ORDER BY r.active_from DESC
+    LIMIT 1;
+
+    IF v_method IS NULL THEN
+      v_method := 'per_car';
+    END IF;
+
+    DELETE FROM au_expense_allocations a
+    USING au_expenses e
+    WHERE a.expense_id = e.id
+      AND e.org_id = p_org_id
+      AND e.occurred_at BETWEEN p_start_date AND p_end_date;
+
+    FOR v_allocation IN
+      SELECT * FROM allocate_overhead_expenses(p_org_id, p_start_date, p_end_date)
+    LOOP
+      INSERT INTO au_expense_allocations (org_id, expense_id, car_id, allocation_method, allocation_ratio, allocated_amount_fils)
+      VALUES (p_org_id, v_allocation.expense_id, v_allocation.car_id, v_method, v_allocation.allocation_ratio, v_allocation.allocated_amount_fils)
+      ON CONFLICT (expense_id, car_id) DO UPDATE
+        SET allocation_method = EXCLUDED.allocation_method,
+            allocation_ratio = EXCLUDED.allocation_ratio,
+            allocated_amount_fils = EXCLUDED.allocated_amount_fils,
+            created_at = NOW();
+      v_count := v_count + 1;
     END LOOP;
 
-    RETURN v_updated_count;
+    RETURN v_count;
 END;
 $$;
 
