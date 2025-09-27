@@ -151,6 +151,7 @@ async function main() {
     // Execute SQL files in order
     const sqlFiles = [
       'database/01_schema_migration.sql',
+      'database/05_expense_allocations.sql',
       'database/02_calculation_views.sql',
       'database/03_overhead_distribution.sql',
       'database/04_rls_policies.sql'
