@@ -47,6 +47,16 @@ async function addCar(formData: FormData) {
 
 export default async function CarsPage() {
   const cars = await getCars();
+  const db = getSupabaseAdmin();
+  const profitsEntries = await Promise.all(
+    cars.map(async (c) => {
+      if (c.status !== "sold") return [c.id, null] as const;
+      const { data: pr } = await db.rpc("au_car_profit_aed", { p_car_id: c.id });
+      const v = Number(Array.isArray(pr) ? pr[0] : pr);
+      return [c.id, isNaN(v) ? null : v] as const;
+    })
+  );
+  const profits = Object.fromEntries(profitsEntries) as Record<string, number | null>;
   return (
     <div className="grid gap-6">
       <div className="flex items-center justify-between">
@@ -73,6 +83,7 @@ export default async function CarsPage() {
               <th className="p-2 border">Avto</th>
               <th className="p-2 border">Xarid</th>
               <th className="p-2 border">Holat</th>
+              <th className="p-2 border">Foyda (AED)</th>
               <th className="p-2 border">Ochish</th>
             </tr>
           </thead>
@@ -83,6 +94,7 @@ export default async function CarsPage() {
                 <td className="p-2 border">{c.make} {c.model} {c.model_year || ""}</td>
                 <td className="p-2 border">{c.purchase_price} {c.purchase_currency}</td>
                 <td className="p-2 border">{c.status}</td>
+                <td className="p-2 border">{profits[c.id] == null ? "—" : (profits[c.id] as number).toFixed(2)}</td>
                 <td className="p-2 border"><Link className="text-blue-600 underline" href={`/cars/${c.id}`}>Tafsilotlar</Link></td>
               </tr>
             ))}

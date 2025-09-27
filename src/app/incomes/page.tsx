@@ -35,6 +35,16 @@ async function addIncome(formData: FormData) {
     car_id: String(formData.get("car_id")),
   };
   const db = getSupabaseAdmin();
+  // Prevent double-counting: sale income is recorded automatically on car page
+  const { data: saleExists } = await db
+    .from("au_incomes")
+    .select("id")
+    .eq("car_id", payload.car_id)
+    .ilike("description", "%[SALE]%")
+    .limit(1);
+  if (saleExists && saleExists.length > 0 && (payload.description || "").toLowerCase().includes("sale")) {
+    throw new Error("Car sale income is recorded automatically when marking a car as sold. Do not add manual sale income.");
+  }
   await db.from("au_incomes").insert([payload]);
 }
 
@@ -44,7 +54,8 @@ export default async function IncomesPage() {
   const { data: rows } = await db.from("au_incomes").select("*").order("occurred_at", { ascending: false }).limit(50);
   return (
     <div className="grid gap-6">
-      <h1 className="text-2xl font-semibold">Daromad</h1>
+      <h1 className="text-2xl font-semibold">Daromad (qo&#39;lda)</h1>
+      <p className="text-sm text-gray-600">Eslatma: Avto sotilganda tushum avtomatik ravishda avto sahifasida yozib olinadi. Bu yerda faqat boshqa daromadlarni kiriting.</p>
       <form action={addIncome} className="grid grid-cols-2 sm:grid-cols-4 gap-2 border p-4 rounded">
         <RatePrefill currencyName="currency" dateName="occurred_at" rateName="rate_to_aed" />
         <input name="occurred_at" type="date" required className="border px-2 py-1 rounded" />

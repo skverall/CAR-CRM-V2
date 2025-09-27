@@ -2,6 +2,7 @@ import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 export const dynamic = "force-dynamic";
 
 import { notFound, redirect } from "next/navigation";
+import RatePrefill from "@/app/components/RatePrefill";
 
 type Car = {
   vin: string;
@@ -38,6 +39,34 @@ async function distribute(formData: FormData) {
   const carId = String(formData.get("car_id"));
   const db = getSupabaseAdmin();
   await db.rpc("au_distribute_profit", { p_car_id: carId });
+  redirect(`/cars/${carId}`);
+}
+
+async function sellCar(formData: FormData) {
+  "use server";
+  const carId = String(formData.get("car_id"));
+  const occurred_at = String(formData.get("occurred_at"));
+  const amount = Number(formData.get("amount"));
+  const currency = String(formData.get("currency"));
+  const rate_to_aed = Number(formData.get("rate_to_aed"));
+  const description = String(formData.get("description") || "[SALE] Auto sale");
+  if (!occurred_at || !amount || !currency || !rate_to_aed) {
+    throw new Error("Sale details are required");
+  }
+  const db = getSupabaseAdmin();
+  const { data: existing } = await db
+    .from("au_incomes")
+    .select("id")
+    .eq("car_id", carId)
+    .ilike("description", "%[SALE]%")
+    .limit(1);
+  const payload = { occurred_at, amount, currency, rate_to_aed, description, car_id: carId } as const;
+  if (existing && existing.length > 0) {
+    await db.from("au_incomes").update(payload).eq("id", existing[0].id);
+  } else {
+    await db.from("au_incomes").insert([payload]);
+  }
+  await db.from("au_cars").update({ status: "sold" }).eq("id", carId);
   redirect(`/cars/${carId}`);
 }
 
@@ -84,11 +113,23 @@ export default async function CarPage({ params }: { params: { id: string } }) {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold">{carRow.vin} - {carRow.make} {carRow.model} {carRow.model_year || ""}</h1>
         <div className="flex items-center gap-2">
-          {next && (
+          {next && next !== "sold" && (
             <form action={changeStatus} className="flex items-center gap-2">
               <input type="hidden" name="car_id" value={id} />
               <input type="hidden" name="next_status" value={next} />
               <button className="bg-blue-600 text-white px-3 py-2 rounded">Holat: {carRow.status} → {next}</button>
+            </form>
+          )}
+          {next === "sold" && (
+            <form action={sellCar} className="flex flex-wrap items-center gap-2">
+              <RatePrefill currencyName="currency" dateName="occurred_at" rateName="rate_to_aed" />
+              <input type="hidden" name="car_id" value={id} />
+              <input name="occurred_at" type="date" required className="border px-2 py-1 rounded" />
+              <input name="amount" type="number" step="0.01" required placeholder="Sale amount" className="border px-2 py-1 rounded" />
+              <input name="currency" required placeholder="Currency" className="border px-2 py-1 rounded" />
+              <input name="rate_to_aed" type="number" step="0.000001" required placeholder="Rate→AED" className="border px-2 py-1 rounded" />
+              <input name="description" placeholder="Description" defaultValue="[SALE] Auto sale" className="border px-2 py-1 rounded" />
+              <button className="bg-blue-600 text-white px-3 py-2 rounded">Sold + Record Income</button>
             </form>
           )}
           {canDistribute && (
@@ -100,12 +141,12 @@ export default async function CarPage({ params }: { params: { id: string } }) {
         </div>
       </div>
 
-      <div className="grid gap-2">
+      <div className="border rounded p-3 bg-yellow-50 grid gap-2">
         <div><b>Xarid</b>: {carRow.purchase_price} {carRow.purchase_currency} (AED {purchaseAED.toFixed(2)})</div>
-        <div className="text-sm text-gray-600">
+        <div className="text-sm text-gray-700">
           Foyda = Tushum (AED {incomesAED.toFixed(2)}) − (Xarid narxi AED {purchaseAED.toFixed(2)} + Bog‘liq xarajatlar AED {expensesAED.toFixed(2)})
         </div>
-        <div><b>Yakuniy foyda (AED)</b>: {profit.toFixed(2)} AED</div>
+        <div><b>Yakuniy foyda (AED)</b>: <span className={profit >= 0 ? "text-green-700" : "text-red-700"}>{profit.toFixed(2)} AED</span></div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">

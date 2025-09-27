@@ -31,7 +31,7 @@ export default function RootLayout({
             <Link className="font-semibold" href="/">Panel</Link>
             <Link href="/cars">Avtomobillar</Link>
             <Link href="/expenses">Xarajatlar</Link>
-            <Link href="/incomes">Daromadlar</Link>
+            <Link href="/incomes">Daromadlar (qo&#39;lda)</Link>
             <Link href="/fx">Kurslar</Link>
             <Link href="/capital">Kapital</Link>
             <Link href="/reports">Hisobotlar</Link>
