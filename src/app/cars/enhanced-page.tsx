@@ -66,7 +66,7 @@ async function getCarsWithProfit(): Promise<CarWithProfit[]> {
     .filter(car => car.status === 'sold')
     .map(car => car.id);
 
-  let profitData: Record<string, any> = {};
+  let profitData: Record<string, Record<string, unknown>> = {};
   if (soldCarIds.length > 0) {
     const { data: profits } = await db
       .from('car_profit_view')
@@ -180,7 +180,7 @@ export default async function CarsPage() {
             <span className="font-semibold text-green-600">{totalProfit.toLocaleString()} AED</span>
           </div>
           <div className="text-sm">
-            <span className="text-gray-600">O'rtacha marja: </span>
+            <span className="text-gray-600">O&apos;rtacha marja: </span>
             <span className="font-semibold">{avgMargin.toFixed(1)}%</span>
           </div>
         </div>

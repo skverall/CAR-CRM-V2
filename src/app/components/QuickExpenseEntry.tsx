@@ -349,7 +349,7 @@ export default function QuickExpenseEntry({ orgId, onSuccess }: QuickExpenseEntr
               {allocationPreview && (
                 <div className="bg-blue-50 border border-blue-200 rounded-md p-3">
                   <div className="text-sm font-medium text-blue-800 mb-2">
-                    Taqsimot ko'rinishi ({allocationPreview.method})
+                    Taqsimot ko&apos;rinishi ({allocationPreview.method})
                   </div>
                   <div className="space-y-1">
                     {allocationPreview.allocations.slice(0, 3).map((allocation, index) => (

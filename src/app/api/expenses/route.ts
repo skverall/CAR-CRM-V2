@@ -88,7 +88,7 @@ export async function POST(request: NextRequest) {
       currency: formData.get('currency') as string,
       rate_to_aed: parseFloat(formData.get('rate_to_aed') as string),
       scope: formData.get('scope') as 'car' | 'overhead' | 'personal',
-      category: formData.get('category') as any,
+      category: formData.get('category') as ExpenseInput['category'],
       description: formData.get('description') as string || undefined,
       car_id: formData.get('car_id') as string || undefined,
       attachment_file: formData.get('attachment') as File || undefined

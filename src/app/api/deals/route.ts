@@ -173,7 +173,7 @@ export async function GET(request: NextRequest) {
       throw error;
     }
 
-    const response: ApiResponse<any[]> = {
+    const response: ApiResponse<Array<Record<string, unknown>>> = {
       data: (deals || []).map((deal: Record<string, unknown>) => ({
         id: deal.id as string,
         car_id: deal.car_id as string,
