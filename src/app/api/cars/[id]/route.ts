@@ -4,10 +4,10 @@ import { CarDetails, ApiResponse } from '@/types/api';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const carId = params.id;
+    const { id: carId } = await context.params;
     const db = getSupabaseAdmin();
 
     // Get car basic info with cost breakdown
@@ -197,10 +197,10 @@ export async function GET(
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const carId = params.id;
+    const { id: carId } = await context.params;
     const body = await request.json();
     const db = getSupabaseAdmin();
 

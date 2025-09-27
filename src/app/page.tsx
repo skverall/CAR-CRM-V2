@@ -101,10 +101,15 @@ async function getDashboardData(): Promise<DashboardData> {
     const brand = car.make || 'Unknown';
     const existing = brandMap.get(brand) || { count: 0, totalProfit: 0, totalMargin: 0, profitCount: 0 };
 
+    const profitRel = (car as Record<string, unknown>)['car_profit_view'] as unknown;
+    const profit = Array.isArray(profitRel)
+      ? (profitRel[0] as { profit_aed?: number; margin_pct?: number } | undefined)
+      : (profitRel as { profit_aed?: number; margin_pct?: number } | undefined);
+
     existing.count++;
-    if (car.car_profit_view?.profit_aed) {
-      existing.totalProfit += car.car_profit_view.profit_aed;
-      existing.totalMargin += car.car_profit_view.margin_pct || 0;
+    if (profit?.profit_aed) {
+      existing.totalProfit += profit.profit_aed;
+      existing.totalMargin += profit.margin_pct || 0;
       existing.profitCount++;
     }
 
@@ -148,20 +153,20 @@ async function getDashboardData(): Promise<DashboardData> {
 
   const recentActivity = [
     ...(recentExpenses || []).map(exp => ({
-      id: exp.id,
+      id: String(exp.id),
       type: 'expense' as const,
       description: exp.description || `${exp.scope} expense`,
-      amount_aed: -(exp.amount_aed || 0),
-      date: exp.occurred_at,
-      car_vin: exp.au_cars?.vin
+      amount_aed: -Number(exp.amount_aed || 0),
+      date: String(exp.occurred_at),
+      car_vin: (() => { const rel = (exp as Record<string, unknown>)['au_cars'] as unknown; return Array.isArray(rel) ? (rel[0] as { vin?: string } | undefined)?.vin : (rel as { vin?: string } | undefined)?.vin; })() ?? undefined
     })),
     ...(recentIncomes || []).map(inc => ({
-      id: inc.id,
-      type: inc.description?.includes('[SALE]') ? 'sale' as const : 'income' as const,
+      id: String(inc.id),
+      type: inc.description?.includes('[SALE]') ? 'sale' as const : 'purchase' as const,
       description: inc.description || 'Income',
-      amount_aed: inc.amount_aed || 0,
-      date: inc.occurred_at,
-      car_vin: inc.au_cars?.vin
+      amount_aed: Number(inc.amount_aed || 0),
+      date: String(inc.occurred_at),
+      car_vin: (() => { const rel = (inc as Record<string, unknown>)['au_cars'] as unknown; return Array.isArray(rel) ? (rel[0] as { vin?: string } | undefined)?.vin : (rel as { vin?: string } | undefined)?.vin; })() ?? undefined
     }))
   ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).slice(0, 10);
 

@@ -12,8 +12,8 @@ export async function GET(request: NextRequest) {
     const perPage = parseInt(searchParams.get('per_page') || '50');
 
     if (!orgId) {
-      return NextResponse.json({ 
-        success: false, 
+      return NextResponse.json({
+        success: false,
         error: 'Organization ID is required',
         timestamp: new Date().toISOString()
       }, { status: 400 });
@@ -81,7 +81,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
-    
+
     const expenseData: ExpenseInput = {
       occurred_at: formData.get('occurred_at') as string,
       amount: parseFloat(formData.get('amount') as string),
@@ -120,7 +120,7 @@ export async function POST(request: NextRequest) {
     if (expenseData.attachment_file && expenseData.attachment_file.size > 0) {
       const file = expenseData.attachment_file;
       const fileName = `${orgId}/${expenseData.car_id || 'general'}/${Date.now()}-${file.name}`;
-      
+
       const { data: uploadData, error: uploadError } = await db.storage
         .from('car-documents')
         .upload(fileName, file);
@@ -141,7 +141,7 @@ export async function POST(request: NextRequest) {
           }])
           .select()
           .single();
-        
+
         attachmentId = docData?.id;
       }
     }
@@ -206,6 +206,15 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // Normalize VIN from joined au_cars which may be array or object depending on relationship typing
+    const carVin = (() => {
+      const au = (expenseRecord as Record<string, unknown>)['au_cars'] as unknown;
+      if (Array.isArray(au)) {
+        return (au[0] as { vin?: string } | undefined)?.vin ?? null;
+      }
+      return (au as { vin?: string } | undefined)?.vin ?? null;
+    })();
+
     const response: ApiResponse<ExpenseResponse> = {
       data: {
         id: expenseRecord.id,
@@ -214,8 +223,8 @@ export async function POST(request: NextRequest) {
         scope: expenseRecord.scope,
         category: expenseRecord.category,
         description: expenseRecord.description,
-        car_vin: expenseRecord.au_cars?.vin || null,
-        allocation_preview: allocationPreview
+        car_vin: carVin,
+        allocation_preview: allocationPreview || undefined
       },
       success: true,
       timestamp: new Date().toISOString()
