@@ -1,5 +1,6 @@
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 import RatePrefill from "@/app/components/RatePrefill";
+import OverheadPreview from "@/app/components/OverheadPreview";
 export const dynamic = "force-dynamic";
 
 
@@ -55,6 +56,9 @@ export default async function ExpensesPage() {
   const db = getSupabaseAdmin();
   const { data: cars } = await db.from("au_cars").select("id, vin").order("purchase_date", { ascending: false });
   const { data: rows } = await db.from("au_expenses").select("*").order("occurred_at", { ascending: false }).limit(50);
+  const { data: org } = await db.from("orgs").select("id").eq("name", "Default Organization").single();
+  const orgId = (org as { id: string } | null)?.id || null;
+
   const GENERAL_ACCOUNT_LABELS: Record<string, string> = {
     business: "Biznes",
     owner: "Egasi",
@@ -71,11 +75,23 @@ export default async function ExpensesPage() {
         <input name="amount" type="number" step="0.01" required placeholder="Miqdor" aria-label="Miqdor" className="border px-2 py-1 rounded" />
         <input name="currency" required placeholder="Valyuta" aria-label="Valyuta" className="border px-2 py-1 rounded" />
         <input name="rate_to_aed" type="number" step="0.000001" required placeholder="AED ga kurs" aria-label="AED ga kurs" className="border px-2 py-1 rounded" />
-        <input name="expense_type" required placeholder="Toifa (masalan, ta'mirlash)" aria-label="Toifa" className="border px-2 py-1 rounded" />
+        <select name="expense_type" required aria-label="Toifa" className="border px-2 py-1 rounded">
+          <option value="purchase">Xarid</option>
+          <option value="shipping">Transport</option>
+          <option value="repair">Ta&apos;mirlash</option>
+          <option value="detailing">Detalling</option>
+          <option value="ads">Reklama</option>
+          <option value="fees">To&apos;lov/Komissiya</option>
+          <option value="fuel">Yoqilg&apos;i</option>
+          <option value="parking">Parkovka</option>
+          <option value="rent">Ijara</option>
+          <option value="salary">Oylik</option>
+          <option value="other">Boshqa</option>
+        </select>
         <input name="description" placeholder="Izoh" aria-label="Izoh" className="border px-2 py-1 rounded" />
 
         {/* Avto tanlash yoki Umumiy/Shaxsiy */}
-        <select name="car_id" className="border px-2 py-1 rounded" aria-label="Avto (bo'sh qoldirsangiz — Umumiy/Shaxsiy)">
+        <select name="car_id" className="border px-2 py-1 rounded" aria-label="Avto (bo&apos;sh qoldirsangiz — Umumiy/Shaxsiy)">
           <option value="">Umumiy/Shaxsiy</option>
           {(cars as CarRef[] || []).map((c: CarRef) => (
             <option key={c.id} value={c.id}>{c.vin}</option>
@@ -90,9 +106,14 @@ export default async function ExpensesPage() {
           <option value="investor">{GENERAL_ACCOUNT_LABELS["investor"]}</option>
         </select>
 
+
+        {/* Preview umumiy/shaxsiy taqsimoti */}
+        <OverheadPreview orgId={orgId} />
+
         <button className="col-span-2 sm:col-span-1 bg-black text-white px-3 py-2 rounded">Xarajat qo‘shish</button>
 
         <p className="col-span-2 sm:col-span-4 text-xs text-gray-600 mt-1">
+
           Eslatma: Avto tanlanmasa, xarajat “Umumiy/Shaxsiy” hisoblanadi va avtomatik ravishda faol mashinalar orasida taqsimlanadi.
         </p>
       </form>

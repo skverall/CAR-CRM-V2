@@ -36,7 +36,10 @@ export default function RootLayout({
             <Link href="/capital">Kapital</Link>
             <Link href="/reports">Hisobotlar</Link>
 
+            <Link href="/guide">Qo&apos;llanma</Link>
+
           </nav>
+
         </header>
         <main className="mx-auto max-w-6xl px-4 py-6">
           {children}
