@@ -57,17 +57,17 @@ export default async function ExpensesPage() {
   const { data: rows } = await db.from("au_expenses").select("*").order("occurred_at", { ascending: false }).limit(50);
   return (
     <div className="grid gap-6">
-      <h1 className="text-2xl font-semibold">Expenses</h1>
+      <h1 className="text-2xl font-semibold">Xarajatlar</h1>
       <form action={addExpense} className="grid grid-cols-2 sm:grid-cols-4 gap-2 border p-4 rounded">
         <RatePrefill currencyName="currency" dateName="occurred_at" rateName="rate_to_aed" />
         <input name="occurred_at" type="date" required className="border px-2 py-1 rounded" />
-        <input name="amount" type="number" step="0.01" required placeholder="Amount" className="border px-2 py-1 rounded" />
-        <input name="currency" required placeholder="Currency" className="border px-2 py-1 rounded" />
-        <input name="rate_to_aed" type="number" step="0.000001" required placeholder="Rate to AED" className="border px-2 py-1 rounded" />
-        <input name="expense_type" required placeholder="Type" className="border px-2 py-1 rounded" />
-        <input name="description" placeholder="Description" className="border px-2 py-1 rounded" />
+        <input name="amount" type="number" step="0.01" required placeholder="Miqdor" className="border px-2 py-1 rounded" />
+        <input name="currency" required placeholder="Valyuta" className="border px-2 py-1 rounded" />
+        <input name="rate_to_aed" type="number" step="0.000001" required placeholder="AED ga kurs" className="border px-2 py-1 rounded" />
+        <input name="expense_type" required placeholder="Turi" className="border px-2 py-1 rounded" />
+        <input name="description" placeholder="Izoh" className="border px-2 py-1 rounded" />
         <select name="car_id" className="border px-2 py-1 rounded">
-          <option value="">General/Personal</option>
+          <option value="">Umumiy/Shaxsiy</option>
           {(cars as CarRef[] || []).map((c: CarRef) => (
             <option key={c.id} value={c.id}>{c.vin}</option>
           ))}
@@ -78,18 +78,18 @@ export default async function ExpensesPage() {
           <option value="assistant">assistant</option>
           <option value="investor">investor</option>
         </select>
-        <button className="col-span-2 sm:col-span-1 bg-black text-white px-3 py-2 rounded">Add Expense</button>
+        <button className="col-span-2 sm:col-span-1 bg-black text-white px-3 py-2 rounded">Xarajat qo‘shish</button>
       </form>
 
       <div className="overflow-auto">
         <table className="min-w-full border">
           <thead className="bg-gray-50">
             <tr>
-              <th className="p-2 border">Date</th>
-              <th className="p-2 border">Amount</th>
-              <th className="p-2 border">Type</th>
-              <th className="p-2 border">Car</th>
-              <th className="p-2 border">Comment</th>
+              <th className="p-2 border">Sana</th>
+              <th className="p-2 border">Miqdor</th>
+              <th className="p-2 border">Turi</th>
+              <th className="p-2 border">Avto</th>
+              <th className="p-2 border">Izoh</th>
             </tr>
           </thead>
           <tbody>

@@ -1,10 +1,6 @@
 import type { NextConfig } from "next";
 
-const nextConfig: NextConfig = {
-  i18n: {
-    locales: ["ru", "en"],
-    defaultLocale: "ru",
-  },
-};
+// Uzbek only, no i18n routing needed
+const nextConfig: NextConfig = {};
 
 export default nextConfig;

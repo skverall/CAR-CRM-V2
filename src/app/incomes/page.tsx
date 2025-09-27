@@ -44,11 +44,11 @@ export default async function IncomesPage() {
   const { data: rows } = await db.from("au_incomes").select("*").order("occurred_at", { ascending: false }).limit(50);
   return (
     <div className="grid gap-6">
-      <h1 className="text-2xl font-semibold">Income</h1>
+      <h1 className="text-2xl font-semibold">Daromad</h1>
       <form action={addIncome} className="grid grid-cols-2 sm:grid-cols-4 gap-2 border p-4 rounded">
         <RatePrefill currencyName="currency" dateName="occurred_at" rateName="rate_to_aed" />
         <input name="occurred_at" type="date" required className="border px-2 py-1 rounded" />
-        <input name="amount" type="number" step="0.01" required placeholder="Amount" className="border px-2 py-1 rounded" />
+        <input name="amount" type="number" step="0.01" required placeholder="Miqdor" className="border px-2 py-1 rounded" />
         <input name="currency" required placeholder="Currency" className="border px-2 py-1 rounded" />
         <input name="rate_to_aed" type="number" step="0.000001" required placeholder="Rate to AED" className="border px-2 py-1 rounded" />
         <input name="description" placeholder="Description" className="border px-2 py-1 rounded" />

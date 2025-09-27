@@ -19,7 +19,7 @@ export default async function Dashboard() {
 
   return (
     <div className="grid gap-6">
-      <h1 className="text-2xl font-semibold">Панель управления</h1>
+      <h1 className="text-2xl font-semibold">Boshqaruv paneli</h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         {(["investor","business","owner","assistant"] as const).map((k) => (
           <div key={k} className="rounded border p-4">
@@ -28,7 +28,7 @@ export default async function Dashboard() {
           </div>
         ))}
         <div className="rounded border p-4">
-          <div className="text-sm text-gray-500">Активных авто</div>
+          <div className="text-sm text-gray-500">Faol avtomobillar</div>
           <div className="text-xl font-semibold">{activeCars ?? 0}</div>
         </div>
       </div>

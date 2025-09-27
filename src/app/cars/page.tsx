@@ -50,11 +50,11 @@ export default async function CarsPage() {
   return (
     <div className="grid gap-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">Автомобили</h1>
+        <h1 className="text-2xl font-semibold">Avtomobillar</h1>
       </div>
       <form action={addCar} className="grid grid-cols-2 sm:grid-cols-4 gap-2 border p-4 rounded">
         <input name="vin" required placeholder="VIN" className="border px-2 py-1 rounded" />
-        <input name="make" placeholder="Марка" className="border px-2 py-1 rounded" />
+        <input name="make" placeholder="Marka" className="border px-2 py-1 rounded" />
         <input name="model" placeholder="Модель" className="border px-2 py-1 rounded" />
         <input name="model_year" type="number" placeholder="Год" className="border px-2 py-1 rounded" />
         <input name="source" placeholder="Источник" className="border px-2 py-1 rounded" />
