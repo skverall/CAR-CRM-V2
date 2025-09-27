@@ -48,12 +48,19 @@ export async function GET(
       profitData = profit;
     }
 
-    // Get expenses
+    // Get direct car expenses
     const { data: expenses } = await db
       .from('au_expenses')
       .select('id, occurred_at, amount_aed, currency, category, description, attachment_id')
-      .or(`car_id.eq.${carId},and(scope.in.(overhead,personal),car_id.eq.${carId})`)
+      .eq('car_id', carId)
       .order('occurred_at', { ascending: false });
+
+    // Get allocated overhead items for this car
+    const { data: overheadAllocations } = await db
+      .from('au_expense_allocations')
+      .select('expense_id, allocated_amount_fils, au_expenses!inner(occurred_at, category, description)')
+      .eq('car_id', carId)
+      .order('au_expenses(occurred_at)', { ascending: false });
 
     // Get documents
     const { data: documents } = await db
@@ -84,13 +91,35 @@ export async function GET(
       amount_aed: carData.purchase_component_aed
     });
 
-    // Expense events
-    (expenses || []).forEach(expense => {
+    // Expense events (direct + allocated overhead)
+    const overheadItems = (
+      (overheadAllocations as Array<Record<string, unknown>> | null) || []
+    ).map((row) => {
+      const exp = row['au_expenses'] as Record<string, unknown> | Array<Record<string, unknown>> | null;
+      const expObj = Array.isArray(exp) ? (exp[0] || {}) : (exp || {});
+      return {
+        expense_id: row['expense_id'] as string,
+        occurred_at: (expObj['occurred_at'] as string),
+        amount_aed: ((row['allocated_amount_fils'] as number) || 0) / 100,
+        category: `${(expObj['category'] as string) || 'overhead'} (overhead)`,
+        description: (expObj['description'] as string | null) ?? null
+      };
+    });
+
+    ((expenses as Array<{ occurred_at: string; amount_aed: number; category: string; description: string | null }>) || []).forEach((expense) => {
       timeline.push({
         date: expense.occurred_at,
         event: 'expense',
         description: expense.description || `${expense.category} expense`,
         amount_aed: -expense.amount_aed
+      });
+    });
+    overheadItems.forEach((item) => {
+      timeline.push({
+        date: item.occurred_at,
+        event: 'expense',
+        description: item.description || `${item.category} expense`,
+        amount_aed: -item.amount_aed
       });
     });
 
@@ -151,15 +180,26 @@ export async function GET(
       roi_pct: profitData?.roi_pct || null,
       days_on_lot: profitData?.days_on_lot || null,
       
-      expenses: (expenses || []).map(exp => ({
-        id: exp.id,
-        occurred_at: exp.occurred_at,
-        amount_aed: exp.amount_aed,
-        currency: exp.currency,
-        category: exp.category,
-        description: exp.description,
-        attachment_id: exp.attachment_id
-      })),
+      expenses: [
+        ...(((expenses as Array<{ id: string; occurred_at: string; amount_aed: number; currency: string; category: string; description: string | null; attachment_id: string | null }>) || []).map((exp) => ({
+          id: exp.id,
+          occurred_at: exp.occurred_at,
+          amount_aed: exp.amount_aed,
+          currency: exp.currency,
+          category: exp.category,
+          description: exp.description,
+          attachment_id: exp.attachment_id
+        }))),
+        ...((overheadItems || []).map((item) => ({
+          id: `alloc-${item.expense_id}`,
+          occurred_at: item.occurred_at,
+          amount_aed: item.amount_aed,
+          currency: 'AED',
+          category: item.category,
+          description: item.description,
+          attachment_id: null
+        })))
+      ],
       
       documents: documentsWithUrls,
       
