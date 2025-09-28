@@ -59,14 +59,14 @@ export default function OverheadPreview(props: {
           const resp = await fetch("/api/expenses/preview-allocation", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ org_id: orgId, amount_aed: amountAed, date }),
+            body: JSON.stringify({ org_id: orgId, expense_amount_aed: amountAed, expense_date: date }),
           });
-          const json = await resp.json() as { items?: Array<{ car_id: string; vin?: string; ratio?: number; amount_aed?: number; }> };
-          const arr: AllocationItem[] = (json.items ?? []).map((x) => ({
-            car_id: x.car_id,
-            vin: x.vin,
-            ratio: x.ratio,
-            amount_aed: x.amount_aed,
+          const json = await resp.json() as { data?: { allocations?: Array<{ car_vin: string; allocation_ratio: number; allocated_amount_aed: number; }> } };
+          const arr: AllocationItem[] = (json.data?.allocations ?? []).map((x) => ({
+            car_id: x.car_vin,
+            vin: x.car_vin,
+            ratio: (x.allocation_ratio ?? 0) * 100,
+            amount_aed: x.allocated_amount_aed,
           }));
           setItems(arr);
         } catch (e) {

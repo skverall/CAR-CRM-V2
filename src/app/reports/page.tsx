@@ -9,6 +9,8 @@ export default function ReportsPage() {
         <a className="underline text-blue-600" href="/api/export?type=expenses">CSV yuklab olish — Xarajatlar</a>
         <a className="underline text-blue-600" href="/api/export?type=incomes">CSV yuklab olish — Daromad</a>
         <a className="underline text-blue-600" href="/api/export?type=movements">CSV yuklab olish — Kapital harakati</a>
+        <a className="underline text-blue-600" href="/reports/daily-expenses">Kunlik xarajatlar (hisobot)</a>
+
       </div>
     </div>
   );

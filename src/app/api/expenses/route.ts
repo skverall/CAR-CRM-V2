@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
       .select(`
         id,
         occurred_at,
-        amount_aed,
+        amount_aed_fils,
         scope,
         category,
         description,
@@ -55,10 +55,10 @@ export async function GET(request: NextRequest) {
       data: (expenses || []).map((exp: Record<string, unknown>) => ({
         id: exp.id as string,
         occurred_at: exp.occurred_at as string,
-        amount_aed: exp.amount_aed as number,
+        amount_aed: typeof (exp as Record<string, unknown>)['amount_aed_fils'] === 'number' ? ((exp as Record<string, unknown>)['amount_aed_fils'] as number) / 100 : 0,
         scope: exp.scope as string,
         category: exp.category as string,
-        description: exp.description as string,
+        description: (exp.description as string) ?? null,
         car_vin: (exp.au_cars as Record<string, unknown>)?.vin as string || null
       })),
       success: true,
@@ -183,7 +183,7 @@ export async function POST(request: NextRequest) {
 
     // Get allocation preview for overhead/personal expenses
     let allocationPreview = null;
-    if (expenseData.scope in ['overhead', 'personal']) {
+    if (expenseData.scope === 'overhead' || expenseData.scope === 'personal') {
       const { data: preview } = await db.rpc('preview_overhead_allocation', {
         p_org_id: orgId,
         p_expense_amount_aed: expenseData.amount * expenseData.rate_to_aed,

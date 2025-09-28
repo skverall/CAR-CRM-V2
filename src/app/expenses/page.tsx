@@ -11,11 +11,12 @@ type ExpenseInsert = {
   amount: number;
   currency: string;
   rate_to_aed: number;
-  expense_type: string;
+  scope: 'car' | 'overhead' | 'personal';
+  category: 'purchase' | 'transport' | 'repair' | 'detailing' | 'ads' | 'fees' | 'fuel' | 'parking' | 'rent' | 'salary' | 'other';
   description?: string;
   car_id?: string;
-  is_personal_or_general?: boolean;
-  general_account?: "business" | "owner" | "assistant" | "investor";
+  org_id: string;
+  amount_aed_fils?: number;
 };
 
 type ExpenseRow = {
@@ -23,33 +24,52 @@ type ExpenseRow = {
   occurred_at: string;
   amount: number;
   currency: string;
-  amount_aed: number;
-  expense_type: string;
+  amount_aed_fils?: number | null;
+  category?: string | null;
+  scope?: string | null;
   car_id: string | null;
-  general_account: string | null;
   description: string | null;
 };
 
 async function addExpense(formData: FormData) {
   "use server";
-  const payload: ExpenseInsert = {
+  const db = getSupabaseAdmin();
+
+  const raw: ExpenseInsert = {
     occurred_at: String(formData.get("occurred_at")),
     amount: Number(formData.get("amount")),
     currency: String(formData.get("currency")),
     rate_to_aed: Number(formData.get("rate_to_aed")),
-    expense_type: String(formData.get("expense_type")),
+    scope: String(formData.get("scope")) as ExpenseInsert['scope'],
+    category: String(formData.get("category")) as ExpenseInsert['category'],
     description: String(formData.get("description") || ""),
+    org_id: String(formData.get("org_id") || ""),
   };
+
   const carId = String(formData.get("car_id") || "");
   if (carId) {
-    payload.car_id = carId;
-    payload.is_personal_or_general = false;
-  } else {
-    payload.is_personal_or_general = true;
-    payload.general_account = String(formData.get("general_account")) as ExpenseInsert["general_account"];
+    raw.car_id = carId;
+    raw.scope = 'car';
   }
-  const db = getSupabaseAdmin();
-  await db.from("au_expenses").insert([payload]);
+
+  if (!raw.org_id) {
+    throw new Error('Missing org_id');
+  }
+
+  const amountAedFils = Math.round(raw.amount * raw.rate_to_aed * 100);
+
+  await db.from("au_expenses").insert([{
+    org_id: raw.org_id,
+    occurred_at: raw.occurred_at,
+    amount: raw.amount,
+    currency: raw.currency,
+    rate_to_aed: raw.rate_to_aed,
+    amount_aed_fils: amountAedFils,
+    scope: raw.scope,
+    category: raw.category,
+    description: raw.description || null,
+    car_id: raw.car_id || null,
+  }]);
 }
 
 export default async function ExpensesPage() {
@@ -59,12 +79,7 @@ export default async function ExpensesPage() {
   const { data: org } = await db.from("orgs").select("id").eq("name", "Default Organization").single();
   const orgId = (org as { id: string } | null)?.id || null;
 
-  const GENERAL_ACCOUNT_LABELS: Record<string, string> = {
-    business: "Biznes",
-    owner: "Egasi",
-    assistant: "Yordamchi",
-    investor: "Sarmoyador",
-  };
+
 
   return (
     <div className="grid gap-6">
@@ -72,12 +87,13 @@ export default async function ExpensesPage() {
       <form action={addExpense} className="grid grid-cols-2 sm:grid-cols-4 gap-2 border p-4 rounded">
         <RatePrefill currencyName="currency" dateName="occurred_at" rateName="rate_to_aed" />
         <input name="occurred_at" type="date" required aria-label="Sana" className="border px-2 py-1 rounded" />
+        <input type="hidden" name="org_id" value={orgId || ""} />
         <input name="amount" type="number" step="0.01" required placeholder="Miqdor" aria-label="Miqdor" className="border px-2 py-1 rounded" />
         <input name="currency" required placeholder="Valyuta" aria-label="Valyuta" className="border px-2 py-1 rounded" />
         <input name="rate_to_aed" type="number" step="0.000001" required placeholder="AED ga kurs" aria-label="AED ga kurs" className="border px-2 py-1 rounded" />
-        <select name="expense_type" required aria-label="Toifa" className="border px-2 py-1 rounded">
+        <select name="category" required aria-label="Toifa" className="border px-2 py-1 rounded">
           <option value="purchase">Xarid</option>
-          <option value="shipping">Transport</option>
+          <option value="transport">Transport</option>
           <option value="repair">Ta&apos;mirlash</option>
           <option value="detailing">Detalling</option>
           <option value="ads">Reklama</option>
@@ -98,12 +114,10 @@ export default async function ExpensesPage() {
           ))}
         </select>
 
-        {/* Umumiy/Shaxsiy bo'lsa — kimning hisobidan */}
-        <select name="general_account" className="border px-2 py-1 rounded" aria-label="Hisob turi (Umumiy/Shaxsiy)">
-          <option value="business">{GENERAL_ACCOUNT_LABELS["business"]}</option>
-          <option value="owner">{GENERAL_ACCOUNT_LABELS["owner"]}</option>
-          <option value="assistant">{GENERAL_ACCOUNT_LABELS["assistant"]}</option>
-          <option value="investor">{GENERAL_ACCOUNT_LABELS["investor"]}</option>
+        {/* Tur (Umumiy/Shaxsiy) */}
+        <select name="scope" className="border px-2 py-1 rounded" aria-label="Tur (Umumiy/Shaxsiy)">
+          <option value="overhead">Umumiy</option>
+          <option value="personal">Shaxsiy</option>
         </select>
 
 
@@ -133,9 +147,9 @@ export default async function ExpensesPage() {
             {(rows as ExpenseRow[] || []).map((r: ExpenseRow) => (
               <tr key={r.id} className="odd:bg-white even:bg-gray-50">
                 <td className="p-2 border">{r.occurred_at}</td>
-                <td className="p-2 border">-{r.amount} {r.currency} (AED {r.amount_aed})</td>
-                <td className="p-2 border">{r.expense_type}</td>
-                <td className="p-2 border">{r.car_id || GENERAL_ACCOUNT_LABELS[r.general_account || ""] || r.general_account}</td>
+                <td className="p-2 border">-{r.amount} {r.currency} (AED {(r.amount_aed_fils != null ? (r.amount_aed_fils / 100).toFixed(2) : '')})</td>
+                <td className="p-2 border">{r.category ?? ''}</td>
+                <td className="p-2 border">{r.car_id || r.scope || ''}</td>
                 <td className="p-2 border">{r.description}</td>
               </tr>
             ))}

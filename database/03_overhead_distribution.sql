@@ -59,7 +59,7 @@ BEGIN
                COALESCE(e.amount_aed_fils, ROUND(e.amount * e.rate_to_aed * 100)::INTEGER) as amount_fils
         FROM au_expenses e
         WHERE e.org_id = p_org_id
-          AND e.scope IN ('overhead', 'personal')
+          AND e.scope IN ('overhead')
           AND e.occurred_at BETWEEN p_start_date AND p_end_date
     LOOP
         -- Calculate allocation based on method
@@ -230,7 +230,7 @@ LANGUAGE plpgsql
 AS $$
 BEGIN
     -- Only process overhead/personal expenses
-    IF NEW.scope IN ('overhead', 'personal') AND NEW.org_id IS NOT NULL THEN
+    IF NEW.scope = 'overhead' AND NEW.org_id IS NOT NULL THEN
         -- Apply allocation for this specific expense
         PERFORM apply_overhead_allocation(NEW.org_id, NEW.occurred_at, NEW.occurred_at);
     END IF;
@@ -338,13 +338,13 @@ BEGIN
         allocation_method = 'none',
         allocation_ratio = NULL
     WHERE org_id = p_org_id
-      AND scope IN ('overhead', 'personal');
+      AND scope IN ('overhead');
 
     -- Process month by month to avoid memory issues
     FOR v_month_start IN
         SELECT DISTINCT DATE_TRUNC('month', occurred_at)::DATE
         FROM au_expenses
-        WHERE org_id = p_org_id AND scope IN ('overhead', 'personal')
+        WHERE org_id = p_org_id AND scope IN ('overhead')
         ORDER BY 1
     LOOP
         v_month_end := (v_month_start + INTERVAL '1 month - 1 day')::DATE;
