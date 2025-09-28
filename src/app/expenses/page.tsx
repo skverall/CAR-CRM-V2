@@ -5,8 +5,9 @@ import Input from "@/app/components/ui/Input";
 import Select from "@/app/components/ui/Select";
 import Button from "@/app/components/ui/Button";
 import Card from "@/app/components/ui/Card";
-import TableShell from "@/app/components/ui/TableShell";
 import EmptyState from "@/app/components/ui/EmptyState";
+import QuickAddExpense from "@/app/components/quick/QuickAddExpense";
+import ExpensesClientTable from "@/app/components/table/ExpensesClientTable";
 
 import ExpenseScopeCarPicker from "@/app/components/ExpenseScopeCarPicker";
 export const dynamic = "force-dynamic";
@@ -136,6 +137,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Re
       </Card>
 
       <Card title="Xarajat qo‘shish">
+        <div className="mb-3"><QuickAddExpense onSubmit={addExpense} orgId={orgId} cars={(cars as CarRef[])||[]} /></div>
         <form action={addExpense} className="grid grid-cols-2 sm:grid-cols-4 gap-2">
           <RatePrefill currencyName="currency" dateName="occurred_at" rateName="rate_to_aed" />
           <input name="occurred_at" type="date" required aria-label="Sana" className="border px-2 py-1 rounded" />
@@ -178,28 +180,10 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Re
           <EmptyState />
         </Card>
       ) : (
-        <TableShell>
-          <thead className="bg-gray-50 sticky top-0 z-10">
-            <tr>
-              <th className="p-2 border">Sana</th>
-              <th className="p-2 border">Miqdor</th>
-              <th className="p-2 border">Toifa</th>
-              <th className="p-2 border">Avto/Hisob</th>
-              <th className="p-2 border">Izoh</th>
-            </tr>
-          </thead>
-          <tbody>
-            {(rows as ExpenseRow[] || []).map((r: ExpenseRow) => (
-              <tr key={r.id} className="odd:bg-white even:bg-gray-50">
-                <td className="p-2 border">{r.occurred_at}</td>
-                <td className="p-2 border w-44">-{r.amount} {r.currency} (AED {(r.amount_aed_fils!=null? (r.amount_aed_fils/100).toLocaleString('en-AE',{minimumFractionDigits:2,maximumFractionDigits:2}) : '')})</td>
-                <td className="p-2 border w-32">{r.category ?? ''}</td>
-                <td className="p-2 border w-40">{r.car_id || r.scope || ''}</td>
-                <td className="p-2 border w-80 whitespace-nowrap overflow-hidden text-ellipsis">{r.description}</td>
-              </tr>
-            ))}
-          </tbody>
-        </TableShell>
+        <Card>
+          {/* Client-side search/sort/export + totals */}
+          <ExpensesClientTable rows={(rows as unknown) as Record<string, unknown>[]} />
+        </Card>
       )}
 
 
