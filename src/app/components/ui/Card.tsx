@@ -1,6 +1,6 @@
 import React from "react";
 
-type Props = React.HTMLAttributes<HTMLDivElement> & { title?: string; subtitle?: string };
+type Props = React.HTMLAttributes<HTMLDivElement> & { title?: React.ReactNode; subtitle?: React.ReactNode };
 
 export default function Card({ className = "", title, subtitle, children, ...props }: Props) {
   return (

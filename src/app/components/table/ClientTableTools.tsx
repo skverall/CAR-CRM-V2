@@ -1,6 +1,7 @@
 "use client";
 import React, { useMemo, useState } from "react";
 import Button from "@/app/components/ui/Button";
+import { useT } from "@/app/i18n/LangContext";
 
 type ToolProps<T extends Record<string, unknown>> = {
   rows: T[];
@@ -32,15 +33,16 @@ export function TableToolbar<T extends Record<string, unknown>>({ rows, getText,
     URL.revokeObjectURL(url);
   };
 
+  const t = useT();
   return (
     <div className="flex flex-col sm:flex-row gap-2 items-stretch sm:items-center justify-between mb-2">
       <input
         value={q}
         onChange={(e) => setQ(e.target.value)}
-        placeholder="Qidiruv..."
+        placeholder={t("table.search", "Qidiruv...")}
         className="border rounded px-3 py-1 w-full sm:w-80"
       />
-      <Button type="button" onClick={exportCsv}>Export CSV</Button>
+      <Button type="button" onClick={exportCsv}>{t("table.exportCsv", "Export CSV")}</Button>
     </div>
   );
 }

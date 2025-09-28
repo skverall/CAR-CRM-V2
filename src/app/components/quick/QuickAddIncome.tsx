@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import Modal from "@/app/components/ui/Modal";
 import Button from "@/app/components/ui/Button";
+import { useT } from "@/app/i18n/LangContext";
 
 export type CarRef = { id: string; vin: string };
 
@@ -52,24 +53,25 @@ export default function QuickAddIncome({ onSubmit, orgId, cars }: Props) {
     setOpen(false);
   };
 
+  const t = useT();
   return (
     <>
-      <Button type="button" onClick={() => setOpen(true)}>Tez qo&#39;shish</Button>
-      <Modal open={open} onClose={() => setOpen(false)} title="Daromad tez qo&#39;shish">
+      <Button type="button" onClick={() => setOpen(true)}>{t('incomes.quickAdd.cta','Tez qo\'shish')}</Button>
+      <Modal open={open} onClose={() => setOpen(false)} title={t('incomes.quickAdd.title','Daromad tez qo\'shish')}>
         <form onSubmit={submit} className="grid grid-cols-2 sm:grid-cols-4 gap-2">
           <input name="occurred_at" value={occurredAt} onChange={e=>setOccurredAt(e.target.value)} type="date" required className="border px-2 py-1 rounded" />
-          <input name="amount" value={amount} onChange={e=>setAmount(e.target.value)} type="number" step="0.01" required placeholder="Miqdor" className="border px-2 py-1 rounded" />
-          <input name="currency" value={currency} onChange={e=>setCurrency(e.target.value)} placeholder="Valyuta" className="border px-2 py-1 rounded" />
-          <input name="rate_to_aed" value={rate} onChange={e=>setRate(e.target.value)} type="number" step="0.000001" required placeholder="AED ga kurs" className="border px-2 py-1 rounded" />
-          <input name="description" value={description} onChange={e=>setDescription(e.target.value)} placeholder="Izoh" className="border px-2 py-1 rounded col-span-2" />
+          <input name="amount" value={amount} onChange={e=>setAmount(e.target.value)} type="number" step="0.01" required placeholder={t('incomes.fields.amount','Miqdor')} className="border px-2 py-1 rounded" />
+          <input name="currency" value={currency} onChange={e=>setCurrency(e.target.value)} placeholder={t('incomes.fields.currency','Valyuta')} className="border px-2 py-1 rounded" />
+          <input name="rate_to_aed" value={rate} onChange={e=>setRate(e.target.value)} type="number" step="0.000001" required placeholder={t('incomes.fields.rate','AED ga kurs')} className="border px-2 py-1 rounded" />
+          <input name="description" value={description} onChange={e=>setDescription(e.target.value)} placeholder={t('incomes.fields.description','Izoh')} className="border px-2 py-1 rounded col-span-2" />
           <select name="car_id" value={carId} onChange={e=>setCarId(e.target.value)} className="border px-2 py-1 rounded">
-            <option value="">(Avto ixtiyoriy)</option>
+            <option value="">{t('incomes.fields.car','(Avto ixtiyoriy)')}</option>
             {cars.map(c => <option key={c.id} value={c.id}>{c.vin}</option>)}
           </select>
           <input type="hidden" name="org_id" value={orgId||""} />
           <div className="col-span-2 sm:col-span-4 flex gap-2 justify-end">
-            <Button type="button" onClick={()=>setOpen(false)} className="bg-gray-200 text-gray-900 hover:bg-gray-300">Bekor qilish</Button>
-            <Button type="submit">Saqlash</Button>
+            <Button type="button" onClick={()=>setOpen(false)} className="bg-gray-200 text-gray-900 hover:bg-gray-300">{t('common.cancel','Bekor qilish')}</Button>
+            <Button type="submit">{t('common.save','Saqlash')}</Button>
           </div>
         </form>
       </Modal>

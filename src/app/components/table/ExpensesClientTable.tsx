@@ -1,6 +1,7 @@
 "use client";
 import React, { useMemo } from "react";
 import { TableToolbar, useClientSort } from "@/app/components/table/ClientTableTools";
+import { useT } from "@/app/i18n/LangContext";
 
 type Row = Record<string, unknown>;
 
@@ -17,6 +18,7 @@ export default function ExpensesClientTable({ rows, filename = "expenses" }: Pro
   const totalAed = useMemo(() => display.reduce((s, r) => s + (((r["amount_aed_fils"])!=null)? (Number(r["amount_aed_fils"])/100) : (Number(r["amount"]||0)*Number(r["rate_to_aed"]||1))), 0), [display]);
   const fmt = (n: number) => Number(n).toLocaleString('en-AE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
+  const t = useT();
   return (
     <div>
       <TableToolbar rows={rows} getText={getText} filename={filename} />
@@ -24,14 +26,14 @@ export default function ExpensesClientTable({ rows, filename = "expenses" }: Pro
         <thead>
           <tr className="bg-gray-50 sticky top-0">
             {[
-              { key: 'occurred_at', label: 'Sana' },
-              { key: 'amount', label: 'Miqdor' },
-              { key: 'currency', label: 'Valyuta' },
-              { key: 'rate_to_aed', label: 'Kurs' },
+              { key: 'occurred_at', label: t('expenses.fields.date','Sana') },
+              { key: 'amount', label: t('expenses.fields.amount','Miqdor') },
+              { key: 'currency', label: t('expenses.fields.currency','Valyuta') },
+              { key: 'rate_to_aed', label: t('expenses.fields.rate','Kurs') },
               { key: 'amount_aed_fils', label: 'AED' },
-              { key: 'category', label: 'Toifa' },
-              { key: 'car_id', label: 'Avto/Hisob' },
-              { key: 'description', label: 'Izoh' },
+              { key: 'category', label: t('expenses.fields.category','Toifa') },
+              { key: 'car_id', label: t('expenses.fields.car','Avto/Hisob') },
+              { key: 'description', label: t('expenses.fields.description','Izoh') },
             ].map(c => (
               <th key={c.key} className="p-2 border cursor-pointer select-none" onClick={() => toggle(c.key)}>
                 {c.label}{sortKey===c.key ? (sortDir==='asc' ? ' ▲' : ' ▼') : ''}
@@ -55,7 +57,7 @@ export default function ExpensesClientTable({ rows, filename = "expenses" }: Pro
         </tbody>
         <tfoot>
           <tr>
-            <td className="p-2 border text-right font-semibold" colSpan={4}>Jami (AED):</td>
+            <td className="p-2 border text-right font-semibold" colSpan={4}>{t('table.totalsAed','Jami (AED):')}</td>
             <td className="p-2 border font-semibold">{fmt(totalAed)}</td>
             <td className="p-2 border" colSpan={3}></td>
           </tr>

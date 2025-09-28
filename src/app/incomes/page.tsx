@@ -8,6 +8,7 @@ import EmptyState from "@/app/components/ui/EmptyState";
 import Select from "@/app/components/ui/Select";
 import QuickAddIncome from "@/app/components/quick/QuickAddIncome";
 import IncomesClientTable from "@/app/components/table/IncomesClientTable";
+import Text from "@/app/components/i18n/Text";
 
 
 
@@ -75,9 +76,9 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Rec
 
   return (
     <div className="grid gap-6">
-      <h1 className="text-2xl font-semibold">Daromad (qo&#39;lda)</h1>
-      <p className="text-sm text-gray-600">Eslatma: Avto sotilganda tushum avtomatik ravishda avto sahifasida yozib olinadi. Bu yerda faqat boshqa daromadlarni kiriting.</p>
-      <Card title="Filtrlar">
+      <h1 className="text-2xl font-semibold"><Text path="incomes.title" fallback="Daromad (qo'lda)" /></h1>
+      <p className="text-sm text-gray-600"><Text path="incomes.noteSaleAuto" fallback="Eslatma: Avto sotilganda tushum avtomatik ravishda avto sahifasida yozib olinadi. Bu yerda faqat boshqa daromadlarni kiriting." /></p>
+      <Card title={<Text path="incomes.filters" fallback="Filtrlar" /> as unknown as string}>
         <form method="get" className="grid grid-cols-2 sm:grid-cols-6 gap-2">
           <Input name="date_from" type="date" defaultValue={dateFrom || ""} aria-label="Boshlanish" />
           <Input name="date_to" type="date" defaultValue={dateTo || ""} aria-label="Tugash" />
@@ -87,11 +88,11 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Rec
               <option key={c.id} value={c.id}>{c.vin}</option>
             ))}
           </Select>
-          <Button type="submit" className="sm:col-span-1">Qo‘llash</Button>
+          <Button type="submit" className="sm:col-span-1"><Text path="common.apply" fallback="Qo‘llash" /></Button>
         </form>
       </Card>
 
-      <Card title="Daromad qo‘shish">
+      <Card title={<Text path="incomes.addTitle" fallback="Daromad qo‘shish" /> as unknown as string}>
         <div className="mb-3"><QuickAddIncome onSubmit={addIncome} orgId={null} cars={(cars as CarRef[])||[]} /></div>
         <form action={addIncome} className="grid grid-cols-2 sm:grid-cols-4 gap-2">
           <RatePrefill currencyName="currency" dateName="occurred_at" rateName="rate_to_aed" />
@@ -105,7 +106,7 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Rec
               <option key={c.id} value={c.id}>{c.vin}</option>
             ))}
           </select>
-          <Button type="submit" className="col-span-2 sm:col-span-1">Daromad qo‘shish</Button>
+          <Button type="submit" className="col-span-2 sm:col-span-1"><Text path="incomes.addTitle" fallback="Daromad qo‘shish" /></Button>
         </form>
       </Card>
 

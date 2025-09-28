@@ -8,6 +8,7 @@ import Card from "@/app/components/ui/Card";
 import EmptyState from "@/app/components/ui/EmptyState";
 import QuickAddExpense from "@/app/components/quick/QuickAddExpense";
 import ExpensesClientTable from "@/app/components/table/ExpensesClientTable";
+import Text from "@/app/components/i18n/Text";
 
 import ExpenseScopeCarPicker from "@/app/components/ExpenseScopeCarPicker";
 export const dynamic = "force-dynamic";
@@ -107,8 +108,8 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Re
 
   return (
     <div className="grid gap-6">
-      <h1 className="text-2xl font-semibold">Xarajatlar</h1>
-      <Card title="Filtrlar">
+      <h1 className="text-2xl font-semibold"><Text path="expenses.title" fallback="Xarajatlar" /></h1>
+      <Card title={<Text path="expenses.filters" fallback="Filtrlar" /> as unknown as string}>
         <form method="get" className="grid grid-cols-2 sm:grid-cols-6 gap-2">
           <Input name="date_from" type="date" defaultValue={dateFrom || ""} aria-label="Boshlanish" />
           <Input name="date_to" type="date" defaultValue={dateTo || ""} aria-label="Tugash" />
@@ -132,11 +133,11 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Re
               <option key={c.id} value={c.id}>{c.vin}</option>
             ))}
           </Select>
-          <Button type="submit" className="sm:col-span-1">Qo‘llash</Button>
+          <Button type="submit" className="sm:col-span-1"><Text path="common.apply" fallback="Qo‘llash" /></Button>
         </form>
       </Card>
 
-      <Card title="Xarajat qo‘shish">
+      <Card title={<Text path="expenses.addTitle" fallback="Xarajat qo‘shish" /> as unknown as string}>
         <div className="mb-3"><QuickAddExpense onSubmit={addExpense} orgId={orgId} cars={(cars as CarRef[])||[]} /></div>
         <form action={addExpense} className="grid grid-cols-2 sm:grid-cols-4 gap-2">
           <RatePrefill currencyName="currency" dateName="occurred_at" rateName="rate_to_aed" />
@@ -166,9 +167,9 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Re
           {/* Preview umumiy/shaxsiy taqsimoti */}
           <OverheadPreview orgId={orgId} />
 
-          <Button type="submit" className="col-span-2 sm:col-span-1">Xarajat qo‘shish</Button>
+          <Button type="submit" className="col-span-2 sm:col-span-1"><Text path="expenses.addTitle" fallback="Xarajat qo‘shish" /></Button>
           <p className="col-span-2 sm:col-span-4 text-xs text-gray-600 mt-1">
-            Eslatma: Avto tanlanmasa, xarajat “Umumiy/Shaxsiy” hisoblanadi va avtomatik ravishda faol mashinalar orasida taqsimlanadi.
+            <Text path="expenses.noteOverhead" fallback="Eslatma: Avto tanlanmasa, xarajat “Umumiy/Shaxsiy” hisoblanadi va avtomatik ravishda faol mashinalar orasida taqsimlanadi." />
           </p>
         </form>
       </Card>

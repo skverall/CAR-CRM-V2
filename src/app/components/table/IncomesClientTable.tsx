@@ -1,6 +1,7 @@
 "use client";
 import React, { useMemo } from "react";
 import { TableToolbar, useClientSort } from "@/app/components/table/ClientTableTools";
+import { useT } from "@/app/i18n/LangContext";
 
 type Row = Record<string, unknown>;
 
@@ -17,6 +18,7 @@ export default function IncomesClientTable({ rows, filename = "incomes" }: Props
   const totalAed = useMemo(() => display.reduce((s, r) => s + Number((r["amount_aed"]) ?? (Number(r["amount"]||0)*Number(r["rate_to_aed"]||1))), 0), [display]);
   const fmt = (n: number) => Number(n).toLocaleString('en-AE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
+  const t = useT();
   return (
     <div>
       <TableToolbar rows={rows} getText={getText} filename={filename} />
@@ -24,13 +26,13 @@ export default function IncomesClientTable({ rows, filename = "incomes" }: Props
         <thead>
           <tr className="bg-gray-50 sticky top-0">
             {[
-              { key: 'occurred_at', label: 'Sana' },
-              { key: 'amount', label: 'Miqdor' },
-              { key: 'currency', label: 'Valyuta' },
-              { key: 'rate_to_aed', label: 'Kurs' },
+              { key: 'occurred_at', label: t('incomes.fields.date','Sana') },
+              { key: 'amount', label: t('incomes.fields.amount','Miqdor') },
+              { key: 'currency', label: t('incomes.fields.currency','Valyuta') },
+              { key: 'rate_to_aed', label: t('incomes.fields.rate','Kurs') },
               { key: 'amount_aed', label: 'AED' },
-              { key: 'car_vin', label: 'Avto' },
-              { key: 'description', label: 'Izoh' },
+              { key: 'car_vin', label: t('incomes.fields.car','Avto') },
+              { key: 'description', label: t('incomes.fields.description','Izoh') },
             ].map(c => (
               <th key={c.key} className="p-2 border cursor-pointer select-none" onClick={() => toggle(c.key)}>
                 {c.label}{sortKey===c.key ? (sortDir==='asc' ? ' \u25b2' : ' \u25bc') : ''}
@@ -53,7 +55,7 @@ export default function IncomesClientTable({ rows, filename = "incomes" }: Props
         </tbody>
         <tfoot>
           <tr>
-            <td className="p-2 border text-right font-semibold" colSpan={4}>Jami (AED):</td>
+            <td className="p-2 border text-right font-semibold" colSpan={4}>{t('table.totalsAed','Jami (AED):')}</td>
             <td className="p-2 border font-semibold">{fmt(totalAed)}</td>
             <td className="p-2 border" colSpan={2}></td>
           </tr>
