@@ -127,6 +127,8 @@ export default async function CarPage({ params }: { params: { id: string } }) {
   const directExpensesAED = Number(cost.car_expenses_component_aed || 0);
   const overheadAED = Number(cost.overhead_component_aed || 0);
   const expensesAED = directExpensesAED + overheadAED;
+  const totalCostAED = Number(cost.total_cost_aed || 0);
+
   // Find sale income (if recorded via [SALE])
   const { data: saleIncomeRows } = await db
     .from('au_incomes')
@@ -155,6 +157,10 @@ export default async function CarPage({ params }: { params: { id: string } }) {
             </form>
           )}
           {next === "sold" && (
+            <>
+
+              <span className="text-xs text-gray-500 italic">Eslatma: kurs sotuv sanasiga ko‘ra avtomatik (RatePrefill)</span>
+
             <form action={sellCar} className="flex flex-wrap items-center gap-2">
               <RatePrefill currencyName="currency" dateName="occurred_at" rateName="rate_to_aed" />
               <input type="hidden" name="car_id" value={id} />
@@ -165,6 +171,7 @@ export default async function CarPage({ params }: { params: { id: string } }) {
               <input name="description" placeholder="Description" defaultValue="[SALE] Auto sale" className="border px-2 py-1 rounded" />
               <button className="bg-blue-600 text-white px-3 py-2 rounded">Sold + Record Income</button>
             </form>
+            </>
           )}
           {canDistribute && (
             <form action={distribute}>
@@ -199,6 +206,8 @@ export default async function CarPage({ params }: { params: { id: string } }) {
             <div className={profit >= 0 ? "text-green-700 font-semibold" : "text-red-700 font-semibold"}>{profit.toFixed(2)}</div>
           </div>
         </div>
+        <div className="text-sm text-gray-700 mt-1">Jami tannarx (AED): {Number(totalCostAED || 0).toFixed(2)}</div>
+
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
