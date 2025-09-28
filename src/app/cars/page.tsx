@@ -2,9 +2,8 @@ import Link from "next/link";
 import Text from "@/app/components/i18n/Text";
 import TableShell from "@/app/components/ui/TableShell";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
-import SellBar from "@/app/components/cars/SellBar";
-import RowQuickAddExpenseClient from "@/app/components/cars/RowQuickAddExpenseClient";
 import StatusFilter from "@/app/components/cars/StatusFilter";
+import RowActionsMenu from "@/app/components/cars/RowActionsMenu";
 import { headers } from "next/headers";
 
 export const dynamic = 'force-dynamic';
@@ -111,18 +110,7 @@ export default async function CarsPage({ searchParams }: { searchParams?: { stat
               <td className="p-2 border">{car.margin_pct != null ? `${car.margin_pct.toFixed(1)}%` : '—'}</td>
               <td className="p-2 border">{car.days_on_lot != null ? car.days_on_lot : '—'}</td>
               <td className="p-2 border">
-                <div className="flex items-center gap-2">
-                  <Link href={`/cars/${car.id}?edit=1`} className="border border-gray-200 bg-white text-gray-800 hover:bg-gray-50 px-2 py-1 rounded">
-                    <Text path="common.edit" fallback="Tahrirlash" />
-                  </Link>
-                  {car.status !== 'sold' && car.status !== 'archived' && (
-                    <SellBar carId={car.id} onSell={sellViaDeals} />
-                  )}
-                  <RowQuickAddExpenseClient orgId={orgId} carId={car.id} carVin={car.vin} />
-                  <Link href={`/cars/${car.id}`} className="text-blue-600 hover:underline">
-                    <Text path="cars.table.view" fallback="Ko'rish" />
-                  </Link>
-                </div>
+                <RowActionsMenu carId={car.id} carVin={car.vin} orgId={orgId} onSell={sellViaDeals} />
               </td>
             </tr>
           ))}
