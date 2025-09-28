@@ -7,6 +7,7 @@ import Button from "@/app/components/ui/Button";
 import Card from "@/app/components/ui/Card";
 import TableShell from "@/app/components/ui/TableShell";
 import EmptyState from "@/app/components/ui/EmptyState";
+import Text from "@/app/components/i18n/Text";
 
 async function upsertRate(formData: FormData) {
   "use server";
@@ -37,8 +38,8 @@ export default async function FxPage({ searchParams }: { searchParams?: Record<s
 
   return (
     <div className="grid gap-6">
-      <h1 className="text-2xl font-semibold">Valyuta kurslari</h1>
-      <Card title="Filtrlar">
+      <h1 className="text-2xl font-semibold"><Text path="fx.title" fallback="Valyuta kurslari" /></h1>
+      <Card title={<Text path="fx.filters" fallback="Filtrlar" /> as unknown as string}>
         <form method="get" className="grid grid-cols-2 sm:grid-cols-6 gap-2">
           <Input name="date_from" type="date" defaultValue={dateFrom || ""} aria-label="Boshlanish" />
           <Input name="date_to" type="date" defaultValue={dateTo || ""} aria-label="Tugash" />
@@ -48,11 +49,11 @@ export default async function FxPage({ searchParams }: { searchParams?: Record<s
             <option value="EUR">EUR</option>
           </Select>
           <div className="sm:col-span-2" />
-          <Button type="submit">Qollash</Button>
+          <Button type="submit"><Text path="common.apply" fallback="Qo‘llash" /></Button>
         </form>
       </Card>
 
-      <Card title="Kurs qo7shish">
+      <Card title={<Text path="fx.addTitle" fallback="Kurs qo‘shish" /> as unknown as string}>
         <form action={upsertRate} className="grid grid-cols-2 sm:grid-cols-4 gap-2">
           <input name="rate_date" type="date" required className="border px-2 py-1 rounded" />
           <select name="base" className="border px-2 py-1 rounded" defaultValue="USD">
@@ -60,8 +61,8 @@ export default async function FxPage({ searchParams }: { searchParams?: Record<s
             <option value="USD">USD</option>
             <option value="EUR">EUR</option>
           </select>
-          <input name="rate" type="number" step="0.000001" placeholder="Kurs (baza→AED)" required className="border px-2 py-1 rounded" />
-          <Button type="submit" className="col-span-2 sm:col-span-1">Saqlash</Button>
+          <input name="rate" type="number" step="0.000001" placeholder={"Kurs (baza→AED)"} required className="border px-2 py-1 rounded" />
+          <Button type="submit" className="col-span-2 sm:col-span-1"><Text path="common.save" fallback="Saqlash" /></Button>
         </form>
       </Card>
 
@@ -75,9 +76,9 @@ export default async function FxPage({ searchParams }: { searchParams?: Record<s
         <TableShell className="text-sm">
           <thead className="bg-gray-50 sticky top-0 z-10">
             <tr>
-              <th className="p-2 border">Sana</th>
-              <th className="p-2 border">Juft</th>
-              <th className="p-2 border">Kurs</th>
+              <th className="p-2 border"><Text path="fx.table.date" fallback="Sana" /></th>
+              <th className="p-2 border"><Text path="fx.table.pair" fallback="Juft" /></th>
+              <th className="p-2 border"><Text path="fx.table.rate" fallback="Kurs" /></th>
             </tr>
           </thead>
           <tbody>

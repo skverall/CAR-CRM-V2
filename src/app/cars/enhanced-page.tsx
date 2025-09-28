@@ -121,11 +121,17 @@ async function addCar(formData: FormData) {
   const purchasePriceAedFils = Math.round(payload.purchase_price * payload.purchase_rate_to_aed * 100);
 
   const db = getSupabaseAdmin();
+  // Resolve organization (align with other pages using Default Organization)
+  const { data: org } = await db.from("orgs").select("id").eq("name", "Default Organization").single();
+  const orgId = (org as { id: string } | null)?.id;
+  if (!orgId) {
+    throw new Error("Organization not found. Please create 'Default Organization'.");
+  }
   await db.from("au_cars").insert([{
     ...payload,
     purchase_price_aed: purchasePriceAedFils,
     status: "in_transit",
-    org_id: "default-org" // TODO: Get from user session
+    org_id: orgId
   }]);
 }
 
@@ -189,7 +195,7 @@ export default async function CarsPage() {
 
       {/* Add Car Form */}
       <div className="bg-white border rounded-lg p-6">
-        <h2 className="text-xl font-semibold mb-4">Yangi avtomobil qo&apos;shish</h2>
+        <h2 className="text-xl font-semibold mb-4"><Text path="cars.addTitle" fallback="Yangi avtomobil qo‘shish" /></h2>
         <form action={addCar} className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           <input name="vin" placeholder="VIN" required className="border px-3 py-2 rounded" />
           <input name="make" placeholder="Marka" required className="border px-3 py-2 rounded" />
@@ -208,7 +214,7 @@ export default async function CarsPage() {
           <input name="source" placeholder="Manba" className="border px-3 py-2 rounded" />
           <input name="notes" placeholder="Izohlar" className="border px-3 py-2 rounded col-span-2" />
           <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 col-span-2 sm:col-span-1">
-            Qo&apos;shish
+            <Text path="cars.addCta" fallback="Qo‘shish" />
           </button>
         </form>
       </div>

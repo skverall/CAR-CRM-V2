@@ -6,6 +6,7 @@ import Button from "@/app/components/ui/Button";
 import Card from "@/app/components/ui/Card";
 import TableShell from "@/app/components/ui/TableShell";
 import EmptyState from "@/app/components/ui/EmptyState";
+import Text from "@/app/components/i18n/Text";
 
 
 type Movement = {
@@ -70,18 +71,18 @@ export default async function CapitalPage({ searchParams }: { searchParams?: Rec
   }, {});
   return (
     <div className="grid gap-6">
-      <h1 className="text-2xl font-semibold">Kapital va harakatlar</h1>
-      <Card title="Filtrlar">
+      <h1 className="text-2xl font-semibold"><Text path="capital.title" fallback="Kapital va harakatlar" /></h1>
+      <Card title={<Text path="capital.filters" fallback="Filtrlar" /> as unknown as string}>
         <form method="get" className="grid grid-cols-2 sm:grid-cols-6 gap-2">
           <Input name="date_from" type="date" defaultValue={dateFrom || ""} aria-label="Boshlanish" />
           <Input name="date_to" type="date" defaultValue={dateTo || ""} aria-label="Tugash" />
           <div className="sm:col-span-3" />
-          <Button type="submit">Qollash</Button>
+          <Button type="submit"><Text path="common.apply" fallback="Qollash" /></Button>
         </form>
       </Card>
 
 
-      <Card title="Kapital harakati qo‘shish">
+      <Card title={<Text path="capital.addTitle" fallback="Kapital harakati qo‘shish" /> as unknown as string}>
         <form action={addMovement} className="grid grid-cols-2 sm:grid-cols-6 gap-2">
           <input name="occurred_at" type="date" required className="border px-2 py-1 rounded col-span-2 sm:col-span-2" />
           <select name="account" className="border px-2 py-1 rounded">
@@ -97,7 +98,7 @@ export default async function CapitalPage({ searchParams }: { searchParams?: Rec
           </select>
           <input name="amount_abs" type="number" step="0.01" min="0.01" placeholder="Miqdor (AED)" required className="border px-2 py-1 rounded" />
           <input name="reason" placeholder="Izoh" className="border px-2 py-1 rounded col-span-2 sm:col-span-2" />
-          <button className="col-span-2 sm:col-span-1 bg-black text-white px-3 py-2 rounded">Qo‘shish</button>
+          <button className="col-span-2 sm:col-span-1 bg-black text-white px-3 py-2 rounded"><Text path="capital.addCta" fallback="Qo‘shish" /></button>
         </form>
       </Card>
 
@@ -120,18 +121,18 @@ export default async function CapitalPage({ searchParams }: { searchParams?: Rec
         <TableShell>
           <thead className="bg-gray-50 sticky top-0 z-10">
             <tr>
-              <th className="p-2 border">Sana</th>
-              <th className="p-2 border">Hisob</th>
-              <th className="p-2 border">Miqdor (AED)</th>
-              <th className="p-2 border">Sabab</th>
-              <th className="p-2 border">Boglanmalar</th>
+              <th className="p-2 border"><Text path="capital.table.date" fallback="Sana" /></th>
+              <th className="p-2 border"><Text path="capital.table.account" fallback="Hisob" /></th>
+              <th className="p-2 border"><Text path="capital.table.amountAed" fallback="Miqdor (AED)" /></th>
+              <th className="p-2 border"><Text path="capital.table.reason" fallback="Sabab" /></th>
+              <th className="p-2 border"><Text path="capital.table.links" fallback="Bog‘lanmalar" /></th>
             </tr>
           </thead>
           <tbody>
             {movementsList.map((m: Movement) => (
               <tr key={m.id} className="odd:bg-white even:bg-gray-50">
                 <td className="p-2 border">{m.occurred_at}</td>
-                <td className="p-2 border">{m.account}</td>
+                <td className="p-2 border"><Text path={`capital.accounts.${m.account}`} fallback={m.account} /></td>
                 <td className="p-2 border">{m.amount_aed}</td>
                 <td className="p-2 border">{m.reason}</td>
                 <td className="p-2 border text-xs">{m.car_id || m.expense_id || m.income_id || m.distribution_id}</td>

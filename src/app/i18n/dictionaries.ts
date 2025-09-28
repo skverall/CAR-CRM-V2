@@ -64,6 +64,10 @@ export const dictionaries: Record<LangCode, Record<string, unknown>> = {
         netProfit: "Net foyda (AED)",
         totalCostAED: "Jami tannarx (AED)",
       }
+      ,
+      addTitle: "Yangi avtomobil qo‘shish",
+      addCta: "Qo‘shish",
+
     },
     table: {
       search: "Qidiruv...",
@@ -120,6 +124,32 @@ export const dictionaries: Record<LangCode, Record<string, unknown>> = {
         description: "Izoh",
         car: "Avto",
       },
+    fx: {
+      title: "Valyuta kurslari",
+      filters: "Filtrlar",
+      addTitle: "Kurs qo‘shish",
+      table: { date: "Sana", pair: "Juft", rate: "Kurs" },
+    },
+    capital: {
+      title: "Kapital va harakatlar",
+      filters: "Filtrlar",
+      addTitle: "Kapital harakati qo‘shish",
+      addCta: "Qo‘shish",
+      table: {
+        date: "Sana",
+        account: "Hisob",
+        amountAed: "Miqdor (AED)",
+        reason: "Sabab",
+        links: "Bog‘lanmalar",
+      },
+      accounts: {
+        investor: "investor",
+        business: "business",
+        owner: "owner",
+        assistant: "assistant",
+      },
+    },
+
       quickAdd: { cta: "Tez qo‘shish", title: "Daromad tez qo‘shish" },
     },
   },
@@ -186,6 +216,10 @@ export const dictionaries: Record<LangCode, Record<string, unknown>> = {
         netProfit: "Чистая прибыль (AED)",
         totalCostAED: "Общая себестоимость (AED)",
       }
+      ,
+      addTitle: "Добавить автомобиль",
+      addCta: "Добавить",
+
     },
     table: {
       search: "Поиск...",
@@ -244,6 +278,32 @@ export const dictionaries: Record<LangCode, Record<string, unknown>> = {
       },
       quickAdd: { cta: "Быстро добавить", title: "Быстрое добавление дохода" },
     },
+    fx: {
+      title: "Курсы валют",
+      filters: "Фильтры",
+      addTitle: "Добавить курс",
+      table: { date: "Дата", pair: "Пара", rate: "Курс" },
+    },
+    capital: {
+      title: "Капитал и движения",
+      filters: "Фильтры",
+      addTitle: "Добавить движение капитала",
+      addCta: "Добавить",
+      table: {
+        date: "Дата",
+        account: "Счет",
+        amountAed: "Сумма (AED)",
+        reason: "Причина",
+        links: "Связки",
+      },
+      accounts: {
+        investor: "инвестор",
+        business: "бизнес",
+        owner: "владелец",
+        assistant: "ассистент",
+      },
+    },
+
   },
 };
 
