@@ -172,8 +172,8 @@ SELECT
     cc.total_cost_aed,
     -- Status categorization
     CASE 
-        WHEN cs.status IN ('in_transit', 'for_sale') AND cs.age_days > 30 THEN 'stale'
-        WHEN cs.status IN ('in_transit', 'for_sale') AND cs.age_days > 60 THEN 'very_stale'
+        WHEN cs.status NOT IN ('sold','archived') AND cs.age_days > 60 THEN 'very_stale'
+        WHEN cs.status NOT IN ('sold','archived') AND cs.age_days > 30 THEN 'stale'
         WHEN cs.status = 'sold' THEN 'sold'
         WHEN cs.status = 'archived' THEN 'archived'
         ELSE 'active'

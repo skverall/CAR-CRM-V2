@@ -70,19 +70,65 @@ async function sellCar(formData: FormData) {
     throw new Error("Sale details are required");
   }
   const db = getSupabaseAdmin();
+
+  // Upsert sale income (avoid double counting by description tag)
   const { data: existing } = await db
     .from("au_incomes")
     .select("id")
     .eq("car_id", carId)
     .ilike("description", "%[SALE]%")
     .limit(1);
-  const payload = { occurred_at, amount, currency, rate_to_aed, description, car_id: carId } as const;
+
+  const amount_aed = amount * rate_to_aed;
+  const incomePayload = { occurred_at, amount, currency, rate_to_aed, amount_aed, description, car_id: carId } as const;
   if (existing && existing.length > 0) {
-    await db.from("au_incomes").update(payload).eq("id", existing[0].id);
+    await db.from("au_incomes").update(incomePayload).eq("id", existing[0].id);
   } else {
-    await db.from("au_incomes").insert([payload]);
+    await db.from("au_incomes").insert([incomePayload]);
   }
-  await db.from("au_cars").update({ status: "sold" }).eq("id", carId);
+
+  // Update car sale fields
+  const soldPriceAedFils = Math.round(amount_aed * 100);
+  await db.from("au_cars").update({
+    status: "sold",
+    sold_price_aed: soldPriceAedFils,
+    sold_date: occurred_at,
+    commission_aed: 0
+  }).eq("id", carId);
+
+  // Create or update deal snapshot for reliability of reports
+  const { data: pv } = await db
+    .from('car_profit_view')
+    .select('sold_price_aed, commission_aed, total_cost_aed, profit_aed, margin_pct, days_on_lot')
+    .eq('id', carId)
+    .single();
+
+  if (pv) {
+    const { data: existingSnap } = await db
+      .from('deal_snapshots')
+      .select('id')
+      .eq('car_id', carId)
+      .limit(1);
+
+    const snapshot = {
+      car_id: carId,
+      org_id: (await db.from('au_cars').select('org_id').eq('id', carId).single()).data?.org_id || null,
+      sold_date: occurred_at,
+      sold_price_aed: pv.sold_price_aed ?? amount_aed,
+      commission_aed: pv.commission_aed ?? 0,
+      total_cost_aed: pv.total_cost_aed ?? 0,
+      profit_aed: pv.profit_aed ?? (amount_aed - (pv.total_cost_aed ?? 0)),
+      margin_pct: pv.margin_pct ?? null,
+      days_on_lot: pv.days_on_lot ?? null,
+    } as Record<string, unknown>;
+
+    if (existingSnap && existingSnap.length > 0) {
+      await db.from('deal_snapshots').update(snapshot).eq('id', existingSnap[0].id);
+    } else {
+      await db.from('deal_snapshots').insert([snapshot]);
+    }
+  }
+
   redirect(`/cars/${carId}`);
 }
 
@@ -112,8 +158,12 @@ export default async function CarPage({ params }: { params: { id: string } }) {
   const { data: expenses } = await db.from("au_expenses").select("*").eq("car_id", id).order("occurred_at");
   const { data: incomes } = await db.from("au_incomes").select("*").eq("car_id", id).order("occurred_at");
   const { data: distributions } = await db.from("au_profit_distributions").select("*").eq("car_id", id);
-  const { data: profitRes } = await db.rpc("au_car_profit_aed", { p_car_id: id });
-  const profit = Number(Array.isArray(profitRes) ? profitRes[0] : profitRes);
+  const { data: pv } = await db
+    .from('car_profit_view')
+    .select('profit_aed, margin_pct, days_on_lot, sold_price_aed, commission_aed, total_cost_aed')
+    .eq('id', id)
+    .single();
+  const profit = Number(pv?.profit_aed ?? 0);
   const canDistribute = carRow.status === "sold" && profit > 0 && (distributions || []).length === 0;
 
   const purchaseAED = Number(carRow.purchase_price) * Number(carRow.purchase_rate_to_aed);

@@ -69,7 +69,7 @@ export default function OverheadPreview(props: {
             amount_aed: x.allocated_amount_aed,
           }));
           setItems(arr);
-        } catch (e) {
+        } catch {
           setItems(null);
         } finally {
           setLoading(false);
@@ -87,7 +87,7 @@ export default function OverheadPreview(props: {
       document.removeEventListener("change", handler);
       if (t) clearTimeout(t);
     };
-  }, [orgId]);
+  }, [orgId, amountName, rateName, dateName, carSelectName, generalAccountName]);
 
   if (!orgId || hidden) return null;
 

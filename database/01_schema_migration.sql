@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS user_orgs (
 -- =====================================================
 
 -- Add missing fields to existing au_cars table
-ALTER TABLE au_cars 
+ALTER TABLE au_cars
 ADD COLUMN IF NOT EXISTS org_id UUID REFERENCES orgs(id),
 ADD COLUMN IF NOT EXISTS mileage INTEGER,
 ADD COLUMN IF NOT EXISTS sold_price_aed INTEGER, -- in fils
@@ -38,7 +38,7 @@ ADD COLUMN IF NOT EXISTS decision_tag TEXT CHECK (decision_tag IN ('take', 'skip
 ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT NOW();
 
 -- Update status enum to match requirements
-DO $$ 
+DO $$
 BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'car_status_new') THEN
         CREATE TYPE car_status_new AS ENUM ('in_transit', 'for_sale', 'reserved', 'sold', 'archived');
@@ -46,16 +46,16 @@ BEGIN
 END $$;
 
 -- Convert purchase_price to fils (integer)
-ALTER TABLE au_cars 
+ALTER TABLE au_cars
 ADD COLUMN IF NOT EXISTS purchase_price_aed INTEGER; -- in fils
 
 -- Update existing data to fils
-UPDATE au_cars 
+UPDATE au_cars
 SET purchase_price_aed = ROUND(purchase_price * purchase_rate_to_aed * 100)::INTEGER
 WHERE purchase_price_aed IS NULL;
 
 -- =====================================================
--- 3. ENHANCED EXPENSES TABLE  
+-- 3. ENHANCED EXPENSES TABLE
 -- =====================================================
 
 -- Add new fields to au_expenses
@@ -72,18 +72,18 @@ ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT NOW();
 ALTER TABLE au_expenses
 ADD COLUMN IF NOT EXISTS amount_aed_fils INTEGER; -- in fils
 
-UPDATE au_expenses 
+UPDATE au_expenses
 SET amount_aed_fils = ROUND(amount * rate_to_aed * 100)::INTEGER
 WHERE amount_aed_fils IS NULL;
 
 -- Migrate existing data to new structure
-UPDATE au_expenses 
-SET scope = CASE 
+UPDATE au_expenses
+SET scope = CASE
     WHEN car_id IS NOT NULL THEN 'car'
     WHEN is_personal_or_general = true THEN 'overhead'
     ELSE 'car'
 END,
-category = CASE 
+category = CASE
     WHEN expense_type = 'shipping' THEN 'transport'
     WHEN expense_type = 'repair' THEN 'repair'
     WHEN expense_type = 'office' THEN 'rent'
@@ -172,7 +172,7 @@ CREATE INDEX IF NOT EXISTS idx_cars_purchase_date ON au_cars(purchase_date);
 CREATE INDEX IF NOT EXISTS idx_cars_sold_date ON au_cars(sold_date);
 CREATE INDEX IF NOT EXISTS idx_cars_org_id ON au_cars(org_id);
 
--- Expenses indexes  
+-- Expenses indexes
 CREATE INDEX IF NOT EXISTS idx_expenses_org_id ON au_expenses(org_id);
 CREATE INDEX IF NOT EXISTS idx_expenses_car_id ON au_expenses(car_id);
 CREATE INDEX IF NOT EXISTS idx_expenses_date ON au_expenses(occurred_at);
@@ -190,3 +190,31 @@ CREATE INDEX IF NOT EXISTS idx_documents_org_id ON documents(org_id);
 -- User orgs indexes
 CREATE INDEX IF NOT EXISTS idx_user_orgs_user_id ON user_orgs(user_id);
 CREATE INDEX IF NOT EXISTS idx_user_orgs_org_id ON user_orgs(org_id);
+
+
+-- =====================================================
+-- 9. DEAL SNAPSHOTS FOR RELIABLE REPORTING
+-- =====================================================
+
+CREATE TABLE IF NOT EXISTS deal_snapshots (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    car_id UUID NOT NULL REFERENCES au_cars(id),
+    org_id UUID REFERENCES orgs(id),
+    sold_date DATE NOT NULL,
+    sold_price_aed DECIMAL(12,2) NOT NULL,
+    commission_aed DECIMAL(12,2) DEFAULT 0,
+    total_cost_aed DECIMAL(12,2) NOT NULL,
+    profit_aed DECIMAL(12,2) NOT NULL,
+    margin_pct DECIMAL(6,2),
+    days_on_lot INTEGER,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    UNIQUE(car_id, sold_date)
+);
+
+-- Indexes for fast lookups
+CREATE INDEX IF NOT EXISTS idx_deal_snapshots_car_id ON deal_snapshots(car_id);
+
+-- Additional performance indexes
+CREATE INDEX IF NOT EXISTS idx_incomes_car_id ON au_incomes(car_id);
+CREATE INDEX IF NOT EXISTS idx_incomes_date ON au_incomes(occurred_at);
+CREATE INDEX IF NOT EXISTS idx_profit_distributions_car_id ON au_profit_distributions(car_id);

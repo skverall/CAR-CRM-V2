@@ -1,6 +1,13 @@
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 import RatePrefill from "@/app/components/RatePrefill";
 import OverheadPreview from "@/app/components/OverheadPreview";
+import Input from "@/app/components/ui/Input";
+import Select from "@/app/components/ui/Select";
+import Button from "@/app/components/ui/Button";
+import Card from "@/app/components/ui/Card";
+import TableShell from "@/app/components/ui/TableShell";
+import EmptyState from "@/app/components/ui/EmptyState";
+
 import ExpenseScopeCarPicker from "@/app/components/ExpenseScopeCarPicker";
 export const dynamic = "force-dynamic";
 
@@ -73,58 +80,106 @@ async function addExpense(formData: FormData) {
   }]);
 }
 
-export default async function ExpensesPage() {
+export default async function ExpensesPage({ searchParams }: { searchParams?: Record<string, string | string[] | undefined> }) {
   const db = getSupabaseAdmin();
   const { data: cars } = await db.from("au_cars").select("id, vin").order("purchase_date", { ascending: false });
-  const { data: rows } = await db.from("au_expenses").select("*").order("occurred_at", { ascending: false }).limit(50);
   const { data: org } = await db.from("orgs").select("id").eq("name", "Default Organization").single();
   const orgId = (org as { id: string } | null)?.id || null;
+
+  const sp = (searchParams || {}) as Record<string, string | undefined>;
+  const dateFrom = sp["date_from"];
+  const dateTo = sp["date_to"];
+  const category = sp["category"];
+  const filterCarId = sp["car_id"];
+
+  const { data: rows } = await (async () => {
+    let q = db.from("au_expenses").select("*").order("occurred_at", { ascending: false }).limit(100);
+    if (dateFrom) q = q.gte("occurred_at", dateFrom);
+    if (dateTo) q = q.lte("occurred_at", dateTo);
+    if (category) q = q.eq("category", category);
+    if (filterCarId) q = q.eq("car_id", filterCarId);
+    const { data } = await q;
+    return { data };
+  })();
 
 
 
   return (
     <div className="grid gap-6">
       <h1 className="text-2xl font-semibold">Xarajatlar</h1>
-      <form action={addExpense} className="grid grid-cols-2 sm:grid-cols-4 gap-2 border p-4 rounded">
-        <RatePrefill currencyName="currency" dateName="occurred_at" rateName="rate_to_aed" />
-        <input name="occurred_at" type="date" required aria-label="Sana" className="border px-2 py-1 rounded" />
-        <input type="hidden" name="org_id" value={orgId || ""} />
-        <input name="amount" type="number" step="0.01" required placeholder="Miqdor" aria-label="Miqdor" className="border px-2 py-1 rounded" />
-        <input name="currency" required placeholder="Valyuta" aria-label="Valyuta" className="border px-2 py-1 rounded" />
-        <input name="rate_to_aed" type="number" step="0.000001" required placeholder="AED ga kurs" aria-label="AED ga kurs" className="border px-2 py-1 rounded" />
-        <select name="category" required aria-label="Toifa" className="border px-2 py-1 rounded">
-          <option value="purchase">Xarid</option>
-          <option value="transport">Transport</option>
-          <option value="repair">Ta&apos;mirlash</option>
-          <option value="detailing">Detalling</option>
-          <option value="ads">Reklama</option>
-          <option value="fees">To&apos;lov/Komissiya</option>
-          <option value="fuel">Yoqilg&apos;i</option>
-          <option value="parking">Parkovka</option>
-          <option value="rent">Ijara</option>
-          <option value="salary">Oylik</option>
-          <option value="other">Boshqa</option>
-        </select>
-        <input name="description" placeholder="Izoh" aria-label="Izoh" className="border px-2 py-1 rounded" />
+      <Card title="Filtrlar">
+        <form method="get" className="grid grid-cols-2 sm:grid-cols-6 gap-2">
+          <Input name="date_from" type="date" defaultValue={dateFrom || ""} aria-label="Boshlanish" />
+          <Input name="date_to" type="date" defaultValue={dateTo || ""} aria-label="Tugash" />
+          <Select name="category" defaultValue={category || ""} aria-label="Toifa">
+            <option value="">Barcha toifalar</option>
+            <option value="purchase">Xarid</option>
+            <option value="transport">Transport</option>
+            <option value="repair">Ta&apos;mirlash</option>
+            <option value="detailing">Detalling</option>
+            <option value="ads">Reklama</option>
+            <option value="fees">To&apos;lov/Komissiya</option>
+            <option value="fuel">Yoqilg&apos;i</option>
+            <option value="parking">Parkovka</option>
+            <option value="rent">Ijara</option>
+            <option value="salary">Oylik</option>
+            <option value="other">Boshqa</option>
+          </Select>
+          <Select name="car_id" defaultValue={filterCarId || ""} aria-label="Avto">
+            <option value="">Barcha avtolar</option>
+            {(cars as CarRef[] || []).map((c: CarRef) => (
+              <option key={c.id} value={c.id}>{c.vin}</option>
+            ))}
+          </Select>
+          <Button type="submit" className="sm:col-span-1">Qo‘llash</Button>
+        </form>
+      </Card>
 
-        {/* Avto va tur tanlash (scope=car => car majburiy) */}
-        <ExpenseScopeCarPicker cars={(cars as CarRef[]) || []} />
+      <Card title="Xarajat qo‘shish">
+        <form action={addExpense} className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          <RatePrefill currencyName="currency" dateName="occurred_at" rateName="rate_to_aed" />
+          <input name="occurred_at" type="date" required aria-label="Sana" className="border px-2 py-1 rounded" />
+          <input type="hidden" name="org_id" value={orgId || ""} />
+          <input name="amount" type="number" step="0.01" required placeholder="Miqdor" aria-label="Miqdor" className="border px-2 py-1 rounded" />
+          <input name="currency" required placeholder="Valyuta" aria-label="Valyuta" className="border px-2 py-1 rounded" />
+          <input name="rate_to_aed" type="number" step="0.000001" required placeholder="AED ga kurs" aria-label="AED ga kurs" className="border px-2 py-1 rounded" />
+          <select name="category" required aria-label="Toifa" className="border px-2 py-1 rounded">
+            <option value="purchase">Xarid</option>
+            <option value="transport">Transport</option>
+            <option value="repair">Ta&apos;mirlash</option>
+            <option value="detailing">Detalling</option>
+            <option value="ads">Reklama</option>
+            <option value="fees">To&apos;lov/Komissiya</option>
+            <option value="fuel">Yoqilg&apos;i</option>
+            <option value="parking">Parkovka</option>
+            <option value="rent">Ijara</option>
+            <option value="salary">Oylik</option>
+            <option value="other">Boshqa</option>
+          </select>
+          <input name="description" placeholder="Izoh" aria-label="Izoh" className="border px-2 py-1 rounded" />
 
+          {/* Avto va tur tanlash (scope=car => car majburiy) */}
+          <ExpenseScopeCarPicker cars={(cars as CarRef[]) || []} />
 
-        {/* Preview umumiy/shaxsiy taqsimoti */}
-        <OverheadPreview orgId={orgId} />
+          {/* Preview umumiy/shaxsiy taqsimoti */}
+          <OverheadPreview orgId={orgId} />
 
-        <button className="col-span-2 sm:col-span-1 bg-black text-white px-3 py-2 rounded">Xarajat qo‘shish</button>
+          <Button type="submit" className="col-span-2 sm:col-span-1">Xarajat qo‘shish</Button>
+          <p className="col-span-2 sm:col-span-4 text-xs text-gray-600 mt-1">
+            Eslatma: Avto tanlanmasa, xarajat “Umumiy/Shaxsiy” hisoblanadi va avtomatik ravishda faol mashinalar orasida taqsimlanadi.
+          </p>
+        </form>
+      </Card>
 
-        <p className="col-span-2 sm:col-span-4 text-xs text-gray-600 mt-1">
-
-          Eslatma: Avto tanlanmasa, xarajat “Umumiy/Shaxsiy” hisoblanadi va avtomatik ravishda faol mashinalar orasida taqsimlanadi.
-        </p>
-      </form>
 
       <div className="overflow-auto">
-        <table className="min-w-full border">
-          <thead className="bg-gray-50">
+      {(((rows as ExpenseRow[] | null)?.length || 0) === 0) ? (
+        <Card>
+          <EmptyState />
+        </Card>
+      ) : (
+        <TableShell>
+          <thead className="bg-gray-50 sticky top-0 z-10">
             <tr>
               <th className="p-2 border">Sana</th>
               <th className="p-2 border">Miqdor</th>
@@ -137,14 +192,17 @@ export default async function ExpensesPage() {
             {(rows as ExpenseRow[] || []).map((r: ExpenseRow) => (
               <tr key={r.id} className="odd:bg-white even:bg-gray-50">
                 <td className="p-2 border">{r.occurred_at}</td>
-                <td className="p-2 border">-{r.amount} {r.currency} (AED {(r.amount_aed_fils != null ? (r.amount_aed_fils / 100).toFixed(2) : '')})</td>
-                <td className="p-2 border">{r.category ?? ''}</td>
-                <td className="p-2 border">{r.car_id || r.scope || ''}</td>
-                <td className="p-2 border">{r.description}</td>
+                <td className="p-2 border w-44">-{r.amount} {r.currency} (AED {(r.amount_aed_fils!=null? (r.amount_aed_fils/100).toLocaleString('en-AE',{minimumFractionDigits:2,maximumFractionDigits:2}) : '')})</td>
+                <td className="p-2 border w-32">{r.category ?? ''}</td>
+                <td className="p-2 border w-40">{r.car_id || r.scope || ''}</td>
+                <td className="p-2 border w-80 whitespace-nowrap overflow-hidden text-ellipsis">{r.description}</td>
               </tr>
             ))}
           </tbody>
-        </table>
+        </TableShell>
+      )}
+
+
       </div>
     </div>
   );

@@ -1,9 +1,14 @@
 export const dynamic = "force-dynamic";
 
+import Card from "@/app/components/ui/Card";
+
 export default function GuidePage() {
   return (
-    <div className="prose max-w-none">
-      <h1>Qo&apos;llanma: Avtomobil CRM (Uzbek)</h1>
+    <div className="grid gap-6">
+      <h1 className="text-2xl font-semibold">Qo&apos;llanma</h1>
+      <Card>
+        <div className="prose max-w-none">
+          <h2>Avtomobil CRM (Uzbek)</h2>
 
       <h2>1) Asosiy bo&apos;limlar</h2>
       <ul>
@@ -50,6 +55,8 @@ export default function GuidePage() {
         <li><b>Daromad sahifasida sotuvni ko&apos;rsataymi?</b> — Yo&apos;q, sotuv avto sahifasida belgilanadi. Daromad sahifasi boshqa tushumlar uchundir.</li>
         <li><b>Umumiy/Shaxsiy taqsimot qachon ishlaydi?</b> — Avto tanlanmagan bo&apos;lsa va miqdor/kurs/sana to&apos;ldirilganida. Preview quyi qismda ko&apos;rinadi.</li>
       </ul>
+        </div>
+      </Card>
     </div>
   );
 }

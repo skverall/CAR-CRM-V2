@@ -1,6 +1,12 @@
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 export const dynamic = "force-dynamic";
 
+import Input from "@/app/components/ui/Input";
+import Button from "@/app/components/ui/Button";
+import Card from "@/app/components/ui/Card";
+import TableShell from "@/app/components/ui/TableShell";
+import EmptyState from "@/app/components/ui/EmptyState";
+
 
 type Movement = {
   id: string;
@@ -43,9 +49,20 @@ async function addMovement(formData: FormData) {
   ]);
 }
 
-export default async function CapitalPage() {
+export default async function CapitalPage({ searchParams }: { searchParams?: Record<string, string | string[] | undefined> }) {
   const db = getSupabaseAdmin();
-  const { data: movements } = await db.from("au_capital_movements").select("*").order("occurred_at", { ascending: false }).limit(100);
+  const sp = (searchParams || {}) as Record<string, string | undefined>;
+  const dateFrom = sp["date_from"];
+  const dateTo = sp["date_to"];
+
+  const { data: movements } = await (async () => {
+    let q = db.from("au_capital_movements").select("*").order("occurred_at", { ascending: false }).limit(100);
+    if (dateFrom) q = q.gte("occurred_at", dateFrom);
+    if (dateTo) q = q.lte("occurred_at", dateTo);
+    const { data } = await q;
+    return { data };
+  })();
+
   const movementsList = (movements as Movement[] | null) || [];
   const balances = movementsList.reduce<Record<string, number>>((acc, m) => {
     acc[m.account] = (acc[m.account] || 0) + Number(m.amount_aed || 0);
@@ -54,37 +71,54 @@ export default async function CapitalPage() {
   return (
     <div className="grid gap-6">
       <h1 className="text-2xl font-semibold">Kapital va harakatlar</h1>
+      <Card title="Filtrlar">
+        <form method="get" className="grid grid-cols-2 sm:grid-cols-6 gap-2">
+          <Input name="date_from" type="date" defaultValue={dateFrom || ""} aria-label="Boshlanish" />
+          <Input name="date_to" type="date" defaultValue={dateTo || ""} aria-label="Tugash" />
+          <div className="sm:col-span-3" />
+          <Button type="submit">Qollash</Button>
+        </form>
+      </Card>
 
-      <form action={addMovement} className="grid grid-cols-2 sm:grid-cols-6 gap-2 border p-4 rounded">
-        <input name="occurred_at" type="date" required className="border px-2 py-1 rounded col-span-2 sm:col-span-2" />
-        <select name="account" className="border px-2 py-1 rounded">
-          <option value="investor">investor</option>
-          <option value="business">business</option>
-          <option value="owner">owner</option>
-          <option value="assistant">assistant</option>
-        </select>
-        <select name="kind" className="border px-2 py-1 rounded">
-          <option value="deposit">Kiritish</option>
-          <option value="withdraw">Chiqib olish</option>
-          <option value="adjust">Togrilash</option>
-        </select>
-        <input name="amount_abs" type="number" step="0.01" min="0.01" placeholder="Miqdor (AED)" required className="border px-2 py-1 rounded" />
-        <input name="reason" placeholder="Izoh" className="border px-2 py-1 rounded col-span-2 sm:col-span-2" />
-        <button className="col-span-2 sm:col-span-1 bg-black text-white px-3 py-2 rounded">Qo‘shish</button>
-      </form>
+
+      <Card title="Kapital harakati qo‘shish">
+        <form action={addMovement} className="grid grid-cols-2 sm:grid-cols-6 gap-2">
+          <input name="occurred_at" type="date" required className="border px-2 py-1 rounded col-span-2 sm:col-span-2" />
+          <select name="account" className="border px-2 py-1 rounded">
+            <option value="investor">investor</option>
+            <option value="business">business</option>
+            <option value="owner">owner</option>
+            <option value="assistant">assistant</option>
+          </select>
+          <select name="kind" className="border px-2 py-1 rounded">
+            <option value="deposit">Kiritish</option>
+            <option value="withdraw">Chiqib olish</option>
+            <option value="adjust">To‘g‘rilash</option>
+          </select>
+          <input name="amount_abs" type="number" step="0.01" min="0.01" placeholder="Miqdor (AED)" required className="border px-2 py-1 rounded" />
+          <input name="reason" placeholder="Izoh" className="border px-2 py-1 rounded col-span-2 sm:col-span-2" />
+          <button className="col-span-2 sm:col-span-1 bg-black text-white px-3 py-2 rounded">Qo‘shish</button>
+        </form>
+      </Card>
+
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {(["investor","business","owner","assistant"] as const).map((k) => (
-          <div key={k} className="rounded border p-4">
+          <Card key={k}>
             <div className="text-sm text-gray-500">{k}</div>
             <div className="text-xl font-semibold">{(balances[k] || 0).toFixed(2)} AED</div>
-          </div>
+          </Card>
         ))}
       </div>
 
       <div className="overflow-auto">
-        <table className="min-w-full border">
-          <thead className="bg-gray-50">
+      {movementsList.length === 0 ? (
+        <Card>
+          <EmptyState />
+        </Card>
+      ) : (
+        <TableShell>
+          <thead className="bg-gray-50 sticky top-0 z-10">
             <tr>
               <th className="p-2 border">Sana</th>
               <th className="p-2 border">Hisob</th>
@@ -104,7 +138,8 @@ export default async function CapitalPage() {
               </tr>
             ))}
           </tbody>
-        </table>
+        </TableShell>
+      )}
       </div>
     </div>
   );
