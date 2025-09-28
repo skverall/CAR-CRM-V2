@@ -97,7 +97,7 @@ export default async function CarsPage() {
                 <td className="p-2 border">{c.make} {c.model} {c.model_year || ""}</td>
                 <td className="p-2 border">{c.purchase_price} {c.purchase_currency}</td>
                 <td className="p-2 border">{c.status}</td>
-                <td className="p-2 border">{fmtAED(profits[c.id] as number | null)}</td>
+                <td className={`p-2 border ${profits[c.id] == null ? '' : (profits[c.id] as number) > 0 ? 'text-green-700' : (profits[c.id] as number) < 0 ? 'text-red-700' : 'text-gray-700'}`}>{fmtAED(profits[c.id] as number | null)}</td>
                 <td className="p-2 border"><Link className="text-blue-600 underline" href={`/cars/${c.id}`}>Tafsilotlar</Link></td>
               </tr>
             ))}

@@ -14,6 +14,22 @@ type Car = {
   purchase_currency: string;
   purchase_rate_to_aed: number;
 };
+type CostRow = {
+  purchase_component_aed: number | null;
+  car_expenses_component_aed: number | null;
+  overhead_component_aed: number | null;
+  total_cost_aed: number | null;
+};
+
+type SaleIncomeRow = {
+  amount: number | null;
+  currency: string | null;
+  rate_to_aed: number | null;
+  amount_aed: number | null;
+  description?: string | null;
+  occurred_at: string;
+};
+
 
 type Expense = {
   id: string;
@@ -101,8 +117,26 @@ export default async function CarPage({ params }: { params: { id: string } }) {
   const canDistribute = carRow.status === "sold" && profit > 0 && (distributions || []).length === 0;
 
   const purchaseAED = Number(carRow.purchase_price) * Number(carRow.purchase_rate_to_aed);
-  const expensesAED = ((expenses as unknown as Expense[] | null) || []).reduce((a, e) => a + Number(e.amount_aed || 0), 0);
-  const incomesAED = ((incomes as unknown as Income[] | null) || []).reduce((a, i) => a + Number(i.amount_aed || 0), 0);
+  // Pull cost components from car_cost_view for accurate split of purchase vs expenses (direct + overhead)
+  const { data: costRow } = await db
+    .from('car_cost_view')
+    .select('purchase_component_aed, car_expenses_component_aed, overhead_component_aed, total_cost_aed')
+    .eq('id', id)
+    .single();
+  const cost = (costRow as CostRow) || ({} as CostRow);
+  const directExpensesAED = Number(cost.car_expenses_component_aed || 0);
+  const overheadAED = Number(cost.overhead_component_aed || 0);
+  const expensesAED = directExpensesAED + overheadAED;
+  // Find sale income (if recorded via [SALE])
+  const { data: saleIncomeRows } = await db
+    .from('au_incomes')
+    .select('amount, currency, rate_to_aed, amount_aed, description, occurred_at')
+    .eq('car_id', id)
+    .ilike('description', '%[SALE]%')
+    .order('occurred_at', { ascending: false })
+    .limit(1);
+  const saleIncome = ((saleIncomeRows || [])[0] as SaleIncomeRow) || null;
+  const saleAED = saleIncome ? (saleIncome.amount_aed ?? ((Number(saleIncome.amount || 0) * Number(saleIncome.rate_to_aed || 0)))) : 0;
 
   const order: Car["status"][] = ["available","repair","listed","sold","archived"];
   const curIdx = order.indexOf(carRow.status);
@@ -141,12 +175,30 @@ export default async function CarPage({ params }: { params: { id: string } }) {
         </div>
       </div>
 
-      <div className="border rounded p-3 bg-yellow-50 grid gap-2">
-        <div><b>Xarid</b>: {carRow.purchase_price} {carRow.purchase_currency} (AED {purchaseAED.toFixed(2)})</div>
-        <div className="text-sm text-gray-700">
-          Foyda = Tushum (AED {incomesAED.toFixed(2)}) − (Xarid narxi AED {purchaseAED.toFixed(2)} + Bog‘liq xarajatlar AED {expensesAED.toFixed(2)})
+      <div className="border rounded p-4 bg-yellow-50 grid gap-2">
+        <div className="font-semibold">Umumiy ko‘rsatkichlar</div>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          <div className="border rounded p-2 bg-white">
+            <div className="text-xs text-gray-600">Xarid</div>
+            <div className="text-sm">{carRow.purchase_price} {carRow.purchase_currency}</div>
+            <div className="text-sm">AED {purchaseAED.toFixed(2)}</div>
+          </div>
+          <div className="border rounded p-2 bg-white">
+            <div className="text-xs text-gray-600">Xarajatlar (AED)</div>
+            <div className="text-sm">To‘g‘ridan-to‘grilar: {directExpensesAED.toFixed(2)}</div>
+            <div className="text-sm">Umumiy (overhead): {overheadAED.toFixed(2)}</div>
+            <div className="text-sm font-medium">Jami: {expensesAED.toFixed(2)}</div>
+          </div>
+          <div className="border rounded p-2 bg-white">
+            <div className="text-xs text-gray-600">Sotuv</div>
+            <div className="text-sm">{saleIncome ? `${saleIncome.amount} ${saleIncome.currency}` : '—'}</div>
+            <div className="text-sm">AED {Number(saleAED || 0).toFixed(2)}</div>
+          </div>
+          <div className="border rounded p-2 bg-white">
+            <div className="text-xs text-gray-600">Net Profit (AED)</div>
+            <div className={profit >= 0 ? "text-green-700 font-semibold" : "text-red-700 font-semibold"}>{profit.toFixed(2)}</div>
+          </div>
         </div>
-        <div><b>Yakuniy foyda (AED)</b>: <span className={profit >= 0 ? "text-green-700" : "text-red-700"}>{profit.toFixed(2)} AED</span></div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
