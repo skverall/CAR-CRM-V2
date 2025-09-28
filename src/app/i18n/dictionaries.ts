@@ -267,6 +267,8 @@ export const dictionaries: Record<LangCode, Record<string, unknown>> = {
         description: "Izoh",
         car: "Avto",
       },
+    },
+
     fx: {
       title: "Valyuta kurslari",
       filters: "Filtrlar",
@@ -460,7 +462,6 @@ export const dictionaries: Record<LangCode, Record<string, unknown>> = {
       },
     },
 
-    },
     incomes: {
       title: "Доходы (вручную)",
       filters: "Фильтры",
@@ -501,19 +502,10 @@ export const dictionaries: Record<LangCode, Record<string, unknown>> = {
         assistant: "ассистент",
       },
     },
-    reports: {
-      title: "Отчеты",
-      export: {
-        carsCsv: "CSV — Автомобили",
-        expensesCsv: "CSV — Расходы",
-        incomesCsv: "CSV — Доходы",
-        movementsCsv: "CSV — Движения капитала",
-        dailyExpenses: "Ежедневные расходы",
-      }
-    },
+
     guide: {
       title: "Руководство",
-
+    }
   }
-};
+}};
 
