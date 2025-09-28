@@ -59,7 +59,8 @@ export async function GET(request: NextRequest) {
         ),
         au_cars!inner(
           model_year,
-          decision_tag
+          decision_tag,
+          purchase_price_aed
         )
       `)
       .eq('org_id', orgId);
@@ -120,21 +121,26 @@ export async function GET(request: NextRequest) {
     }
 
     // Transform data to match API contract
-    const cars = (carsData || []).map((car: Record<string, unknown>) => ({
-      id: car.id as string,
-      vin: car.vin as string,
-      make: car.make as string,
-      model: car.model as string,
-      model_year: (car as Record<string, unknown>).au_cars ? ((car as Record<string, unknown>).au_cars as Record<string, unknown>).model_year as number || null : null,
-      status: car.status as 'in_transit' | 'for_sale' | 'reserved' | 'sold' | 'archived',
-      purchase_date: car.purchase_date as string,
-      cost_base_aed: car.total_cost_aed as number,
-      sold_price_aed: (car as Record<string, unknown>).car_profit_view ? ((car as Record<string, unknown>).car_profit_view as Record<string, unknown>).sold_price_aed as number || null : null,
-      profit_aed: (car as Record<string, unknown>).car_profit_view ? ((car as Record<string, unknown>).car_profit_view as Record<string, unknown>).profit_aed as number || null : null,
-      margin_pct: (car as Record<string, unknown>).car_profit_view ? ((car as Record<string, unknown>).car_profit_view as Record<string, unknown>).margin_pct as number || null : null,
-      days_on_lot: (car as Record<string, unknown>).car_profit_view ? ((car as Record<string, unknown>).car_profit_view as Record<string, unknown>).days_on_lot as number || null : null,
-      decision_tag: (car as Record<string, unknown>).au_cars ? ((car as Record<string, unknown>).au_cars as Record<string, unknown>).decision_tag as 'take' | 'skip' | null || null : null
-    }));
+    const cars = (carsData || []).map((car: Record<string, unknown>) => {
+      const au = (car as Record<string, unknown>).au_cars as Record<string, unknown> | undefined;
+      const pv = (car as Record<string, unknown>).car_profit_view as Record<string, unknown> | undefined;
+      return {
+        id: car.id as string,
+        vin: car.vin as string,
+        make: car.make as string,
+        model: car.model as string,
+        model_year: au ? (au.model_year as number) || null : null,
+        status: car.status as 'in_transit' | 'for_sale' | 'reserved' | 'sold' | 'archived',
+        purchase_date: car.purchase_date as string,
+        purchase_price_aed: au && typeof au.purchase_price_aed === 'number' ? (au.purchase_price_aed as number) / 100 : null,
+        cost_base_aed: car.total_cost_aed as number,
+        sold_price_aed: pv ? (pv.sold_price_aed as number) || null : null,
+        profit_aed: pv ? (pv.profit_aed as number) || null : null,
+        margin_pct: pv ? (pv.margin_pct as number) || null : null,
+        days_on_lot: pv ? (pv.days_on_lot as number) || null : null,
+        decision_tag: au ? (au.decision_tag as 'take' | 'skip' | null) || null : null
+      };
+    });
 
     const response: ApiResponse<CarListResponse> = {
       data: {

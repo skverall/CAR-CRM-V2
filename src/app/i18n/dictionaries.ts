@@ -5,12 +5,6 @@ export const dictionaries: Record<LangCode, Record<string, unknown>> = {
     nav: {
       panel: "Panel",
       cars: "Avtomobillar",
-      expenses: "Xarajatlar",
-      incomes: "Daromadlar (qo'lda)",
-      fx: "Kurslar",
-      capital: "Kapital",
-      reports: "Hisobotlar",
-      guide: "Qo'llanma",
     },
     sell: {
       cta: "Sotish",
@@ -44,6 +38,7 @@ export const dictionaries: Record<LangCode, Record<string, unknown>> = {
         car: "Avtomobil",
         status: "Holat",
         purchaseDate: "Xarid sanasi",
+        purchasePrice: "Xarid narxi",
         totalCost: "Tan narx (AED)",
         soldPrice: "Sotuv narxi",
         profit: "Foyda",
@@ -202,18 +197,26 @@ export const dictionaries: Record<LangCode, Record<string, unknown>> = {
     },
     dashboard: {
       title: "Avtomobil CRM Boshqaruv Paneli",
-      last30: "Songgi 30 kun malumotlari",
+      last30: "So‘nggi 30 kun ma‘lumotlari",
       kpi: {
         totalProfit: "Umumiy foyda",
-        avgMargin: "Ortacha marja",
-        medianDays: "Ortacha sotish vaqti",
+        avgMargin: "O‘rtacha marja",
+        medianDays: "O‘rtacha sotish vaqti",
         activeCars: "Faol avtomobillar",
       },
+      cards: {
+        total: "Jami avtomobillar",
+        in_transit: "Yo'lda",
+        garage: "Garajda",
+        for_sale: "Sotuvda",
+        sold: "Sotilgan",
+        reserved: "Band"
+      },
       inventory: { title: "Inventar holati" },
-      topProfit: { title: "Eng foydali avtomobillar", empty: "Malumot yoq" },
-      lossCars: { title: "Zarar keltirgan avtomobillar", empty: "Zarar yoq 09f" },
-      brands: { title: "Brendlar boyicha taqsimot", unit: "ta avtomobil", avgProfit: "Ortacha foyda:", avgMargin: "Ortacha marja:" },
-      activity: { title: "Songgi faoliyat" },
+      topProfit: { title: "Eng foydali avtomobillar", empty: "Ma‘lumot yo‘q" },
+      lossCars: { title: "Zarar keltirgan avtomobillar", empty: "Zarar yo‘q 🎉" },
+      brands: { title: "Brendlar bo‘yicha taqsimot", unit: "ta avtomobil", avgProfit: "O‘rtacha foyda:", avgMargin: "O‘rtacha marja:" },
+      activity: { title: "So‘nggi faoliyat" },
     },
 
     common: {
@@ -250,7 +253,7 @@ export const dictionaries: Record<LangCode, Record<string, unknown>> = {
         other: "Boshqa",
       },
       scopeNone: "(Umumiy/Shaxsiy)",
-      quickAdd: { cta: "Tez qo‘shish", title: "Xarajat tez qo‘shish" },
+      quickAdd: { cta: "Xarajat qo‘shish", title: "Xarajat tez qo‘shish" },
       noteOverhead: "Eslatma: Avto tanlanmasa, xarajat \u201cUmumiy/Shaxsiy\u201d hisoblanadi va avtomatik ravishda faol mashinalar orasida taqsimlanadi.",
 
     },
@@ -302,12 +305,6 @@ export const dictionaries: Record<LangCode, Record<string, unknown>> = {
     nav: {
       panel: "Панель",
       cars: "Автомобили",
-      expenses: "Расходы",
-      incomes: "Доходы (вручную)",
-      fx: "Курсы",
-      capital: "Капитал",
-      reports: "Отчеты",
-      guide: "Руководство",
     },
     sell: {
       cta: "Продать",
@@ -341,6 +338,7 @@ export const dictionaries: Record<LangCode, Record<string, unknown>> = {
         car: "Автомобиль",
         status: "Статус",
         purchaseDate: "Дата покупки",
+        purchasePrice: "Закупочная цена",
         totalCost: "Себестоимость (AED)",
         soldPrice: "Цена продажи",
         profit: "Прибыль",
@@ -405,7 +403,7 @@ export const dictionaries: Record<LangCode, Record<string, unknown>> = {
         other: "Другое",
       },
       scopeNone: "(Общий/Личный)",
-      quickAdd: { cta: "Быстро добавить", title: "Быстрое добавление расхода" },
+      quickAdd: { cta: "Добавить расход", title: "Быстрое добавление расхода" },
       noteOverhead: "Если авто не выбрано, расход считается \u00abОбщий/Личный\u00bb и автоматически распределяется между активными машинами.",
 
     dashboard: {
@@ -416,6 +414,14 @@ export const dictionaries: Record<LangCode, Record<string, unknown>> = {
         avgMargin: "Средняя маржа",
         medianDays: "Медианное время продажи",
         activeCars: "Активные авто",
+      },
+      cards: {
+        total: "Всего автомобилей",
+        in_transit: "В пути",
+        garage: "В гараже",
+        for_sale: "В продаже",
+        sold: "Продано",
+        reserved: "В резерве"
       },
       inventory: { title: "Статус инвентаря" },
       topProfit: { title: "Самые прибыльные авто", empty: "Нет данных" },

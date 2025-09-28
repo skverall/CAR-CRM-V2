@@ -10,12 +10,6 @@ export default function Nav() {
   const links = [
     { href: "/", label: t("nav.panel") },
     { href: "/cars", label: t("nav.cars") },
-    { href: "/expenses", label: t("nav.expenses") },
-    { href: "/incomes", label: t("nav.incomes") },
-    { href: "/fx", label: t("nav.fx") },
-    { href: "/capital", label: t("nav.capital") },
-    { href: "/reports", label: t("nav.reports") },
-    { href: "/guide", label: t("nav.guide") },
   ];
   return (
     <nav className="mx-auto max-w-6xl px-4 py-3 flex items-center gap-4 overflow-x-auto">
