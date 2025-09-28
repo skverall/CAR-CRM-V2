@@ -136,8 +136,8 @@ export default async function DailyExpensesPage({ searchParams }: { searchParams
       <div>
         <a
           className="underline text-blue-600"
-          href={`/api/export?type=expenses&start=${encodeURIComponent(start)}&end=${encodeURIComponent(end)}`}
-        >CSV yuklab olish — Xarajatlar (davr: {start} → {end})</a>
+          href={`/api/export?type=expenses&start=${encodeURIComponent(start)}&end=${encodeURIComponent(end)}&scope=${encodeURIComponent(scope)}&car_id=${encodeURIComponent(carId)}&category=${encodeURIComponent(category)}`}
+        >CSV yuklab olish — Xarajatlar (filtrlar saqlanadi, davr: {start} → {end})</a>
       </div>
     </div>
   );

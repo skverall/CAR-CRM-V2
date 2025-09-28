@@ -16,6 +16,9 @@ type CarRow = {
   purchase_rate_to_aed: number;
 };
 
+
+function fmtAED(n: number | null) { if (n == null) return "—"; return new Intl.NumberFormat('en-AE', { style: 'currency', currency: 'AED', maximumFractionDigits: 2 }).format(n); }
+
 type CarInsert = Pick<CarRow, "vin" | "make" | "model" | "model_year" | "purchase_date" | "purchase_currency" | "purchase_rate_to_aed" | "purchase_price" | "status"> & { source?: string | null };
 
 async function getCars(): Promise<CarRow[]> {
@@ -94,7 +97,7 @@ export default async function CarsPage() {
                 <td className="p-2 border">{c.make} {c.model} {c.model_year || ""}</td>
                 <td className="p-2 border">{c.purchase_price} {c.purchase_currency}</td>
                 <td className="p-2 border">{c.status}</td>
-                <td className="p-2 border">{profits[c.id] == null ? "—" : (profits[c.id] as number).toFixed(2)}</td>
+                <td className="p-2 border">{fmtAED(profits[c.id] as number | null)}</td>
                 <td className="p-2 border"><Link className="text-blue-600 underline" href={`/cars/${c.id}`}>Tafsilotlar</Link></td>
               </tr>
             ))}

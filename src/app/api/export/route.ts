@@ -26,11 +26,70 @@ export async function GET(req: NextRequest) {
   const type = (searchParams.get("type") || "").toLowerCase();
   const db = getSupabaseAdmin();
 
+  type ExpenseRowSelect = {
+    id: string;
+    occurred_at: string;
+    amount: number | null;
+    currency: string | null;
+    rate_to_aed: number | null;
+    amount_aed_fils: number | null;
+    scope: string;
+    category: string;
+    description: string | null;
+    car_id: string | null;
+    au_cars?: { vin: string | null } | null;
+  };
+
+
   let rows: Row[] = [];
   switch (type) {
     case "expenses": {
-      const { data } = await db.from("au_expenses").select("id,occurred_at,amount,currency,amount_aed,expense_type,car_id,general_account,description").order("occurred_at", { ascending: false }).limit(500);
-      rows = data || [];
+      const orgId = searchParams.get("org_id") || "";
+      const start = searchParams.get("start");
+      const end = searchParams.get("end");
+      const scope = searchParams.get("scope");
+      const carId = searchParams.get("car_id");
+      const category = searchParams.get("category");
+
+      let query = db
+        .from("au_expenses")
+        .select(`
+          id,
+          occurred_at,
+          amount,
+          currency,
+          rate_to_aed,
+          amount_aed_fils,
+          scope,
+          category,
+          description,
+          car_id,
+          au_cars(vin)
+        `)
+        .eq("org_id", orgId)
+        .order("occurred_at", { ascending: false })
+        .limit(2000);
+
+      if (start) query = query.gte("occurred_at", start);
+      if (end) query = query.lte("occurred_at", end);
+      if (scope) query = query.eq("scope", scope);
+      if (carId) query = query.eq("car_id", carId);
+      if (category) query = query.eq("category", category);
+
+      const { data } = await query;
+      const arr = (data as ExpenseRowSelect[] | null) || [];
+      rows = arr.map((r) => ({
+        occurred_at: r.occurred_at,
+        scope: r.scope,
+        category: r.category,
+        amount: r.amount ?? "",
+        currency: r.currency ?? "",
+        rate_to_aed: r.rate_to_aed ?? "",
+        amount_aed: r.amount_aed_fils != null ? (Number(r.amount_aed_fils) / 100).toFixed(2) : "",
+        car_id: r.car_id ?? "",
+        car_vin: r.au_cars?.vin ?? "",
+        description: r.description ?? "",
+      }));
       break;
     }
     case "incomes": {
