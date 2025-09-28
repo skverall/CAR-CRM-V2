@@ -2,6 +2,7 @@ import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 import { DashboardKPIs, TopProfitCar, BrandDistribution } from "@/types/api";
 
 export const dynamic = "force-dynamic";
+import Text from "@/app/components/i18n/Text";
 
 interface DashboardData {
   kpis: DashboardKPIs;
@@ -185,37 +186,37 @@ export default async function Dashboard() {
   return (
     <div className="grid gap-6 p-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">Avtomobil CRM Boshqaruv Paneli</h1>
+        <h1 className="text-3xl font-bold"><Text path="dashboard.title" fallback="Avtomobil CRM Boshqaruv Paneli" /></h1>
         <div className="text-sm text-gray-500">
-          So&apos;nggi 30 kun ma&apos;lumotlari
+          <Text path="dashboard.last30" fallback="So‘nggi 30 kun ma‘lumotlari" />
         </div>
       </div>
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-green-50 border border-green-200 rounded-lg p-6">
-          <div className="text-sm font-medium text-green-600">Umumiy foyda</div>
+          <div className="text-sm font-medium text-green-600"><Text path="dashboard.kpi.totalProfit" fallback="Umumiy foyda" /></div>
           <div className="text-2xl font-bold text-green-900">
             {dashboardData.kpis.profit_total_aed.toLocaleString()} AED
           </div>
         </div>
 
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-          <div className="text-sm font-medium text-blue-600">O&apos;rtacha marja</div>
+          <div className="text-sm font-medium text-blue-600"><Text path="dashboard.kpi.avgMargin" fallback="O‘rtacha marja" /></div>
           <div className="text-2xl font-bold text-blue-900">
             {dashboardData.kpis.avg_margin_pct.toFixed(1)}%
           </div>
         </div>
 
         <div className="bg-purple-50 border border-purple-200 rounded-lg p-6">
-          <div className="text-sm font-medium text-purple-600">O&apos;rtacha sotish vaqti</div>
+          <div className="text-sm font-medium text-purple-600"><Text path="dashboard.kpi.medianDays" fallback="O‘rtacha sotish vaqti" /></div>
           <div className="text-2xl font-bold text-purple-900">
             {dashboardData.kpis.median_days_to_sell} kun
           </div>
         </div>
 
         <div className="bg-orange-50 border border-orange-200 rounded-lg p-6">
-          <div className="text-sm font-medium text-orange-600">Faol avtomobillar</div>
+          <div className="text-sm font-medium text-orange-600"><Text path="dashboard.kpi.activeCars" fallback="Faol avtomobillar" /></div>
           <div className="text-2xl font-bold text-orange-900">
             {dashboardData.kpis.inventory_counts.for_sale + dashboardData.kpis.inventory_counts.in_transit}
           </div>
@@ -224,37 +225,37 @@ export default async function Dashboard() {
 
       {/* Inventory Status */}
       <div className="bg-white border rounded-lg p-6">
-        <h2 className="text-xl font-semibold mb-4">Inventar holati</h2>
+        <h2 className="text-xl font-semibold mb-4"><Text path="dashboard.inventory.title" fallback="Inventar holati" /></h2>
         <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
           <div className="text-center">
             <div className="text-2xl font-bold text-blue-600">
               {dashboardData.kpis.inventory_counts.in_transit}
             </div>
-            <div className="text-sm text-gray-600">Yo&apos;lda</div>
+            <div className="text-sm text-gray-600"><Text path="status.in_transit" fallback="Yo‘lda" /></div>
           </div>
           <div className="text-center">
             <div className="text-2xl font-bold text-green-600">
               {dashboardData.kpis.inventory_counts.for_sale}
             </div>
-            <div className="text-sm text-gray-600">Sotuvda</div>
+            <div className="text-sm text-gray-600"><Text path="status.for_sale" fallback="Sotuvda" /></div>
           </div>
           <div className="text-center">
             <div className="text-2xl font-bold text-yellow-600">
               {dashboardData.kpis.inventory_counts.reserved}
             </div>
-            <div className="text-sm text-gray-600">Band</div>
+            <div className="text-sm text-gray-600"><Text path="status.reserved" fallback="Band" /></div>
           </div>
           <div className="text-center">
             <div className="text-2xl font-bold text-purple-600">
               {dashboardData.kpis.inventory_counts.sold}
             </div>
-            <div className="text-sm text-gray-600">Sotilgan</div>
+            <div className="text-sm text-gray-600"><Text path="status.sold" fallback="Sotilgan" /></div>
           </div>
           <div className="text-center">
             <div className="text-2xl font-bold text-gray-600">
               {dashboardData.kpis.inventory_counts.archived}
             </div>
-            <div className="text-sm text-gray-600">Arxivlangan</div>
+            <div className="text-sm text-gray-600"><Text path="status.archived" fallback="Arxiv" /></div>
           </div>
         </div>
       </div>
@@ -262,7 +263,7 @@ export default async function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Top Profit Cars */}
         <div className="bg-white border rounded-lg p-6">
-          <h2 className="text-xl font-semibold mb-4 text-green-700">Eng foydali avtomobillar</h2>
+          <h2 className="text-xl font-semibold mb-4 text-green-700"><Text path="dashboard.topProfit.title" fallback="Eng foydali avtomobillar" /></h2>
           <div className="space-y-3">
             {dashboardData.topProfitCars.length > 0 ? (
               dashboardData.topProfitCars.map((car) => (
@@ -278,14 +279,14 @@ export default async function Dashboard() {
                 </div>
               ))
             ) : (
-              <div className="text-gray-500 text-center py-4">Ma&apos;lumot yo&apos;q</div>
+              <div className="text-gray-500 text-center py-4"><Text path="dashboard.topProfit.empty" fallback="Ma‘lumot yo‘q" /></div>
             )}
           </div>
         </div>
 
         {/* Loss Cars */}
         <div className="bg-white border rounded-lg p-6">
-          <h2 className="text-xl font-semibold mb-4 text-red-700">Zarar keltirgan avtomobillar</h2>
+          <h2 className="text-xl font-semibold mb-4 text-red-700"><Text path="dashboard.lossCars.title" fallback="Zarar keltirgan avtomobillar" /></h2>
           <div className="space-y-3">
             {dashboardData.lossCars.length > 0 ? (
               dashboardData.lossCars.map((car) => (
@@ -301,7 +302,7 @@ export default async function Dashboard() {
                 </div>
               ))
             ) : (
-              <div className="text-gray-500 text-center py-4">Zarar yo&apos;q 🎉</div>
+              <div className="text-gray-500 text-center py-4"><Text path="dashboard.lossCars.empty" fallback="Zarar yo‘q 🎉" /></div>
             )}
           </div>
         </div>
@@ -309,17 +310,17 @@ export default async function Dashboard() {
 
       {/* Brand Distribution */}
       <div className="bg-white border rounded-lg p-6">
-        <h2 className="text-xl font-semibold mb-4">Brendlar bo&apos;yicha taqsimot</h2>
+        <h2 className="text-xl font-semibold mb-4"><Text path="dashboard.brands.title" fallback="Brendlar bo‘yicha taqsimot" /></h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {dashboardData.brandDistribution.slice(0, 6).map((brand) => (
             <div key={brand.brand} className="p-4 border rounded-lg">
               <div className="font-medium">{brand.brand}</div>
-              <div className="text-sm text-gray-600">{brand.count} ta avtomobil</div>
+              <div className="text-sm text-gray-600">{brand.count} <Text path="dashboard.brands.unit" fallback="ta avtomobil" /></div>
               <div className="text-sm">
-                O&apos;rtacha foyda: <span className="font-medium">{brand.avg_profit_aed.toLocaleString()} AED</span>
+                <Text path="dashboard.brands.avgProfit" fallback="O‘rtacha foyda:" /> <span className="font-medium">{brand.avg_profit_aed.toLocaleString()} AED</span>
               </div>
               <div className="text-sm">
-                O&apos;rtacha marja: <span className="font-medium">{brand.avg_margin_pct.toFixed(1)}%</span>
+                <Text path="dashboard.brands.avgMargin" fallback="O‘rtacha marja:" /> <span className="font-medium">{brand.avg_margin_pct.toFixed(1)}%</span>
               </div>
             </div>
           ))}
@@ -328,7 +329,7 @@ export default async function Dashboard() {
 
       {/* Recent Activity */}
       <div className="bg-white border rounded-lg p-6">
-        <h2 className="text-xl font-semibold mb-4">So&apos;nggi faoliyat</h2>
+        <h2 className="text-xl font-semibold mb-4"><Text path="dashboard.activity.title" fallback="So‘nggi faoliyat" /></h2>
         <div className="space-y-2">
           {dashboardData.recentActivity.map((activity) => (
             <div key={activity.id} className="flex justify-between items-center p-3 hover:bg-gray-50 rounded">

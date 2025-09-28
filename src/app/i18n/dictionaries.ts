@@ -69,7 +69,6 @@ export const dictionaries: Record<LangCode, Record<string, unknown>> = {
       addCta: "Qo‘shish",
 
     },
-    table: {
     reports: {
       title: "Hisobotlar",
       export: {
@@ -81,14 +80,69 @@ export const dictionaries: Record<LangCode, Record<string, unknown>> = {
       }
     },
     guide: {
-      title: "Qo'\llanma",
+      title: "Qo'llanma",
     },
-
+    table: {
       search: "Qidiruv...",
       exportCsv: "CSV eksport",
       totalsAed: "Jami (AED):",
     },
+    dashboard: {
+      title: "Avtomobil CRM Boshqaruv Paneli",
+      last30: "Songgi 30 kun malumotlari",
+      kpi: {
+        totalProfit: "Umumiy foyda",
+        avgMargin: "Ortacha marja",
+        medianDays: "Ortacha sotish vaqti",
+        activeCars: "Faol avtomobillar",
+      },
+      inventory: { title: "Inventar holati" },
+      topProfit: { title: "Eng foydali avtomobillar", empty: "Malumot yoq" },
+      lossCars: { title: "Zarar keltirgan avtomobillar", empty: "Zarar yoq 09f" },
+      brands: { title: "Brendlar boyicha taqsimot", unit: "ta avtomobil", avgProfit: "Ortacha foyda:", avgMargin: "Ortacha marja:" },
+      activity: { title: "Songgi faoliyat" },
+    },
+    reports: {
+      title: "Hisobotlar",
+      export: {
+        carsCsv: "CSV yuklab olish  Avtomobillar",
+        expensesCsv: "CSV yuklab olish  Xarajatlar",
+        incomesCsv: "CSV yuklab olish  Daromad",
+        movementsCsv: "CSV yuklab olish  Kapital harakati",
+        dailyExpenses: "Kunlik xarajatlar (hisobot)",
+      },
+      dailyExpensesPage: {
+        title: "Kunlik xarajatlar",
+        today: "Bugun",
+        yesterday: "Kecha",
+        filters: {
+          scope: "Scope",
+          all: "Hammasi",
+          overhead: "Umumiy",
+          personal: "Shaxsiy",
+          onlyCar: "Faqat avto (car_id)",
+          car: "Avto",
+          category: "Toifa",
+        },
+        summary: {
+          totalAed: "Jami AED",
+          byCategory: "Toifa boyicha",
+          byCar: "Avto/Hisob boyicha",
+        },
+        table: {
+          date: "Sana",
+          amountAed: "Miqdor (AED)",
+          category: "Toifa",
+          car: "Avto/Hisob",
+          description: "Izoh",
+        },
+        scope: { personal: "Shaxsiy" },
+        export: { expensesCsvWithRange: "CSV yuklab olish  Xarajatlar (filtrlar saqlanadi, davr)" },
+      },
+    },
+
     common: {
+
       apply: "Qo‘llash",
       cancel: "Bekor qilish",
       save: "Saqlash",
@@ -226,19 +280,6 @@ export const dictionaries: Record<LangCode, Record<string, unknown>> = {
         direct: "Прямые",
         overhead: "Накладные",
         total: "Итого",
-    reports: {
-      title: "Отчеты",
-      export: {
-        carsCsv: "CSV — Автомобили",
-        expensesCsv: "CSV — Расходы",
-        incomesCsv: "CSV — Доходы",
-        movementsCsv: "CSV — Движения капитала",
-        dailyExpenses: "Ежедневные расходы",
-      }
-    },
-    guide: {
-      title: "Руководство",
-    },
 
         sale: "Продажа",
         netProfit: "Чистая прибыль (AED)",
@@ -290,6 +331,60 @@ export const dictionaries: Record<LangCode, Record<string, unknown>> = {
       quickAdd: { cta: "Быстро добавить", title: "Быстрое добавление расхода" },
       noteOverhead: "Если авто не выбрано, расход считается \u00abОбщий/Личный\u00bb и автоматически распределяется между активными машинами.",
 
+    dashboard: {
+      title: "Панель управления",
+      last30: "Данные за последние 30 дней",
+      kpi: {
+        totalProfit: "Общая прибыль",
+        avgMargin: "Средняя маржа",
+        medianDays: "Медианное время продажи",
+        activeCars: "Активные авто",
+      },
+      inventory: { title: "Статус инвентаря" },
+      topProfit: { title: "Самые прибыльные авто", empty: "Нет данных" },
+      lossCars: { title: "Убыточные авто", empty: "Убытков нет 🎉" },
+      brands: { title: "Распределение по брендам", unit: "авто", avgProfit: "Средняя прибыль:", avgMargin: "Средняя маржа:" },
+      activity: { title: "Последняя активность" },
+    },
+    reports: {
+      title: "Отчеты",
+      export: {
+        carsCsv: "CSV — Автомобили",
+        expensesCsv: "CSV — Расходы",
+        incomesCsv: "CSV — Доходы",
+        movementsCsv: "CSV — Движения капитала",
+        dailyExpenses: "Ежедневные расходы",
+      },
+      dailyExpensesPage: {
+        title: "Ежедневные расходы",
+        today: "Сегодня",
+        yesterday: "Вчера",
+        filters: {
+          scope: "Область",
+          all: "Все",
+          overhead: "Общий",
+          personal: "Личный",
+          onlyCar: "Только авто (car_id)",
+          car: "Авто",
+          category: "Категория",
+        },
+        summary: {
+          totalAed: "Итого AED",
+          byCategory: "По категориям",
+          byCar: "По авто/счету",
+        },
+        table: {
+          date: "Дата",
+          amountAed: "Сумма (AED)",
+          category: "Категория",
+          car: "Авто/Счет",
+          description: "Описание",
+        },
+        scope: { personal: "Личный" },
+        export: { expensesCsvWithRange: "CSV — Расходы (сохранены фильтры, период)" },
+      },
+    },
+
     },
     incomes: {
       title: "Доходы (вручную)",
@@ -331,6 +426,20 @@ export const dictionaries: Record<LangCode, Record<string, unknown>> = {
         assistant: "ассистент",
       },
     },
+    reports: {
+      title: "Отчеты",
+      export: {
+        carsCsv: "CSV — Автомобили",
+        expensesCsv: "CSV — Расходы",
+        incomesCsv: "CSV — Доходы",
+        movementsCsv: "CSV — Движения капитала",
+        dailyExpenses: "Ежедневные расходы",
+      }
+    },
+    guide: {
+      title: "Руководство",
+    },
+
 
   },
 };

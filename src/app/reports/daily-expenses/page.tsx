@@ -1,5 +1,6 @@
 import { getSupabaseAdmin } from '@/lib/supabaseAdmin';
 export const dynamic = 'force-dynamic';
+import Text from "@/app/components/i18n/Text";
 
 function toISODate(d: Date) { return d.toISOString().slice(0,10); }
 
@@ -36,26 +37,26 @@ export default async function DailyExpensesPage({ searchParams }: { searchParams
   return (
     <div className="grid gap-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">Kunlik xarajatlar</h1>
+        <h1 className="text-2xl font-semibold"><Text path="reports.dailyExpensesPage.title" fallback="Kunlik xarajatlar" /></h1>
         <div className="flex items-center gap-2 text-sm">
-          <a className="underline" href={`?start=${toISODate(today)}&end=${toISODate(today)}`}>Bugun</a>
-          <a className="underline" href={`?start=${yesterday}&end=${yesterday}`}>Kecha</a>
+          <a className="underline" href={`?start=${toISODate(today)}&end=${toISODate(today)}`}><Text path="reports.dailyExpensesPage.today" fallback="Bugun" /></a>
+          <a className="underline" href={`?start=${yesterday}&end=${yesterday}`}><Text path="reports.dailyExpensesPage.yesterday" fallback="Kecha" /></a>
         </div>
       {/* Filters */}
       <form method="GET" className="flex flex-wrap items-end gap-2 border rounded p-3">
         <input type="hidden" name="start" value={start} />
         <input type="hidden" name="end" value={end} />
         <div className="grid gap-1">
-          <label className="text-xs text-gray-600">Scope</label>
+          <label className="text-xs text-gray-600"><Text path="reports.dailyExpensesPage.filters.scope" fallback="Scope" /></label>
           <select name="scope" defaultValue={scope} className="border px-2 py-1 rounded">
-            <option value="">Hammasi</option>
-            <option value="overhead">Umumiy</option>
-            <option value="personal">Shaxsiy</option>
-            <option value="car">Faqat avto (car_id)</option>
+            <option value=""><Text path="reports.dailyExpensesPage.filters.all" fallback="Hammasi" /></option>
+            <option value="overhead"><Text path="reports.dailyExpensesPage.filters.overhead" fallback="Umumiy" /></option>
+            <option value="personal"><Text path="reports.dailyExpensesPage.filters.personal" fallback="Shaxsiy" /></option>
+            <option value="car"><Text path="reports.dailyExpensesPage.filters.onlyCar" fallback="Faqat avto (car_id)" /></option>
           </select>
         </div>
         <div className="grid gap-1">
-          <label className="text-xs text-gray-600">Avto</label>
+          <label className="text-xs text-gray-600"><Text path="reports.dailyExpensesPage.filters.car" fallback="Avto" /></label>
           <select name="car_id" defaultValue={carId} className="border px-2 py-1 rounded">
             <option value="">—</option>
             {carOptions.map((c) => (
@@ -64,34 +65,34 @@ export default async function DailyExpensesPage({ searchParams }: { searchParams
           </select>
         </div>
         <div className="grid gap-1">
-          <label className="text-xs text-gray-600">Toifa</label>
+          <label className="text-xs text-gray-600"><Text path="reports.dailyExpensesPage.filters.category" fallback="Toifa" /></label>
           <select name="category" defaultValue={category} className="border px-2 py-1 rounded">
             <option value="">—</option>
-            <option value="purchase">Xarid</option>
-            <option value="transport">Transport</option>
-            <option value="repair">Ta&apos;mirlash</option>
-            <option value="detailing">Detalling</option>
-            <option value="ads">Reklama</option>
-            <option value="fees">To&apos;lov/Komissiya</option>
-            <option value="fuel">Yoqilg&apos;i</option>
-            <option value="parking">Parkovka</option>
-            <option value="rent">Ijara</option>
-            <option value="salary">Oylik</option>
-            <option value="other">Boshqa</option>
+            <option value="purchase"><Text path="expenses.categories.purchase" fallback="Xarid" /></option>
+            <option value="transport"><Text path="expenses.categories.transport" fallback="Transport" /></option>
+            <option value="repair"><Text path="expenses.categories.repair" fallback="Tamirlash" /></option>
+            <option value="detailing"><Text path="expenses.categories.detailing" fallback="Detalling" /></option>
+            <option value="ads"><Text path="expenses.categories.ads" fallback="Reklama" /></option>
+            <option value="fees"><Text path="expenses.categories.fees" fallback="Tolov/Komissiya" /></option>
+            <option value="fuel"><Text path="expenses.categories.fuel" fallback="Yoqilgi" /></option>
+            <option value="parking"><Text path="expenses.categories.parking" fallback="Parkovka" /></option>
+            <option value="rent"><Text path="expenses.categories.rent" fallback="Ijara" /></option>
+            <option value="salary"><Text path="expenses.categories.salary" fallback="Oylik" /></option>
+            <option value="other"><Text path="expenses.categories.other" fallback="Boshqa" /></option>
           </select>
         </div>
-        <button className="bg-black text-white px-3 py-2 rounded">Filtrlash</button>
+        <button className="bg-black text-white px-3 py-2 rounded"><Text path="common.apply" fallback="Qollash" /></button>
       </form>
 
       </div>
 
       <div className="grid sm:grid-cols-3 gap-3">
         <div className="border rounded p-3">
-          <div className="text-xs text-gray-500">Jami AED</div>
+          <div className="text-xs text-gray-500"><Text path="reports.dailyExpensesPage.summary.totalAed" fallback="Jami AED" /></div>
           <div className="text-xl font-semibold">{data ? fmt(data.summary.total_aed) : '—'}</div>
         </div>
         <div className="border rounded p-3">
-          <div className="text-xs text-gray-500">Toifa bo&apos;yicha</div>
+          <div className="text-xs text-gray-500"><Text path="reports.dailyExpensesPage.summary.byCategory" fallback="Toifa boyicha" /></div>
           <div className="flex flex-wrap gap-2 mt-1">
             {data?.summary.by_category.map((c) => (
               <span key={c.key} className="px-2 py-1 bg-gray-100 rounded text-xs">{c.key}: {fmt(c.total_aed)}</span>
@@ -99,7 +100,7 @@ export default async function DailyExpensesPage({ searchParams }: { searchParams
           </div>
         </div>
         <div className="border rounded p-3">
-          <div className="text-xs text-gray-500">Avto/Hisob bo&apos;yicha</div>
+          <div className="text-xs text-gray-500"><Text path="reports.dailyExpensesPage.summary.byCar" fallback="Avto/Hisob boyicha" /></div>
           <div className="flex flex-wrap gap-2 mt-1">
             {data?.summary.by_car.map((c) => (
               <span key={c.key} className="px-2 py-1 bg-gray-100 rounded text-xs">{c.key}: {fmt(c.total_aed)}</span>
@@ -112,11 +113,11 @@ export default async function DailyExpensesPage({ searchParams }: { searchParams
         <table className="min-w-full border">
           <thead className="bg-gray-50">
             <tr>
-              <th className="p-2 border">Sana</th>
-              <th className="p-2 border">Miqdor (AED)</th>
-              <th className="p-2 border">Toifa</th>
-              <th className="p-2 border">Avto/Hisob</th>
-              <th className="p-2 border">Izoh</th>
+              <th className="p-2 border"><Text path="reports.dailyExpensesPage.table.date" fallback="Sana" /></th>
+              <th className="p-2 border"><Text path="reports.dailyExpensesPage.table.amountAed" fallback="Miqdor (AED)" /></th>
+              <th className="p-2 border"><Text path="reports.dailyExpensesPage.table.category" fallback="Toifa" /></th>
+              <th className="p-2 border"><Text path="reports.dailyExpensesPage.table.car" fallback="Avto/Hisob" /></th>
+              <th className="p-2 border"><Text path="reports.dailyExpensesPage.table.description" fallback="Izoh" /></th>
             </tr>
           </thead>
           <tbody>
@@ -125,7 +126,7 @@ export default async function DailyExpensesPage({ searchParams }: { searchParams
                 <td className="p-2 border">{r.occurred_at}</td>
                 <td className="p-2 border">-{fmt(r.amount_aed)}</td>
                 <td className="p-2 border">{r.category}</td>
-                <td className="p-2 border">{r.car_vin || (r.scope === 'personal' ? 'Shaxsiy' : r.scope)}</td>
+                <td className="p-2 border">{r.car_vin || (r.scope === 'personal' ? <Text path="reports.dailyExpensesPage.scope.personal" fallback="Shaxsiy" /> : r.scope)}</td>
                 <td className="p-2 border">{r.description}</td>
               </tr>
             ))}
@@ -137,7 +138,13 @@ export default async function DailyExpensesPage({ searchParams }: { searchParams
         <a
           className="underline text-blue-600"
           href={`/api/export?type=expenses&start=${encodeURIComponent(start)}&end=${encodeURIComponent(end)}&scope=${encodeURIComponent(scope)}&car_id=${encodeURIComponent(carId)}&category=${encodeURIComponent(category)}`}
-        >CSV yuklab olish — Xarajatlar (filtrlar saqlanadi, davr: {start} → {end})</a>
+        >
+          <Text path="reports.dailyExpensesPage.export.expensesCsvWithRange" fallback="CSV yuklab olish — Xarajatlar (filtrlar saqlanadi, davr)" /> — {start}
+
+
+
+          					 	 	 	 			 	 	  	 	 	 	 	 	 {end}
+        </a>
       </div>
     </div>
   );
