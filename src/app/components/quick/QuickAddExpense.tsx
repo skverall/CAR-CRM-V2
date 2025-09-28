@@ -63,7 +63,7 @@ export default function QuickAddExpense({ onSubmit, orgId, cars }: Props) {
   const t = useT();
   return (
     <>
-      <Button type="button" onClick={() => setOpen(true)}>{t('expenses.quickAdd.cta','Tez qo\u2018shish')}</Button>
+      <Button type="button" onClick={() => setOpen(true)}>{t('expenses.quickAdd.cta','Xarajat qo\u2018shish')}</Button>
       <Modal open={open} onClose={() => setOpen(false)} title={t('expenses.quickAdd.title','Xarajat tez qo\u2018shish')}>
         <form onSubmit={submit} className="grid grid-cols-2 sm:grid-cols-4 gap-2">
           <input name="occurred_at" value={occurredAt} onChange={e=>setOccurredAt(e.target.value)} type="date" required className="border px-2 py-1 rounded" />
