@@ -2,6 +2,8 @@ import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 import Link from "next/link";
 export const dynamic = "force-dynamic";
 import Text from "@/app/components/i18n/Text";
+import AddCarForm, { AddCarState } from "@/app/components/cars/AddCarForm";
+import { revalidatePath } from "next/cache";
 
 type CarWithProfit = {
   id: string;
@@ -101,38 +103,52 @@ async function getCarsWithProfit(): Promise<CarWithProfit[]> {
   }));
 }
 
-async function addCar(formData: FormData) {
+async function addCar(prevState: AddCarState, formData: FormData): Promise<AddCarState> {
   "use server";
-  const payload: CarInsert = {
-    vin: String(formData.get("vin") || "").trim(),
-    make: String(formData.get("make") || "").trim(),
-    model: String(formData.get("model") || "").trim(),
-    model_year: Number(formData.get("model_year")) || null,
-    source: String(formData.get("source") || "").trim(),
-    purchase_date: String(formData.get("purchase_date")),
-    purchase_currency: String(formData.get("purchase_currency")),
-    purchase_rate_to_aed: Number(formData.get("purchase_rate_to_aed")),
-    purchase_price: Number(formData.get("purchase_price")),
-    mileage: Number(formData.get("mileage")) || undefined,
-    notes: String(formData.get("notes") || "").trim() || undefined
-  };
+  try {
+    const payload: CarInsert = {
+      vin: String(formData.get("vin") || "").trim(),
+      make: String(formData.get("make") || "").trim(),
+      model: String(formData.get("model") || "").trim(),
+      model_year: Number(formData.get("model_year")) || null,
+      source: String(formData.get("source") || "").trim(),
+      purchase_date: String(formData.get("purchase_date")),
+      purchase_currency: String(formData.get("purchase_currency")),
+      purchase_rate_to_aed: Number(formData.get("purchase_rate_to_aed")),
+      purchase_price: Number(formData.get("purchase_price")),
+      mileage: Number(formData.get("mileage")) || undefined,
+      notes: String(formData.get("notes") || "").trim() || undefined,
+    };
 
-  // Convert price to fils for storage
-  const purchasePriceAedFils = Math.round(payload.purchase_price * payload.purchase_rate_to_aed * 100);
+    if (!payload.vin || !payload.make || !payload.model || !payload.purchase_date || !payload.purchase_currency || !payload.purchase_rate_to_aed || !payload.purchase_price) {
+      return { error: "Заполните обязательные поля." };
+    }
 
-  const db = getSupabaseAdmin();
-  // Resolve organization (align with other pages using Default Organization)
-  const { data: org } = await db.from("orgs").select("id").eq("name", "Default Organization").single();
-  const orgId = (org as { id: string } | null)?.id;
-  if (!orgId) {
-    throw new Error("Organization not found. Please create 'Default Organization'.");
+    const purchasePriceAedFils = Math.round(payload.purchase_price * payload.purchase_rate_to_aed * 100);
+
+    const db = getSupabaseAdmin();
+    const { data: org } = await db.from("orgs").select("id").eq("name", "Default Organization").single();
+    const orgId = (org as { id: string } | null)?.id;
+    if (!orgId) {
+      return { error: "Организация не найдена. Создайте ‘Default Organization’ в базе или сообщите мне — создам автоматически." };
+    }
+
+    const { error } = await db.from("au_cars").insert([
+      {
+        ...payload,
+        purchase_price_aed: purchasePriceAedFils,
+        status: "in_transit",
+        org_id: orgId,
+      },
+    ]);
+    if (error) return { error: error.message };
+
+    revalidatePath("/cars");
+    return { success: "Автомобиль добавлен." };
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : "Неизвестная ошибка";
+    return { error: msg };
   }
-  await db.from("au_cars").insert([{
-    ...payload,
-    purchase_price_aed: purchasePriceAedFils,
-    status: "in_transit",
-    org_id: orgId
-  }]);
 }
 
 function getStatusBadge(status: string) {
@@ -194,30 +210,7 @@ export default async function CarsPage() {
       </div>
 
       {/* Add Car Form */}
-      <div className="bg-white border rounded-lg p-6">
-        <h2 className="text-xl font-semibold mb-4"><Text path="cars.addTitle" fallback="Yangi avtomobil qo‘shish" /></h2>
-        <form action={addCar} className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <input name="vin" placeholder="VIN" required className="border px-3 py-2 rounded" />
-          <input name="make" placeholder="Marka" required className="border px-3 py-2 rounded" />
-          <input name="model" placeholder="Model" required className="border px-3 py-2 rounded" />
-          <input name="model_year" type="number" placeholder="Yil" className="border px-3 py-2 rounded" />
-          <input name="purchase_date" type="date" required className="border px-3 py-2 rounded" />
-          <input name="purchase_price" type="number" step="0.01" placeholder="Narx" required className="border px-3 py-2 rounded" />
-          <select name="purchase_currency" required className="border px-3 py-2 rounded">
-            <option value="">Valyuta</option>
-            <option value="USD">USD</option>
-            <option value="AED">AED</option>
-            <option value="EUR">EUR</option>
-          </select>
-          <input name="purchase_rate_to_aed" type="number" step="0.01" placeholder="AED kursi" required className="border px-3 py-2 rounded" />
-          <input name="mileage" type="number" placeholder="Probeg (km)" className="border px-3 py-2 rounded" />
-          <input name="source" placeholder="Manba" className="border px-3 py-2 rounded" />
-          <input name="notes" placeholder="Izohlar" className="border px-3 py-2 rounded col-span-2" />
-          <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 col-span-2 sm:col-span-1">
-            <Text path="cars.addCta" fallback="Qo‘shish" />
-          </button>
-        </form>
-      </div>
+      <AddCarForm action={addCar} />
 
       {/* Cars Table */}
       <div className="bg-white border rounded-lg overflow-hidden">
@@ -302,6 +295,12 @@ export default async function CarsPage() {
                       className="text-blue-600 hover:text-blue-900"
                     >
                       <Text path="cars.table.view" fallback="Ko'rish" />
+                    </Link>
+                    <Link
+                      href={`/cars/${car.id}?sell=1`}
+                      className="ml-3 border border-red-200 bg-red-100 text-red-800 hover:bg-red-200 px-2 py-1 rounded"
+                    >
+                      <Text path="sell.cta" fallback="Sotish" />
                     </Link>
                   </td>
                 </tr>

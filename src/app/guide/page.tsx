@@ -1,11 +1,12 @@
 export const dynamic = "force-dynamic";
 
 import Card from "@/app/components/ui/Card";
+import Text from "@/app/components/i18n/Text";
 
 export default function GuidePage() {
   return (
     <div className="grid gap-6">
-      <h1 className="text-2xl font-semibold">Qo&apos;llanma</h1>
+      <h1 className="text-2xl font-semibold"><Text path="guide.title" fallback="Qo'\llanma" /></h1>
       <Card>
         <div className="prose max-w-none">
           <h2>Qo&#39;llanma (yangilangan)</h2>

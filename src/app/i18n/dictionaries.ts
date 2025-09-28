@@ -70,6 +70,20 @@ export const dictionaries: Record<LangCode, Record<string, unknown>> = {
 
     },
     table: {
+    reports: {
+      title: "Hisobotlar",
+      export: {
+        carsCsv: "CSV yuklab olish — Avtomobillar",
+        expensesCsv: "CSV yuklab olish — Xarajatlar",
+        incomesCsv: "CSV yuklab olish — Daromad",
+        movementsCsv: "CSV yuklab olish — Kapital harakati",
+        dailyExpenses: "Kunlik xarajatlar (hisobot)",
+      }
+    },
+    guide: {
+      title: "Qo'\llanma",
+    },
+
       search: "Qidiruv...",
       exportCsv: "CSV eksport",
       totalsAed: "Jami (AED):",
@@ -212,6 +226,20 @@ export const dictionaries: Record<LangCode, Record<string, unknown>> = {
         direct: "Прямые",
         overhead: "Накладные",
         total: "Итого",
+    reports: {
+      title: "Отчеты",
+      export: {
+        carsCsv: "CSV — Автомобили",
+        expensesCsv: "CSV — Расходы",
+        incomesCsv: "CSV — Доходы",
+        movementsCsv: "CSV — Движения капитала",
+        dailyExpenses: "Ежедневные расходы",
+      }
+    },
+    guide: {
+      title: "Руководство",
+    },
+
         sale: "Продажа",
         netProfit: "Чистая прибыль (AED)",
         totalCostAED: "Общая себестоимость (AED)",

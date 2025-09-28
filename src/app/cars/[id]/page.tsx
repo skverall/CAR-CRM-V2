@@ -208,7 +208,7 @@ export default async function CarPage({ params }: { params: { id: string } }) {
             </form>
           )}
           {next === "sold" && (
-            <SellBar carId={id} onSell={sellCar} />
+            <SellBar carId={id} onSell={sellCar} autoOpenFromQuery />
           )}
           {canDistribute && (
             <form action={distribute}>

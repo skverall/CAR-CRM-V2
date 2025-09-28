@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Modal from "@/app/components/ui/Modal";
 import RatePrefill from "@/app/components/RatePrefill";
 import { useT } from "@/app/i18n/LangContext";
@@ -7,12 +7,23 @@ import { useT } from "@/app/i18n/LangContext";
 export default function SellBar({
   carId,
   onSell,
+  autoOpenFromQuery = false,
 }: {
   carId: string;
   onSell: (formData: FormData) => Promise<void>;
+  autoOpenFromQuery?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const t = useT();
+
+  useEffect(() => {
+    if (!autoOpenFromQuery) return;
+    try {
+      const sp = new URLSearchParams(window.location.search);
+      if (sp.has("sell")) setOpen(true);
+    } catch {}
+  }, [autoOpenFromQuery]);
+
   return (
     <div className="flex items-center gap-2">
       <button
@@ -36,7 +47,7 @@ export default function SellBar({
           <input name="rate_to_aed" type="number" step="0.000001" required placeholder={t("sell.rate")} className="border px-2 py-1 rounded" />
           <input name="description" placeholder={t("sell.desc")} defaultValue="[SALE] Auto sale" className="border px-2 py-1 rounded col-span-2 sm:col-span-4" />
           <div className="col-span-2 sm:col-span-4 flex justify-end gap-2 mt-2">
-            <button type="button" onClick={() => setOpen(false)} className="px-3 py-2 rounded border">Cancel</button>
+            <button type="button" onClick={() => setOpen(false)} className="px-3 py-2 rounded border">{t("common.cancel","Cancel")}</button>
             <button type="submit" className="px-3 py-2 rounded bg-blue-600 text-white hover:bg-blue-700">{t("sell.submit")}</button>
           </div>
         </form>
