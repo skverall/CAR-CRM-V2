@@ -7,12 +7,10 @@ export default function RowQuickAddExpenseClient({
   orgId,
   carId,
   carVin,
-  label,
 }: {
   orgId: string | null;
   carId: string;
   carVin: string;
-  label?: string;
 }) {
   // Provide a client-side onSubmit that posts to /api/expenses
   const onSubmit = useCallback(async (fd: FormData) => {

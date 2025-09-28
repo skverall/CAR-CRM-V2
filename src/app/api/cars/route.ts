@@ -50,18 +50,7 @@ export async function GET(request: NextRequest) {
         model,
         status,
         purchase_date,
-        total_cost_aed,
-        car_profit_view!inner(
-          profit_aed,
-          margin_pct,
-          days_on_lot,
-          sold_price_aed
-        ),
-        au_cars!inner(
-          model_year,
-          decision_tag,
-          purchase_price_aed
-        )
+        total_cost_aed
       `)
       .eq('org_id', orgId);
 
@@ -72,43 +61,19 @@ export async function GET(request: NextRequest) {
     if (filters.brand) {
       query = query.in('make', filters.brand);
     }
-    if (filters.only_losses) {
-      query = query.lt('car_profit_view.profit_aed', 0);
-    }
-    if (filters.margin_range) {
-      query = query
-        .gte('car_profit_view.margin_pct', filters.margin_range[0])
-        .lte('car_profit_view.margin_pct', filters.margin_range[1]);
-    }
-
-    // Apply sorting
-    const sortColumn = sortBy === 'profit_aed' ? 'car_profit_view.profit_aed' : 
-                      sortBy === 'margin_pct' ? 'car_profit_view.margin_pct' :
-                      sortBy === 'days_on_lot' ? 'car_profit_view.days_on_lot' :
-                      sortBy;
-    
+    // Apply sorting (fallback to purchase_date if profit/margin fields requested)
+    const sortColumn = ['profit_aed','margin_pct','days_on_lot'].includes(sortBy)
+      ? 'purchase_date'
+      : sortBy;
     query = query.order(sortColumn, { ascending: sortOrder === 'asc' });
 
-    // Get total count (build a separate count query)
+    // Get total count
     let countQuery = db
       .from('car_cost_view')
       .select('*', { count: 'exact' })
       .eq('org_id', orgId);
-
-    if (filters.status) {
-      countQuery = countQuery.in('status', filters.status);
-    }
-    if (filters.brand) {
-      countQuery = countQuery.in('make', filters.brand);
-    }
-    if (filters.only_losses) {
-      countQuery = countQuery.lt('car_profit_view.profit_aed', 0);
-    }
-    if (filters.margin_range) {
-      countQuery = countQuery
-        .gte('car_profit_view.margin_pct', filters.margin_range[0])
-        .lte('car_profit_view.margin_pct', filters.margin_range[1]);
-    }
+    if (filters.status) countQuery = countQuery.in('status', filters.status);
+    if (filters.brand) countQuery = countQuery.in('make', filters.brand);
 
     const { count } = await countQuery;
 
@@ -120,10 +85,39 @@ export async function GET(request: NextRequest) {
       throw error;
     }
 
+    // Fetch related data in separate queries to avoid PostgREST FK requirements for views
+    const ids = (carsData || []).map((c: Record<string, unknown>) => c.id as string);
+
+    // au_cars fields
+    let auMap: Record<string, Record<string, unknown>> = {};
+    if (ids.length > 0) {
+      const { data: aus } = await db
+        .from('au_cars')
+        .select('id, model_year, decision_tag, purchase_price_aed, sold_price_aed')
+        .in('id', ids);
+      auMap = (aus || []).reduce((acc: Record<string, Record<string, unknown>>, row: Record<string, unknown>) => {
+        acc[row.id as string] = row;
+        return acc;
+      }, {} as Record<string, Record<string, unknown>>);
+    }
+
+    // car_profit_view fields
+    let profitMap: Record<string, Record<string, unknown>> = {};
+    if (ids.length > 0) {
+      const { data: profits } = await db
+        .from('car_profit_view')
+        .select('id, profit_aed, margin_pct, days_on_lot, sold_price_aed')
+        .in('id', ids);
+      profitMap = (profits || []).reduce((acc: Record<string, Record<string, unknown>>, row: Record<string, unknown>) => {
+        acc[row.id as string] = row;
+        return acc;
+      }, {} as Record<string, Record<string, unknown>>);
+    }
+
     // Transform data to match API contract
     const cars = (carsData || []).map((car: Record<string, unknown>) => {
-      const au = (car as Record<string, unknown>).au_cars as Record<string, unknown> | undefined;
-      const pv = (car as Record<string, unknown>).car_profit_view as Record<string, unknown> | undefined;
+      const au = auMap[car.id as string] as Record<string, unknown> | undefined;
+      const pv = profitMap[car.id as string] as Record<string, unknown> | undefined;
       return {
         id: car.id as string,
         vin: car.vin as string,
@@ -134,7 +128,7 @@ export async function GET(request: NextRequest) {
         purchase_date: car.purchase_date as string,
         purchase_price_aed: au && typeof au.purchase_price_aed === 'number' ? (au.purchase_price_aed as number) / 100 : null,
         cost_base_aed: car.total_cost_aed as number,
-        sold_price_aed: pv ? (pv.sold_price_aed as number) || null : null,
+        sold_price_aed: pv ? (pv.sold_price_aed as number) || null : (au && typeof au.sold_price_aed === 'number' ? (au.sold_price_aed as number)/100 : null),
         profit_aed: pv ? (pv.profit_aed as number) || null : null,
         margin_pct: pv ? (pv.margin_pct as number) || null : null,
         days_on_lot: pv ? (pv.days_on_lot as number) || null : null,

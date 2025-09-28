@@ -5,6 +5,7 @@ import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 import SellBar from "@/app/components/cars/SellBar";
 import RowQuickAddExpenseClient from "@/app/components/cars/RowQuickAddExpenseClient";
 import StatusFilter from "@/app/components/cars/StatusFilter";
+import { headers } from "next/headers";
 
 export const dynamic = 'force-dynamic';
 
@@ -33,7 +34,11 @@ async function getOrgId(): Promise<string | null> {
 async function fetchCars(orgId: string, statusParam?: string): Promise<CarRow[]> {
   const qs = new URLSearchParams({ org_id: orgId, per_page: '200' });
   if (statusParam) qs.set('status', statusParam);
-  const res = await fetch(`/api/cars?${qs.toString()}`, { cache: 'no-store' });
+  const h = await headers();
+  const host = h.get('x-forwarded-host') || h.get('host') || 'localhost:3000';
+  const proto = h.get('x-forwarded-proto') || 'http';
+  const base = `${proto}://${host}`;
+  const res = await fetch(`${base}/api/cars?${qs.toString()}`, { cache: 'no-store' });
   const json = await res.json();
   if (!json.success) throw new Error(json.error || 'Failed to load cars');
   return (json.data.cars as CarRow[]);
