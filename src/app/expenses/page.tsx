@@ -1,6 +1,7 @@
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 import RatePrefill from "@/app/components/RatePrefill";
 import OverheadPreview from "@/app/components/OverheadPreview";
+import ExpenseScopeCarPicker from "@/app/components/ExpenseScopeCarPicker";
 export const dynamic = "force-dynamic";
 
 
@@ -106,19 +107,8 @@ export default async function ExpensesPage() {
         </select>
         <input name="description" placeholder="Izoh" aria-label="Izoh" className="border px-2 py-1 rounded" />
 
-        {/* Avto tanlash yoki Umumiy/Shaxsiy */}
-        <select name="car_id" className="border px-2 py-1 rounded" aria-label="Avto (bo&apos;sh qoldirsangiz — Umumiy/Shaxsiy)">
-          <option value="">Umumiy/Shaxsiy</option>
-          {(cars as CarRef[] || []).map((c: CarRef) => (
-            <option key={c.id} value={c.id}>{c.vin}</option>
-          ))}
-        </select>
-
-        {/* Tur (Umumiy/Shaxsiy) */}
-        <select name="scope" className="border px-2 py-1 rounded" aria-label="Tur (Umumiy/Shaxsiy)">
-          <option value="overhead">Umumiy</option>
-          <option value="personal">Shaxsiy</option>
-        </select>
+        {/* Avto va tur tanlash (scope=car => car majburiy) */}
+        <ExpenseScopeCarPicker cars={(cars as CarRef[]) || []} />
 
 
         {/* Preview umumiy/shaxsiy taqsimoti */}

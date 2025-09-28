@@ -25,7 +25,11 @@ export async function GET(request: NextRequest) {
 
     const db = getSupabaseAdmin();
 
-    const { data: rows, error } = await db
+    const scope = searchParams.get('scope');
+    const carId = searchParams.get('car_id');
+    const category = searchParams.get('category');
+
+    let query = db
       .from('au_expenses')
       .select(`
         id,
@@ -41,6 +45,12 @@ export async function GET(request: NextRequest) {
       .gte('occurred_at', start)
       .lte('occurred_at', end)
       .order('occurred_at', { ascending: true });
+
+    if (scope) query = query.eq('scope', scope);
+    if (carId) query = query.eq('car_id', carId);
+    if (category) query = query.eq('category', category);
+
+    const { data: rows, error } = await query;
 
     if (error) throw error;
 

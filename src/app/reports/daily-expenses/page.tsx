@@ -8,11 +8,19 @@ export default async function DailyExpensesPage({ searchParams }: { searchParams
   const { data: org } = await db.from('orgs').select('id').eq('name', 'Default Organization').single();
   const orgId = (org as { id: string } | null)?.id || '';
 
+  const scope = (searchParams.scope as string) || '';
+  const carId = (searchParams.car_id as string) || '';
+  const category = (searchParams.category as string) || '';
+
   const today = new Date();
   const start = (searchParams.start as string) || toISODate(today);
   const end = (searchParams.end as string) || toISODate(today);
 
-  const qs = new URLSearchParams({ org_id: orgId, start, end }).toString();
+  // Car options for filters
+  const { data: cars } = await db.from('au_cars').select('id, vin').order('purchase_date', { ascending: false });
+  const carOptions = (cars as { id: string; vin: string }[] | null) || [];
+
+  const qs = new URLSearchParams({ org_id: orgId, start, end, scope, car_id: carId, category }).toString();
   const res = await fetch(`/api/reports/daily-expenses?${qs}`, { cache: 'no-store' });
   const json = await res.json();
   const data = json.data as {
@@ -33,6 +41,48 @@ export default async function DailyExpensesPage({ searchParams }: { searchParams
           <a className="underline" href={`?start=${toISODate(today)}&end=${toISODate(today)}`}>Bugun</a>
           <a className="underline" href={`?start=${yesterday}&end=${yesterday}`}>Kecha</a>
         </div>
+      {/* Filters */}
+      <form method="GET" className="flex flex-wrap items-end gap-2 border rounded p-3">
+        <input type="hidden" name="start" value={start} />
+        <input type="hidden" name="end" value={end} />
+        <div className="grid gap-1">
+          <label className="text-xs text-gray-600">Scope</label>
+          <select name="scope" defaultValue={scope} className="border px-2 py-1 rounded">
+            <option value="">Hammasi</option>
+            <option value="overhead">Umumiy</option>
+            <option value="personal">Shaxsiy</option>
+            <option value="car">Faqat avto (car_id)</option>
+          </select>
+        </div>
+        <div className="grid gap-1">
+          <label className="text-xs text-gray-600">Avto</label>
+          <select name="car_id" defaultValue={carId} className="border px-2 py-1 rounded">
+            <option value="">—</option>
+            {carOptions.map((c) => (
+              <option key={c.id} value={c.id}>{c.vin}</option>
+            ))}
+          </select>
+        </div>
+        <div className="grid gap-1">
+          <label className="text-xs text-gray-600">Toifa</label>
+          <select name="category" defaultValue={category} className="border px-2 py-1 rounded">
+            <option value="">—</option>
+            <option value="purchase">Xarid</option>
+            <option value="transport">Transport</option>
+            <option value="repair">Ta&apos;mirlash</option>
+            <option value="detailing">Detalling</option>
+            <option value="ads">Reklama</option>
+            <option value="fees">To&apos;lov/Komissiya</option>
+            <option value="fuel">Yoqilg&apos;i</option>
+            <option value="parking">Parkovka</option>
+            <option value="rent">Ijara</option>
+            <option value="salary">Oylik</option>
+            <option value="other">Boshqa</option>
+          </select>
+        </div>
+        <button className="bg-black text-white px-3 py-2 rounded">Filtrlash</button>
+      </form>
+
       </div>
 
       <div className="grid sm:grid-cols-3 gap-3">
