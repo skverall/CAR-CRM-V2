@@ -9,78 +9,76 @@ export default function GuidePage() {
       <h1 className="text-2xl font-semibold"><Text path="guide.title" fallback="Qo'\llanma" /></h1>
       <Card>
         <div className="prose max-w-none">
-          <h2>Qo&#39;llanma (yangilangan)</h2>
+          <h2><Text path="guide.sections.updated.title" fallback="Qo'llanma (yangilangan)" /></h2>
 
-          <h3>1) Nimalar yangilandi</h3>
+          <h3><Text path="guide.sections.updated.heading" fallback="1) Nimalar yangilandi" /></h3>
           <ul>
-            <li>Yagona dizayn: Card, jadval (sticky thead), EmptyState, bir xil input/knopka uslublari.</li>
-            <li>Faol bo&#39;lim indikatorlari (navigatsiyada hozir qaysi sahifa ochiq — aniq ko&#39;rinadi).</li>
-            <li>Filtrlar: sana (hamma joyda), <b>Expenses</b> — toifa va avto, <b>Incomes</b> — avto. Pleyxsolderlar: “Barcha …”.</li>
-            <li>Avto ro&#39;yxati kengaytirilgan: foyda, marja %, kunlar (days on lot).</li>
-            <li>Hisob-kitoblar barqaror: sotishda <b>deal_snapshot</b> yoziladi, tarixiy hisobotlar o&#39;zgarmaydi.</li>
+            <li><Text path="guide.sections.updated.items.item1" fallback="Yagona dizayn: Card, jadval (sticky thead), EmptyState, bir xil input/knopka uslublari." /></li>
+            <li><Text path="guide.sections.updated.items.item2" fallback="Faol bo'lim indikatorlari (navigatsiyada hozir qaysi sahifa ochiq — aniq ko'rinadi)." /></li>
+            <li><Text path="guide.sections.updated.items.item3" fallback="Filtrlar: sana (hamma joyda), Expenses — toifa va avto, Incomes — avto. Pleyxsolderlar: “Barcha …”." /></li>
+            <li><Text path="guide.sections.updated.items.item4" fallback="Avto ro'yxati kengaytirilgan: foyda, marja %, kunlar (days on lot)." /></li>
+            <li><Text path="guide.sections.updated.items.item5" fallback="Hisob-kitoblar barqaror: sotishda deal_snapshot yoziladi, tarixiy hisobotlar o'zgarmaydi." /></li>
           </ul>
 
-          <h3>2) Ish jarayoni qisqacha</h3>
+          <h3><Text path="guide.sections.flow.title" fallback="2) Ish jarayoni qisqacha" /></h3>
           <ol>
-            <li><b>Xarajat</b> qo&#39;shing: sana, miqdor, valyuta, AED kursi, toifa. Avto tanlasangiz — o&#39;sha avtoga, tanlamasangiz — Umumiy/Shaxsiy bo&#39;ladi.</li>
-            <li>Umumiy/Shaxsiy uchun miqdor/kurs/sana kiritilganda <b>taqsimot preview</b> pastda ko&#39;rinadi.</li>
-            <li><b>Daromad</b> qo&#39;lda faqat boshqa tushumlar uchun. <b>Sotuv daromadi</b> avtomatik: mashinani <b>sold</b> qilganda yoziladi.</li>
-            <li>Valyuta kurslarini <b>FX</b> sahifasida qo&#39;shing (baza→AED).</li>
-            <li><b>Capital</b>: balanslar, kirim/chiqim/korrektirovka va kuzatuv jadvali.</li>
+            <li><Text path="guide.sections.flow.items.item1" fallback="Xarajat qo'shing: sana, miqdor, valyuta, AED kursi, toifa. Avto tanlasangiz — o'sha avtoga, tanlamasangiz — Umumiy/Shaxsiy bo'ladi." /></li>
+            <li><Text path="guide.sections.flow.items.item2" fallback="Umumiy/Shaxsiy uchun miqdor/kurs/sana kiritilganda taqsimot preview pastda ko'rinadi." /></li>
+            <li><Text path="guide.sections.flow.items.item3" fallback="Daromad qo'lda faqat boshqa tushumlar uchun. Sotuv daromadi avtomatik: mashinani sold qilganda yoziladi." /></li>
+            <li><Text path="guide.sections.flow.items.item4" fallback="Valyuta kurslarini FX sahifasida qo'shing (baza→AED)." /></li>
+            <li><Text path="guide.sections.flow.items.item5" fallback="Capital: balanslar, kirim/chiqim/korrektirovka va kuzatuv jadvali." /></li>
           </ol>
 
-          <h3>3) Xarajatlar (Expenses)</h3>
+          <h3><Text path="guide.sections.expenses.title" fallback="3) Xarajatlar (Expenses)" /></h3>
           <ol>
-            <li><b>Forma:</b> Sana, Miqdor, Valyuta, AED kursi, Toifa, Izoh, Avto (ixtiyoriy).</li>
-            <li><b>Avto bo&#39;sh</b> — Umumiy/Shaxsiy; <b>Avto tanlangan</b> — aynan o&#39;sha avtoga yoziladi.</li>
-            <li><b>Preview</b> uchun miqdor+kurs+sana to&#39;ldiring — faol avtolar orasida taqsimot ko&#39;rinadi.</li>
-            <li><b>Filtrlar:</b> Sana dan/ga, Toifa, Avto. Pleyxsolderlar — “Barcha toifalar”, “Barcha avtolar”.</li>
-            <li>Jadval sarlavhasi “yopishqoq”, AED summalar formatlangan, bo&#39;sh ro&#39;yxatda EmptyState.</li>
+            <li><Text path="guide.sections.expenses.items.item1" fallback="Forma: Sana, Miqdor, Valyuta, AED kursi, Toifa, Izoh, Avto (ixtiyoriy)." /></li>
+            <li><Text path="guide.sections.expenses.items.item2" fallback="Avto bo'sh — Umumiy/Shaxsiy; Avto tanlangan — aynan o'sha avtoga yoziladi." /></li>
+            <li><Text path="guide.sections.expenses.items.item3" fallback="Preview uchun miqdor+kurs+sana to'ldiring — faol avtolar orasida taqsimot ko'rinadi." /></li>
+            <li><Text path="guide.sections.expenses.items.item4" fallback="Filtrlar: Sana dan/ga, Toifa, Avto. Pleyxsolderlar — “Barcha toifalar”, “Barcha avtolar”." /></li>
+            <li><Text path="guide.sections.expenses.items.item5" fallback="Jadval sarlavhasi “yopishqoq”, AED summalar formatlangan, bo'sh ro'yxatda EmptyState." /></li>
           </ol>
 
-          <h3>4) Daromadlar (Incomes)</h3>
+          <h3><Text path="guide.sections.incomes.title" fallback="4) Daromadlar (Incomes)" /></h3>
           <ul>
-            <li><b>Sotuv daromadi qo&#39;lda kiritilmaydi.</b> Avto sahifasida <b>sold</b> qilganda tizim <code>[SALE]</code> daromadini yozadi.</li>
-            <li>Boshqa tushumlar uchun forma: Sana, Miqdor, Valyuta, AED kursi, Izoh, Avto.</li>
-            <li>Filtrlar: Sana dan/ga, Avto (“Barcha avtolar”).</li>
+            <li><Text path="guide.sections.incomes.items.item1" fallback="Sotuv daromadi qo'lda kiritilmaydi. Avto sahifasida sold qilganda tizim [SALE] daromadini yozadi." /></li>
+            <li><Text path="guide.sections.incomes.items.item2" fallback="Boshqa tushumlar uchun forma: Sana, Miqdor, Valyuta, AED kursi, Izoh, Avto." /></li>
+            <li><Text path="guide.sections.incomes.items.item3" fallback="Filtrlar: Sana dan/ga, Avto (“Barcha avtolar”)." /></li>
           </ul>
 
-          <h3>5) Valyuta kurslari (FX)</h3>
+          <h3><Text path="guide.sections.fx.title" fallback="5) Valyuta kurslari (FX)" /></h3>
           <ul>
-            <li>Kurs qo&#39;shish: Sana, Baza valyuta (USD/EUR/AED), Kurs (baza→AED).</li>
-            <li>Ro&#39;yxat: Sana, Juft, Kurs. Filtr — sana bo&#39;yicha.</li>
+            <li><Text path="guide.sections.fx.items.item1" fallback="Kurs qo'shish: Sana, Baza valyuta (USD/EUR/AED), Kurs (baza→AED)." /></li>
+            <li><Text path="guide.sections.fx.items.item2" fallback="Ro'yxat: Sana, Juft, Kurs. Filtr — sana bo'yicha." /></li>
           </ul>
 
-          <h3>6) Kapital (Capital)</h3>
+          <h3><Text path="guide.sections.capital.title" fallback="6) Kapital (Capital)" /></h3>
           <ul>
-            <li>Hisoblar: investor, business, owner, assistant.</li>
-            <li>Harakatlar: deposit / withdraw / adjust. Sana, summa, sabab, (ixtiyoriy) bog&#39;lanishlar.</li>
-            <li>Sahifada balans kartalari, so&#39;nggi harakatlar jadvali va sana bo&#39;yicha filtrlar mavjud.</li>
+            <li><Text path="guide.sections.capital.items.item1" fallback="Hisoblar: investor, business, owner, assistant." /></li>
+            <li><Text path="guide.sections.capital.items.item2" fallback="Harakatlar: deposit / withdraw / adjust. Sana, summa, sabab, (ixtiyoriy) bog'lanishlar." /></li>
+            <li><Text path="guide.sections.capital.items.item3" fallback="Sahifada balans kartalari, so'nggi harakatlar jadvali va sana bo'yicha filtrlar mavjud." /></li>
           </ul>
 
-          <h3>7) Mashinani sotish va snapshot</h3>
+          <h3><Text path="guide.sections.sell.title" fallback="7) Mashinani sotish va snapshot" /></h3>
           <ol>
-            <li><b>Cars → mashina</b> sahifasida statusni <b>sold</b> ga o&#39;tkazing, sotuv sanasi/summasi/valyuta/AED kursini kiriting.</li>
-            <li>Tizim <code>[SALE]</code> daromadini avtomatik yozadi va <b>deal_snapshot</b> saqlaydi — tarixiy foyda o&#39;zgarmaydi.</li>
-            <li>Qo&#39;lda sotuv daromadini kiritmang — ikki marta hisoblanib qoladi.</li>
+            <li><Text path="guide.sections.sell.items.item1" fallback="Cars → mashina sahifasida statusni sold ga o'tkazing, sotuv sanasi/summasi/valyuta/AED kursini kiriting." /></li>
+            <li><Text path="guide.sections.sell.items.item2" fallback="Tizim [SALE] daromadini avtomatik yozadi va deal_snapshot saqlaydi — tarixiy foyda o'zgarmaydi." /></li>
+            <li><Text path="guide.sections.sell.items.item3" fallback="Qo'lda sotuv daromadini kiritmang — ikki marta hisoblanib qoladi." /></li>
           </ol>
 
-          <h3>8) Hisobotlar</h3>
+          <h3><Text path="guide.sections.reports.title" fallback="8) Hisobotlar" /></h3>
           <ul>
-            <li>Reports sahifasida eksport/ko&#39;rinishlar mavjud (masalan, kunlik xarajatlar).</li>
-            <li>Foyda va xarajatlar hisob-kitobi ma&#39;lumotlar bazasidagi maxsus ko&#39;rinishlar orqali samarali olinadi.</li>
+            <li><Text path="guide.sections.reports.items.item1" fallback="Reports sahifasida eksport/ko'rinishlar mavjud (masalan, kunlik xarajatlar)." /></li>
+            <li><Text path="guide.sections.reports.items.item2" fallback="Foyda va xarajatlar hisob-kitobi ma'lumotlar bazasidagi maxsus ko'rinishlar orqali samarali olinadi." /></li>
           </ul>
 
-          <h3>9) Foyda formulasi</h3>
-          <p>
-            Foyda = Sotuv (AED) − (Xarid (AED) + Barcha xarajatlar (AED)). Umumiy/Shaxsiy xarajatlar faol avtolar orasida qo&#39;llanilgan usul bo&#39;yicha taqsimlanadi.
-          </p>
+          <h3><Text path="guide.sections.profit.title" fallback="9) Foyda formulasi" /></h3>
+          <p><Text path="guide.sections.profit.p" fallback="Foyda = Sotuv (AED) − (Xarid (AED) + Barcha xarajatlar (AED)). Umumiy/Shaxsiy xarajatlar faol avtolar orasida qo'llanilgan usul bo'yicha taqsimlanadi." /></p>
 
-          <h3>10) Tez-tez so&#39;raladigan savollar</h3>
+          <h3><Text path="guide.sections.faq.title" fallback="10) Tez-tez so'raladigan savollar" /></h3>
           <ul>
-            <li><b>Daromad sahifasida sotuvni ko&#39;rsatamanmi?</b> — Yo&#39;q. Sotuv faqat avto sahifasida (<b>sold</b>), tizim o&#39;zi yozadi.</li>
-            <li><b>Preview ko&#39;rinmayapti?</b> — Avto tanlanmagan bo&#39;lsin va Miqdor + AED kursi + Sana to&#39;ldirilgan bo&#39;lsin.</li>
-            <li><b>Bo&#39;sh jadval chiqdi?</b> — Filtrlar toraytirgandir; pleyxsolderdagi “Barcha …” ni tanlab ko&#39;ring yoki sanalarni kengaytiring.</li>
+            <li><Text path="guide.sections.faq.items.item1" fallback="Daromad sahifasida sotuvni ko'rsatamanmi? — Yo'q. Sotuv faqat avto sahifasida (sold), tizim o'zi yozadi." /></li>
+            <li><Text path="guide.sections.faq.items.item2" fallback="Preview ko'rinmayapti? — Avto tanlanmagan bo'lsin va Miqdor + AED kursi + Sana to'ldirilgan bo'lsin." /></li>
+            <li><Text path="guide.sections.faq.items.item3" fallback="Bo'sh jadval chiqdi? — Filtrlar toraytirgandir; “Barcha …” ni tanlab ko'ring yoki sanalarni kengaytiring." /></li>
           </ul>
         </div>
       </Card>

@@ -78,10 +78,123 @@ export const dictionaries: Record<LangCode, Record<string, unknown>> = {
         movementsCsv: "CSV yuklab olish — Kapital harakati",
         dailyExpenses: "Kunlik xarajatlar (hisobot)",
       }
+,
+      dailyExpensesPage: {
+        title: "Kunlik xarajatlar",
+        today: "Bugun",
+        yesterday: "Kecha",
+        filters: {
+          scope: "Scope",
+          all: "Hammasi",
+          overhead: "Umumiy",
+          personal: "Shaxsiy",
+          onlyCar: "Faqat avto (car_id)",
+          car: "Avto",
+          category: "Toifa",
+        },
+        summary: {
+          totalAed: "Jami AED",
+          byCategory: "Toifa bo‘yicha",
+          byCar: "Avto/Hisob bo‘yicha",
+        },
+        table: {
+          date: "Sana",
+          amountAed: "Miqdor (AED)",
+          category: "Toifa",
+          car: "Avto/Hisob",
+          description: "Izoh",
+        },
+        scope: { personal: "Shaxsiy" },
+        export: { expensesCsvWithRange: "CSV yuklab olish — Xarajatlar (filtrlar saqlanadi, davr)" },
+      }
+
     },
     guide: {
       title: "Qo'llanma",
+      sections: {
+      updated: {
+        title: "Qo'llanma (yangilangan)",
+        heading: "1) Nimalar yangilandi",
+        items: {
+          item1: "Yagona dizayn: Card, jadval (sticky thead), EmptyState, bir xil input/knopka uslublari.",
+          item2: "Faol bo'lim indikatorlari (navigatsiyada hozir qaysi sahifa ochiq  aniq ko'rinadi).",
+          item3: "Filtrlar: sana (hamma joyda), Expenses  toifa va avto, Incomes  avto. Pleyxsolderlar: Barcha .",
+          item4: "Avto ro'yxati kengaytirilgan: foyda, marja %, kunlar (days on lot).",
+          item5: "Hisob-kitoblar barqaror: sotishda deal_snapshot yoziladi, tarixiy hisobotlar o'zgarmaydi.",
+        },
+      },
+      flow: {
+        title: "2) Ish jarayoni qisqacha",
+        items: {
+          item1: "Xarajat qo'shing: sana, miqdor, valyuta, AED kursi, toifa. Avto tanlasangiz  o'sha avtoga, tanlamasangiz  Umumiy/Shaxsiy bo'ladi.",
+          item2: "Umumiy/Shaxsiy uchun miqdor/kurs/sana kiritilganda taqsimot preview pastda ko'rinadi.",
+          item3: "Daromad qo'lda faqat boshqa tushumlar uchun. Sotuv daromadi avtomatik: mashinani sold qilganda yoziladi.",
+          item4: "Valyuta kurslarini FX sahifasida qo'shing (bazaAED).",
+          item5: "Capital: balanslar, kirim/chiqim/korrektirovka va kuzatuv jadvali.",
+        },
+      },
+      expenses: {
+        title: "3) Xarajatlar (Expenses)",
+        items: {
+          item1: "Forma: Sana, Miqdor, Valyuta, AED kursi, Toifa, Izoh, Avto (ixtiyoriy).",
+          item2: "Avto bo'sh  Umumiy/Shaxsiy; Avto tanlangan  aynan o'sha avtoga yoziladi.",
+          item3: "Preview uchun miqdor+kurs+sana to'ldiring  faol avtolar orasida taqsimot ko'rinadi.",
+          item4: "Filtrlar: Sana dan/ga, Toifa, Avto. Pleyxsolderlar  Barcha toifalar, Barcha avtolar.",
+          item5: "Jadval sarlavhasi yopishqoq, AED summalar formatlangan, bo'sh ro'yxatda EmptyState.",
+        },
+      },
+      incomes: {
+        title: "4) Daromadlar (Incomes)",
+        items: {
+          item1: "Sotuv daromadi qo'lda kiritilmaydi. Avto sahifasida sold qilganda tizim [SALE] daromadini yozadi.",
+          item2: "Boshqa tushumlar uchun forma: Sana, Miqdor, Valyuta, AED kursi, Izoh, Avto.",
+          item3: "Filtrlar: Sana dan/ga, Avto (Barcha avtolar).",
+        },
+      },
+      fx: {
+        title: "5) Valyuta kurslari (FX)",
+        items: {
+          item1: "Kurs qo'shish: Sana, Baza valyuta (USD/EUR/AED), Kurs (bazaAED).",
+          item2: "Ro'yxat: Sana, Juft, Kurs. Filtr  sana bo'yicha.",
+        },
+      },
+      capital: {
+        title: "6) Kapital (Capital)",
+        items: {
+          item1: "Hisoblar: investor, business, owner, assistant.",
+          item2: "Harakatlar: deposit / withdraw / adjust. Sana, summa, sabab, (ixtiyoriy) bog'lanishlar.",
+          item3: "Sahifada balans kartalari, so'nggi harakatlar jadvali va sana bo'yicha filtrlar mavjud.",
+        },
+      },
+      sell: {
+        title: "7) Mashinani sotish va snapshot",
+        items: {
+          item1: "Cars  mashina sahifasida statusni sold ga o'tkazing, sotuv sanasi/summasi/valyuta/AED kursini kiriting.",
+          item2: "Tizim [SALE] daromadini avtomatik yozadi va deal_snapshot saqlaydi  tarixiy foyda o'zgarmaydi.",
+          item3: "Qo'lda sotuv daromadini kiritmang  ikki marta hisoblanib qoladi.",
+        },
+      },
+      reports: {
+        title: "8) Hisobotlar",
+        items: {
+          item1: "Reports sahifasida eksport/ko'rinishlar mavjud (masalan, kunlik xarajatlar).",
+          item2: "Foyda va xarajatlar hisob-kitobi ma'lumotlar bazasidagi maxsus ko'rinishlar orqali samarali olinadi.",
+        },
+      },
+      profit: {
+        title: "9) Foyda formulasi",
+        p: "Foyda = Sotuv (AED)  (Xarid (AED) + Barcha xarajatlar (AED)). Umumiy/Shaxsiy xarajatlar faol avtolar orasida qo'llanilgan usul bo'yicha taqsimlanadi.",
+      },
+      faq: {
+        title: "10) Tez-tez so'raladigan savollar",
+        items: {
+          item1: "Daromad sahifasida sotuvni ko'rsatamanmi?  Yo'q. Sotuv faqat avto sahifasida (sold), tizim o'zi yozadi.",
+          item2: "Preview ko'rinmayapti?  Avto tanlanmagan bo'lsin va Miqdor + AED kursi + Sana to'ldirilgan bo'lsin.",
+          item3: "Bo'sh jadval chiqdi?  Filtrlar toraytirgandir; Barcha  ni tanlab ko'ring yoki sanalarni kengaytiring.",
+        },
+      },
     },
+
     table: {
       search: "Qidiruv...",
       exportCsv: "CSV eksport",
@@ -101,44 +214,6 @@ export const dictionaries: Record<LangCode, Record<string, unknown>> = {
       lossCars: { title: "Zarar keltirgan avtomobillar", empty: "Zarar yoq 09f" },
       brands: { title: "Brendlar boyicha taqsimot", unit: "ta avtomobil", avgProfit: "Ortacha foyda:", avgMargin: "Ortacha marja:" },
       activity: { title: "Songgi faoliyat" },
-    },
-    reports: {
-      title: "Hisobotlar",
-      export: {
-        carsCsv: "CSV yuklab olish  Avtomobillar",
-        expensesCsv: "CSV yuklab olish  Xarajatlar",
-        incomesCsv: "CSV yuklab olish  Daromad",
-        movementsCsv: "CSV yuklab olish  Kapital harakati",
-        dailyExpenses: "Kunlik xarajatlar (hisobot)",
-      },
-      dailyExpensesPage: {
-        title: "Kunlik xarajatlar",
-        today: "Bugun",
-        yesterday: "Kecha",
-        filters: {
-          scope: "Scope",
-          all: "Hammasi",
-          overhead: "Umumiy",
-          personal: "Shaxsiy",
-          onlyCar: "Faqat avto (car_id)",
-          car: "Avto",
-          category: "Toifa",
-        },
-        summary: {
-          totalAed: "Jami AED",
-          byCategory: "Toifa boyicha",
-          byCar: "Avto/Hisob boyicha",
-        },
-        table: {
-          date: "Sana",
-          amountAed: "Miqdor (AED)",
-          category: "Toifa",
-          car: "Avto/Hisob",
-          description: "Izoh",
-        },
-        scope: { personal: "Shaxsiy" },
-        export: { expensesCsvWithRange: "CSV yuklab olish  Xarajatlar (filtrlar saqlanadi, davr)" },
-      },
     },
 
     common: {
@@ -438,9 +513,7 @@ export const dictionaries: Record<LangCode, Record<string, unknown>> = {
     },
     guide: {
       title: "Руководство",
-    },
 
-
-  },
+  }
 };
 
