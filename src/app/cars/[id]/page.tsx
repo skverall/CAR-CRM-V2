@@ -3,6 +3,7 @@ export const dynamic = "force-dynamic";
 
 import { notFound, redirect } from "next/navigation";
 import RatePrefill from "@/app/components/RatePrefill";
+import SellBar from "@/app/components/cars/SellBar";
 
 type Car = {
   vin: string;
@@ -207,21 +208,7 @@ export default async function CarPage({ params }: { params: { id: string } }) {
             </form>
           )}
           {next === "sold" && (
-            <>
-
-              <span className="text-xs text-gray-500 italic">Eslatma: kurs sotuv sanasiga ko‘ra avtomatik (RatePrefill)</span>
-
-            <form action={sellCar} className="flex flex-wrap items-center gap-2">
-              <RatePrefill currencyName="currency" dateName="occurred_at" rateName="rate_to_aed" />
-              <input type="hidden" name="car_id" value={id} />
-              <input name="occurred_at" type="date" required className="border px-2 py-1 rounded" />
-              <input name="amount" type="number" step="0.01" required placeholder="Sale amount" className="border px-2 py-1 rounded" />
-              <input name="currency" required placeholder="Currency" className="border px-2 py-1 rounded" />
-              <input name="rate_to_aed" type="number" step="0.000001" required placeholder="Rate→AED" className="border px-2 py-1 rounded" />
-              <input name="description" placeholder="Description" defaultValue="[SALE] Auto sale" className="border px-2 py-1 rounded" />
-              <button className="bg-blue-600 text-white px-3 py-2 rounded">Sold + Record Income</button>
-            </form>
-            </>
+            <SellBar carId={id} onSell={sellCar} />
           )}
           {canDistribute && (
             <form action={distribute}>
