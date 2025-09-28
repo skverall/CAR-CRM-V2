@@ -224,6 +224,7 @@ export const dictionaries: Record<LangCode, Record<string, unknown>> = {
       apply: "Qo‘llash",
       cancel: "Bekor qilish",
       save: "Saqlash",
+      edit: "Tahrirlash",
     },
     expenses: {
       title: "Xarajatlar",
@@ -374,6 +375,7 @@ export const dictionaries: Record<LangCode, Record<string, unknown>> = {
       apply: "Применить",
       cancel: "Отмена",
       save: "Сохранить",
+      edit: "Редактировать",
     },
     expenses: {
       title: "Расходы",

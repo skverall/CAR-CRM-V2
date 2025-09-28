@@ -89,8 +89,8 @@ export default async function CarsPage({ searchParams }: { searchParams?: { stat
           {cars.map((car) => (
             <tr key={car.id} className="odd:bg-white even:bg-gray-50">
               <td className="p-2 border">
-                <div className="font-medium">{car.vin}</div>
-                <div className="text-gray-600">{car.make} {car.model} {car.model_year ?? ''}</div>
+                <div className="font-semibold text-gray-900">{car.make} {car.model} {car.model_year ?? ''}</div>
+                <div className="text-gray-500 text-xs">VIN: {car.vin}</div>
               </td>
               <td className="p-2 border">
                 <span className="px-2 py-1 rounded-full bg-gray-100 text-gray-800 text-xs">
@@ -112,13 +112,16 @@ export default async function CarsPage({ searchParams }: { searchParams?: { stat
               <td className="p-2 border">{car.days_on_lot != null ? car.days_on_lot : '—'}</td>
               <td className="p-2 border">
                 <div className="flex items-center gap-2">
-                  <Link href={`/cars/${car.id}`} className="text-blue-600 hover:underline">
-                    <Text path="cars.table.view" fallback="Ko'rish" />
+                  <Link href={`/cars/${car.id}?edit=1`} className="border border-gray-200 bg-white text-gray-800 hover:bg-gray-50 px-2 py-1 rounded">
+                    <Text path="common.edit" fallback="Tahrirlash" />
                   </Link>
                   {car.status !== 'sold' && car.status !== 'archived' && (
                     <SellBar carId={car.id} onSell={sellViaDeals} />
                   )}
                   <RowQuickAddExpenseClient orgId={orgId} carId={car.id} carVin={car.vin} />
+                  <Link href={`/cars/${car.id}`} className="text-blue-600 hover:underline">
+                    <Text path="cars.table.view" fallback="Ko'rish" />
+                  </Link>
                 </div>
               </td>
             </tr>
