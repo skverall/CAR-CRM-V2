@@ -40,7 +40,7 @@ export function LangProvider({ children }: { children: React.ReactNode }) {
     };
   }, [lang]);
 
-  const value = useMemo(() => ({ lang, setLang, t }), [lang]);
+  const value = useMemo(() => ({ lang, setLang, t }), [lang, t]);
 
   return <LangContext.Provider value={value}>{children}</LangContext.Provider>;
 }

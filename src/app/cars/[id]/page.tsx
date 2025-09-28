@@ -2,7 +2,7 @@ import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 export const dynamic = "force-dynamic";
 
 import { notFound, redirect } from "next/navigation";
-import RatePrefill from "@/app/components/RatePrefill";
+import Text from "@/app/components/i18n/Text";
 import SellBar from "@/app/components/cars/SellBar";
 
 type Car = {
@@ -220,30 +220,30 @@ export default async function CarPage({ params }: { params: { id: string } }) {
       </div>
 
       <div className="border rounded p-4 bg-yellow-50 grid gap-2">
-        <div className="font-semibold">Umumiy ko‘rsatkichlar</div>
+        <div className="font-semibold"><Text path="cars.details.overview" fallback="Umumiy ko‘rsatkichlar" /></div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
           <div className="border rounded p-2 bg-white">
-            <div className="text-xs text-gray-600">Xarid</div>
+            <div className="text-xs text-gray-600"><Text path="cars.details.purchase" fallback="Xarid" /></div>
             <div className="text-sm">{carRow.purchase_price} {carRow.purchase_currency}</div>
             <div className="text-sm">AED {purchaseAED.toFixed(2)}</div>
           </div>
           <div className="border rounded p-2 bg-white">
-            <div className="text-xs text-gray-600">Xarajatlar (AED)</div>
-            <div className="text-sm">To‘g‘ridan-to‘grilar: {directExpensesAED.toFixed(2)}</div>
-            <div className="text-sm">Umumiy (overhead): {overheadAED.toFixed(2)}</div>
-            <div className="text-sm font-medium">Jami: {expensesAED.toFixed(2)}</div>
+            <div className="text-xs text-gray-600"><Text path="cars.details.expenses" fallback="Xarajatlar (AED)" /></div>
+            <div className="text-sm"><Text path="cars.details.direct" fallback="To‘g‘ridan-to‘grilar" />: {directExpensesAED.toFixed(2)}</div>
+            <div className="text-sm"><Text path="cars.details.overhead" fallback="Umumiy (overhead)" />: {overheadAED.toFixed(2)}</div>
+            <div className="text-sm font-medium"><Text path="cars.details.total" fallback="Jami" />: {expensesAED.toFixed(2)}</div>
           </div>
           <div className="border rounded p-2 bg-white">
-            <div className="text-xs text-gray-600">Sotuv</div>
+            <div className="text-xs text-gray-600"><Text path="cars.details.sale" fallback="Sotuv" /></div>
             <div className="text-sm">{saleIncome ? `${saleIncome.amount} ${saleIncome.currency}` : '—'}</div>
             <div className="text-sm">AED {Number(saleAED || 0).toFixed(2)}</div>
           </div>
           <div className="border rounded p-2 bg-white">
-            <div className="text-xs text-gray-600">Net Profit (AED)</div>
+            <div className="text-xs text-gray-600"><Text path="cars.details.netProfit" fallback="Net Profit (AED)" /></div>
             <div className={profit >= 0 ? "text-green-700 font-semibold" : "text-red-700 font-semibold"}>{profit.toFixed(2)}</div>
           </div>
         </div>
-        <div className="text-sm text-gray-700 mt-1">Jami tannarx (AED): {Number(totalCostAED || 0).toFixed(2)}</div>
+        <div className="text-sm text-gray-700 mt-1"><Text path="cars.details.totalCostAED" fallback="Jami tannarx (AED)" />: {Number(totalCostAED || 0).toFixed(2)}</div>
 
       </div>
 

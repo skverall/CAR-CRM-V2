@@ -1,6 +1,7 @@
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 import Link from "next/link";
 export const dynamic = "force-dynamic";
+import Text from "@/app/components/i18n/Text";
 
 type CarWithProfit = {
   id: string;
@@ -130,18 +131,18 @@ async function addCar(formData: FormData) {
 
 function getStatusBadge(status: string) {
   const statusConfig = {
-    in_transit: { label: "Yo&apos;lda", color: "bg-blue-100 text-blue-800" },
-    for_sale: { label: "Sotuvda", color: "bg-green-100 text-green-800" },
-    reserved: { label: "Band", color: "bg-yellow-100 text-yellow-800" },
-    sold: { label: "Sotilgan", color: "bg-purple-100 text-purple-800" },
-    archived: { label: "Arxiv", color: "bg-gray-100 text-gray-800" }
+    in_transit: { key: "status.in_transit", color: "bg-blue-100 text-blue-800" },
+    for_sale: { key: "status.for_sale", color: "bg-green-100 text-green-800" },
+    reserved: { key: "status.reserved", color: "bg-yellow-100 text-yellow-800" },
+    sold: { key: "status.sold", color: "bg-purple-100 text-purple-800" },
+    archived: { key: "status.archived", color: "bg-gray-100 text-gray-800" }
   };
-  
+
   const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.in_transit;
-  
+
   return (
     <span className={`px-2 py-1 rounded-full text-xs font-medium ${config.color}`}>
-      {config.label}
+      <Text path={config.key} />
     </span>
   );
 }
@@ -169,18 +170,18 @@ export default async function CarsPage() {
   return (
     <div className="grid gap-6 p-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">Avtomobillar</h1>
+        <h1 className="text-3xl font-bold"><Text path="cars.title" fallback="Avtomobillar" /></h1>
         <div className="flex gap-4">
           <div className="text-sm">
-            <span className="text-gray-600">Jami: </span>
+            <span className="text-gray-600"><Text path="cars.summary.total" fallback="Jami" />: </span>
             <span className="font-semibold">{totalCars}</span>
           </div>
           <div className="text-sm">
-            <span className="text-gray-600">Umumiy foyda: </span>
+            <span className="text-gray-600"><Text path="cars.summary.totalProfit" fallback="Umumiy foyda" />: </span>
             <span className="font-semibold text-green-600">{totalProfit.toLocaleString()} AED</span>
           </div>
           <div className="text-sm">
-            <span className="text-gray-600">O&apos;rtacha marja: </span>
+            <span className="text-gray-600"><Text path="cars.summary.avgMargin" fallback="O'rtacha marja" />: </span>
             <span className="font-semibold">{avgMargin.toFixed(1)}%</span>
           </div>
         </div>
@@ -219,34 +220,34 @@ export default async function CarsPage() {
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Avtomobil
+                  <Text path="cars.table.car" fallback="Avtomobil" />
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Holat
+                  <Text path="cars.table.status" fallback="Holat" />
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Xarid sanasi
+                  <Text path="cars.table.purchaseDate" fallback="Xarid sanasi" />
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Tan narx
+                  <Text path="cars.table.totalCost" fallback="Tan narx (AED)" />
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Sotuv narxi
+                  <Text path="cars.table.soldPrice" fallback="Sotuv narxi" />
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Foyda
+                  <Text path="cars.table.profit" fallback="Foyda" />
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Marja
+                  <Text path="cars.table.margin" fallback="Marja" />
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Kunlar
+                  <Text path="cars.table.days" fallback="Kunlar" />
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Qaror
+                  <Text path="cars.table.decision" fallback="Qaror" />
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Amallar
+                  <Text path="cars.table.actions" fallback="Amallar" />
                 </th>
               </tr>
             </thead>
@@ -294,7 +295,7 @@ export default async function CarsPage() {
                       href={`/cars/${car.id}`}
                       className="text-blue-600 hover:text-blue-900"
                     >
-                      Ko&apos;rish
+                      <Text path="cars.table.view" fallback="Ko'rish" />
                     </Link>
                   </td>
                 </tr>
