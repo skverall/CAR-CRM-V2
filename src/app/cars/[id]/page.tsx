@@ -150,12 +150,27 @@ async function changeStatus(formData: FormData) {
   redirect(`/cars/${carId}`);
 }
 
-export default async function CarPage({ params }: { params: { id: string } }) {
+export default async function CarPage({ params, searchParams }: { params: { id: string }, searchParams?: { edit?: string } }) {
   const id = params.id;
   const db = getSupabaseAdmin();
   const { data: car } = await db.from("au_cars").select("*").eq("id", id).single();
   if (!car) return notFound();
   const carRow: Car = car as unknown as Car;
+  const isEdit = Boolean(searchParams?.edit);
+
+  // Server action: update basic fields
+  async function updateCar(formData: FormData) {
+    "use server";
+    const payload: Record<string, unknown> = {
+      make: String(formData.get("make") || carRow.make || ""),
+      model: String(formData.get("model") || carRow.model || ""),
+      model_year: formData.get("model_year") ? Number(formData.get("model_year")) : carRow.model_year,
+      status: String(formData.get("status") || carRow.status),
+    };
+    await getSupabaseAdmin().from("au_cars").update({ ...payload, updated_at: new Date().toISOString() }).eq("id", id);
+    redirect(`/cars/${id}`);
+  }
+
   const { data: expenses } = await db.from("au_expenses").select("*").eq("car_id", id).order("occurred_at");
   const { data: incomes } = await db.from("au_incomes").select("*").eq("car_id", id).order("occurred_at");
   const { data: distributions } = await db.from("au_profit_distributions").select("*").eq("car_id", id);
@@ -168,7 +183,6 @@ export default async function CarPage({ params }: { params: { id: string } }) {
   const canDistribute = carRow.status === "sold" && profit > 0 && (distributions || []).length === 0;
 
   const purchaseAED = Number(carRow.purchase_price) * Number(carRow.purchase_rate_to_aed);
-  // Pull cost components from car_cost_view for accurate split of purchase vs expenses (direct + overhead)
   const { data: costRow } = await db
     .from('car_cost_view')
     .select('purchase_component_aed, car_expenses_component_aed, overhead_component_aed, total_cost_aed')
@@ -180,7 +194,6 @@ export default async function CarPage({ params }: { params: { id: string } }) {
   const expensesAED = directExpensesAED + overheadAED;
   const totalCostAED = Number(cost.total_cost_aed || 0);
 
-  // Find sale income (if recorded via [SALE])
   const { data: saleIncomeRows } = await db
     .from('au_incomes')
     .select('amount, currency, rate_to_aed, amount_aed, description, occurred_at')
@@ -198,7 +211,7 @@ export default async function CarPage({ params }: { params: { id: string } }) {
   return (
     <div className="grid gap-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">{carRow.vin} - {carRow.make} {carRow.model} {carRow.model_year || ""}</h1>
+        <h1 className="text-2xl font-semibold">{carRow.make} {carRow.model} {carRow.model_year || ""} <span className="text-gray-500 text-base">/ VIN: {carRow.vin}</span></h1>
         <div className="flex items-center gap-2">
           {next && next !== "sold" && (
             <form action={changeStatus} className="flex items-center gap-2">
@@ -218,6 +231,28 @@ export default async function CarPage({ params }: { params: { id: string } }) {
           )}
         </div>
       </div>
+
+      {isEdit && (
+        <div className="border rounded p-4 bg-white">
+          <h2 className="font-semibold mb-3">Tahrirlash</h2>
+          <form action={updateCar} className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <input name="make" defaultValue={carRow.make || ''} placeholder="Make" className="border px-3 py-2 rounded" />
+            <input name="model" defaultValue={carRow.model || ''} placeholder="Model" className="border px-3 py-2 rounded" />
+            <input name="model_year" type="number" defaultValue={carRow.model_year || undefined} placeholder="Year" className="border px-3 py-2 rounded" />
+            <select name="status" defaultValue={carRow.status} className="border px-3 py-2 rounded">
+              <option value="available">available</option>
+              <option value="repair">repair</option>
+              <option value="listed">listed</option>
+              <option value="sold">sold</option>
+              <option value="archived">archived</option>
+            </select>
+            <div className="col-span-2 sm:col-span-4 flex gap-2 justify-end">
+              <a href={`/cars/${id}`} className="px-3 py-2 rounded border">Bekor qilish</a>
+              <button type="submit" className="px-3 py-2 rounded bg-blue-600 text-white hover:bg-blue-700">Saqlash</button>
+            </div>
+          </form>
+        </div>
+      )}
 
       <div className="border rounded p-4 bg-yellow-50 grid gap-2">
         <div className="font-semibold"><Text path="cars.details.overview" fallback="Umumiy ko‘rsatkichlar" /></div>
