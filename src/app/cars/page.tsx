@@ -1,6 +1,6 @@
-import Link from "next/link";
 import Text from "@/app/components/i18n/Text";
 import TableShell from "@/app/components/ui/TableShell";
+import StatusBadge from "@/app/components/ui/StatusBadge";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 import StatusFilter from "@/app/components/cars/StatusFilter";
 import RowActionsMenu from "@/app/components/cars/RowActionsMenu";
@@ -63,59 +63,138 @@ export default async function CarsPage({ searchParams }: { searchParams?: { stat
   const cars = orgId ? await fetchCars(orgId, searchParams?.status) : [];
 
   return (
-    <div className="grid gap-4 p-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold"><Text path="cars.title" fallback="Avtomobillar" /></h1>
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">
+            <Text path="cars.title" fallback="Avtomobillar" />
+          </h1>
+          <p className="text-sm text-gray-600 mt-1">
+            Barcha avtomobillar ro'yxati va ularning holati
+          </p>
+        </div>
         <StatusFilter />
       </div>
 
-      <TableShell className="text-sm">
-        <thead className="bg-gray-50 sticky top-0 z-10">
-          <tr>
-            <th className="p-2 border"><Text path="cars.table.car" fallback="Avtomobil" /></th>
-            <th className="p-2 border"><Text path="cars.table.status" fallback="Holat" /></th>
-            <th className="p-2 border"><Text path="cars.table.purchaseDate" fallback="Xarid sanasi" /></th>
-            <th className="p-2 border">AED <Text path="cars.table.purchasePrice" fallback="Xarid narxi" /></th>
-            <th className="p-2 border"><Text path="cars.table.totalCost" fallback="Tan narx (AED)" /></th>
-            <th className="p-2 border"><Text path="cars.table.soldPrice" fallback="Sotuv narxi" /></th>
-            <th className="p-2 border"><Text path="cars.table.profit" fallback="Foyda" /></th>
-            <th className="p-2 border"><Text path="cars.table.margin" fallback="Marja" /></th>
-            <th className="p-2 border"><Text path="cars.table.days" fallback="Kunlar" /></th>
-            <th className="p-2 border"><Text path="cars.table.actions" fallback="Amallar" /></th>
-          </tr>
-        </thead>
-        <tbody>
-          {cars.map((car) => (
-            <tr key={car.id} className="odd:bg-white even:bg-gray-50">
-              <td className="p-2 border">
-                <div className="font-semibold text-gray-900">{car.make} {car.model} {car.model_year ?? ''}</div>
-                <div className="text-gray-500 text-xs">VIN: {car.vin}</div>
-              </td>
-              <td className="p-2 border">
-                <span className="px-2 py-1 rounded-full bg-gray-100 text-gray-800 text-xs">
-                  <Text path={`status.${car.status}`} fallback={car.status} />
-                </span>
-              </td>
-              <td className="p-2 border whitespace-nowrap">{new Date(car.purchase_date).toLocaleDateString('uz-UZ')}</td>
-              <td className="p-2 border whitespace-nowrap">{car.purchase_price_aed != null ? `${car.purchase_price_aed.toLocaleString()} AED` : '—'}</td>
-              <td className="p-2 border whitespace-nowrap">{(car.cost_base_aed ?? 0).toLocaleString()} AED</td>
-              <td className="p-2 border whitespace-nowrap">{car.sold_price_aed != null ? `${car.sold_price_aed.toLocaleString()} AED` : '—'}</td>
-              <td className="p-2 border">
-                {car.profit_aed != null ? (
-                  <span className={car.profit_aed >= 0 ? 'text-green-600 font-medium' : 'text-red-600 font-medium'}>
-                    {car.profit_aed >= 0 ? '+' : ''}{car.profit_aed.toLocaleString()} AED
-                  </span>
-                ) : '—'}
-              </td>
-              <td className="p-2 border">{car.margin_pct != null ? `${car.margin_pct.toFixed(1)}%` : '—'}</td>
-              <td className="p-2 border">{car.days_on_lot != null ? car.days_on_lot : '—'}</td>
-              <td className="p-2 border">
-                <RowActionsMenu carId={car.id} carVin={car.vin} orgId={orgId} onSell={sellViaDeals} />
-              </td>
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <TableShell className="text-sm" maxHeightClass="max-h-[80vh]">
+          <thead className="bg-gray-50/80 sticky top-0 z-10 border-b border-gray-200">
+            <tr>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                <Text path="cars.table.car" fallback="Avtomobil" />
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                <Text path="cars.table.status" fallback="Holat" />
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                <Text path="cars.table.purchaseDate" fallback="Xarid sanasi" />
+              </th>
+              <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                <Text path="cars.table.purchasePrice" fallback="Xarid narxi" /> (AED)
+              </th>
+              <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                <Text path="cars.table.totalCost" fallback="Tan narx" /> (AED)
+              </th>
+              <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                <Text path="cars.table.soldPrice" fallback="Sotuv narxi" />
+              </th>
+              <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                <Text path="cars.table.profit" fallback="Foyda" />
+              </th>
+              <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                <Text path="cars.table.margin" fallback="Marja" />
+              </th>
+              <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                <Text path="cars.table.days" fallback="Kunlar" />
+              </th>
+              <th className="px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                <Text path="cars.table.actions" fallback="Amallar" />
+              </th>
             </tr>
-          ))}
-        </tbody>
-      </TableShell>
+          </thead>
+          <tbody className="divide-y divide-gray-200">
+            {cars.length === 0 ? (
+              <tr>
+                <td colSpan={10} className="px-4 py-12 text-center text-gray-500">
+                  <div className="flex flex-col items-center gap-2">
+                    <svg className="w-12 h-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                    <p className="text-sm">Hech qanday avtomobil topilmadi</p>
+                  </div>
+                </td>
+              </tr>
+            ) : (
+              cars.map((car, index) => (
+                <tr key={car.id} className={`hover:bg-gray-50/50 transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50/30'}`}>
+                  <td className="px-4 py-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center text-white font-semibold text-sm">
+                        {car.make?.charAt(0) || 'C'}
+                      </div>
+                      <div>
+                        <div className="font-semibold text-gray-900 text-sm">
+                          {car.make} {car.model} {car.model_year ?? ''}
+                        </div>
+                        <div className="text-gray-500 text-xs font-mono">
+                          VIN: {car.vin}
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-4 py-4">
+                    <StatusBadge status={car.status}>
+                      <Text path={`status.${car.status}`} fallback={car.status} />
+                    </StatusBadge>
+                  </td>
+                  <td className="px-4 py-4 text-sm text-gray-600 whitespace-nowrap">
+                    {new Date(car.purchase_date).toLocaleDateString('uz-UZ')}
+                  </td>
+                  <td className="px-4 py-4 text-right text-sm font-medium text-gray-900 whitespace-nowrap">
+                    {car.purchase_price_aed != null ? `${car.purchase_price_aed.toLocaleString()}` : '—'}
+                  </td>
+                  <td className="px-4 py-4 text-right text-sm font-medium text-gray-900 whitespace-nowrap">
+                    {(car.cost_base_aed ?? 0).toLocaleString()}
+                  </td>
+                  <td className="px-4 py-4 text-right text-sm font-medium text-gray-900 whitespace-nowrap">
+                    {car.sold_price_aed != null ? `${car.sold_price_aed.toLocaleString()} AED` : '—'}
+                  </td>
+                  <td className="px-4 py-4 text-right">
+                    {car.profit_aed != null ? (
+                      <div className="flex items-center justify-end gap-1">
+                        <span className={`text-sm font-semibold ${car.profit_aed >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                          {car.profit_aed >= 0 ? '+' : ''}{car.profit_aed.toLocaleString()}
+                        </span>
+                        <span className="text-xs text-gray-500">AED</span>
+                      </div>
+                    ) : (
+                      <span className="text-sm text-gray-400">—</span>
+                    )}
+                  </td>
+                  <td className="px-4 py-4 text-right text-sm text-gray-600">
+                    {car.margin_pct != null ? (
+                      <span className={`font-medium ${car.margin_pct >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                        {car.margin_pct.toFixed(1)}%
+                      </span>
+                    ) : '—'}
+                  </td>
+                  <td className="px-4 py-4 text-right text-sm text-gray-600">
+                    {car.days_on_lot != null ? (
+                      <span className="inline-flex items-center gap-1">
+                        <span>{car.days_on_lot}</span>
+                        <span className="text-xs text-gray-400">kun</span>
+                      </span>
+                    ) : '—'}
+                  </td>
+                  <td className="px-4 py-4 text-center">
+                    <RowActionsMenu carId={car.id} orgId={orgId} onSell={sellViaDeals} />
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </TableShell>
+      </div>
     </div>
   );
 }
