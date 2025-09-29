@@ -70,7 +70,7 @@ export default async function CarsPage({ searchParams }: { searchParams?: { stat
             <Text path="cars.title" fallback="Avtomobillar" />
           </h1>
           <p className="text-sm text-gray-600 mt-1">
-            Barcha avtomobillar ro'yxati va ularning holati
+            Barcha avtomobillar ro&apos;yxati va ularning holati
           </p>
         </div>
         <StatusFilter />

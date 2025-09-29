@@ -1,6 +1,5 @@
 import Link from "next/link";
 import Text from "@/app/components/i18n/Text";
-import Card from "@/app/components/ui/Card";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 
 export const dynamic = "force-dynamic";
@@ -127,7 +126,7 @@ export default async function Dashboard() {
           <Text path="dashboard.title" fallback="Панель управления" />
         </h1>
         <p className="text-gray-600 max-w-2xl mx-auto">
-          Avtomobillar bozorini boshqarish tizimi. Barcha ma'lumotlar real vaqtda yangilanadi.
+          Avtomobillar bozorini boshqarish tizimi. Barcha ma&apos;lumotlar real vaqtda yangilanadi.
         </p>
       </div>
 
@@ -158,7 +157,7 @@ export default async function Dashboard() {
 
               {/* Hover indicator */}
               <div className="mt-4 flex items-center text-xs text-gray-400 group-hover:text-gray-600 transition-colors">
-                <span>Ko'rish</span>
+                <span>Ko&apos;rish</span>
                 <svg className="w-3 h-3 ml-1 transform group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
@@ -183,7 +182,7 @@ export default async function Dashboard() {
             </div>
             <div>
               <div className="font-medium text-gray-900">Avtomobillar</div>
-              <div className="text-sm text-gray-500">Barcha avtomobillarni ko'rish</div>
+              <div className="text-sm text-gray-500">Barcha avtomobillarni ko&apos;rish</div>
             </div>
           </Link>
 
@@ -195,7 +194,7 @@ export default async function Dashboard() {
             </div>
             <div>
               <div className="font-medium text-gray-900">Yangi avtomobil</div>
-              <div className="text-sm text-gray-500">Yangi avtomobil qo'shish</div>
+              <div className="text-sm text-gray-500">Yangi avtomobil qo&apos;shish</div>
             </div>
           </button>
 
