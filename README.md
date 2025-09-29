@@ -1,39 +1,137 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🚗 Car CRM - Система управления автомобильным бизнесом
 
-## Getting Started
+[![Next.js](https://img.shields.io/badge/Next.js-15.5.4-black)](https://nextjs.org/)
+[![React](https://img.shields.io/badge/React-19.1.0-blue)](https://reactjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-38bdf8)](https://tailwindcss.com/)
+[![Supabase](https://img.shields.io/badge/Supabase-Latest-3ecf8e)](https://supabase.com/)
 
-First, run the development server:
+Современная CRM система для управления автомобильным бизнесом с расчетом прибыли, управлением расходами и аналитикой.
+
+## ✨ Возможности
+
+- 🚗 **Управление автомобилями** - Полный учет автомобилей с детальной информацией
+- 💰 **Расчет прибыли** - Автоматический расчет прибыли с учетом всех расходов
+- 📊 **Аналитика** - Детальная статистика и отчеты по продажам
+- 💸 **Управление расходами** - Учет прямых и накладных расходов
+- 🌐 **Мультиязычность** - Поддержка узбекского и русского языков
+- 📱 **Адаптивный дизайн** - Отлично работает на всех устройствах
+- 🎨 **Современный UI** - Красивый интерфейс с плавными анимациями
+
+## 🎉 Что нового в версии 2.0?
+
+- ✅ Полностью обновленный дизайн с современной дизайн-системой
+- ✅ Новые UI компоненты (Badge, Tooltip, Spinner, Alert)
+- ✅ Улучшенная навигация с мобильным меню
+- ✅ Редизайн дашборда с анимациями
+- ✅ Расширенная локализация
+
+📖 **Подробнее:** [README_IMPROVEMENTS.md](./README_IMPROVEMENTS.md)
+
+## 🚀 Быстрый старт
+
+### Требования
+
+- Node.js 18+
+- npm или yarn
+- Аккаунт Supabase
+
+### Установка
 
 ```bash
+# Клонируйте репозиторий
+git clone <your-repo-url>
+cd car-crm-v2
+
+# Установите зависимости
+npm install
+
+# Настройте переменные окружения
+cp .env.example .env.local
+# Отредактируйте .env.local и добавьте ваши ключи Supabase
+
+# Запустите dev сервер
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Откройте [http://localhost:3000](http://localhost:3000) в браузере.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 📚 Документация
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- 📖 [Сводка улучшений](./IMPROVEMENTS_SUMMARY.md) - Полный список всех улучшений
+- 🚀 [Следующие шаги](./NEXT_STEPS.md) - План дальнейшего развития
+- 📊 [Отчет об обновлении](./UPGRADE_REPORT.md) - Детальный отчет о версии 2.0
+- 📝 [История изменений](./CHANGELOG.md) - Changelog проекта
+- 💡 [Быстрый старт](./README_IMPROVEMENTS.md) - Руководство по новым возможностям
 
-## Learn More
+## 🛠 Технологии
 
-To learn more about Next.js, take a look at the following resources:
+- **Frontend:** Next.js 15, React 19, TypeScript
+- **Styling:** Tailwind CSS 4, Custom CSS Variables
+- **Backend:** Supabase (PostgreSQL)
+- **Deployment:** Vercel
+- **i18n:** Custom implementation (UZ/RU)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 📦 Структура проекта
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+src/app/
+├── components/
+│   ├── ui/              # UI компоненты (Badge, Tooltip, Spinner, Alert)
+│   ├── Nav.tsx          # Навигация
+│   └── Text.tsx         # Компонент локализации
+├── i18n/                # Система переводов
+├── cars/                # Страницы автомобилей
+├── expenses/            # Страницы расходов
+├── page.tsx             # Главная страница (дашборд)
+└── globals.css          # Глобальные стили и дизайн-система
 
-## Deploy on Vercel
+database/
+├── 01_schema.sql        # Схема БД
+└── 02_calculation_views.sql  # Views для расчетов
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🎨 Новые UI компоненты
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Badge
+```tsx
+<Badge variant="success" size="md">Активен</Badge>
+```
+
+### Tooltip
+```tsx
+<Tooltip content="Подсказка" position="top">
+  <button>Наведи</button>
+</Tooltip>
+```
+
+### Spinner
+```tsx
+<Spinner size="lg" color="primary" />
+```
+
+### Alert
+```tsx
+<Alert variant="success" title="Успех!">
+  Операция выполнена
+</Alert>
+```
+
+## 🌐 Локализация
+
+Проект поддерживает два языка:
+- 🇺🇿 Узбекский (uz)
+- 🇷🇺 Русский (ru)
+
+Переключение языка доступно в навигационном меню.
+
+## 📱 Адаптивность
+
+Все компоненты полностью адаптивны и отлично работают на:
+- 💻 Desktop (1920px+)
+- 💻 Laptop (1024px+)
+- 📱 Tablet (768px+)
+- 📱 Mobile (320px+)
 
 
 ## Setup (Supabase + Local)
