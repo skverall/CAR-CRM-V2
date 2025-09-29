@@ -1,6 +1,11 @@
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
-import { getOrgId } from "@/lib/getOrgId";
 export const dynamic = "force-dynamic";
+
+async function getOrgId(): Promise<string | null> {
+  const db = getSupabaseAdmin();
+  const { data } = await db.from("orgs").select("id").eq("name", "Default Organization").single();
+  return (data as { id: string } | null)?.id ?? null;
+}
 
 import Text from "@/app/components/i18n/Text";
 import ProfitChart from "@/app/components/analytics/ProfitChart";
@@ -73,7 +78,7 @@ export default async function AnalyticsPage() {
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Total Profit */}
-        <div className="card">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-2">
             <div className="text-sm text-gray-600">
               <Text path="analytics.totalProfit" fallback="Jami foyda" />
@@ -91,7 +96,7 @@ export default async function AnalyticsPage() {
         </div>
 
         {/* Average Margin */}
-        <div className="card">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-2">
             <div className="text-sm text-gray-600">
               <Text path="analytics.avgMargin" fallback="O'rtacha marja" />
@@ -106,7 +111,7 @@ export default async function AnalyticsPage() {
             {avgMargin.toFixed(1)}%
           </div>
           <div className="text-xs text-gray-500 mt-1">
-            <Badge 
+            <Badge
               variant={avgMargin >= 20 ? 'success' : avgMargin >= 10 ? 'warning' : 'danger'}
               size="sm"
             >
@@ -122,7 +127,7 @@ export default async function AnalyticsPage() {
         </div>
 
         {/* Cars Sold */}
-        <div className="card">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-2">
             <div className="text-sm text-gray-600">
               <Text path="analytics.carsSold" fallback="Sotilgan avtomobillar" />
@@ -145,7 +150,7 @@ export default async function AnalyticsPage() {
         </div>
 
         {/* Average Days to Sell */}
-        <div className="card">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-2">
             <div className="text-sm text-gray-600">
               <Text path="analytics.avgDaysToSell" fallback="O'rtacha sotuv muddati" />
@@ -170,7 +175,7 @@ export default async function AnalyticsPage() {
 
       {/* Top Profitable Cars */}
       {profitableCars.length > 0 && (
-        <div className="card">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <h3 className="text-xl font-bold text-gray-900 mb-4">
             <Text path="analytics.topProfitableCars" fallback="Eng foydali avtomobillar" />
           </h3>
@@ -246,7 +251,7 @@ export default async function AnalyticsPage() {
 
       {/* Loss Cars */}
       {lossCars.length > 0 && (
-        <div className="card border-red-200">
+        <div className="bg-white rounded-xl shadow-sm border border-red-200 p-6">
           <div className="flex items-center gap-3 mb-4">
             <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />

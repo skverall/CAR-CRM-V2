@@ -59,7 +59,7 @@ export default function ProfitBreakdown({
   return (
     <div className="space-y-6">
       {/* Cost Breakdown */}
-      <div className="card">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold text-gray-900">
             <Text path="profit.costBreakdown" fallback="Xarajatlar tarkibi" />
@@ -189,7 +189,7 @@ export default function ProfitBreakdown({
 
       {/* Profit Breakdown (only if sold) */}
       {status === 'sold' && soldPrice && (
-        <div className="card">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold text-gray-900">
               <Text path="profit.profitBreakdown" fallback="Foyda hisob-kitobi" />
