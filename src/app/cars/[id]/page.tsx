@@ -4,6 +4,7 @@ export const dynamic = "force-dynamic";
 import { notFound, redirect } from "next/navigation";
 import Text from "@/app/components/i18n/Text";
 import SellBar from "@/app/components/cars/SellBar";
+import ProfitBreakdown from "@/app/components/cars/ProfitBreakdown";
 
 type Car = {
   vin: string;
@@ -281,6 +282,18 @@ export default async function CarPage({ params, searchParams }: { params: { id: 
         <div className="text-sm text-gray-700 mt-1"><Text path="cars.details.totalCostAED" fallback="Jami tannarx (AED)" />: {Number(totalCostAED || 0).toFixed(2)}</div>
 
       </div>
+
+      {/* New Profit Breakdown Component */}
+      <ProfitBreakdown
+        purchasePrice={Number(carRow.purchase_price)}
+        purchaseCurrency={carRow.purchase_currency}
+        purchaseRate={Number(carRow.purchase_rate_to_aed)}
+        directExpenses={directExpensesAED}
+        overheadExpenses={overheadAED}
+        soldPrice={carRow.status === 'sold' ? Number(pv?.sold_price_aed || 0) : undefined}
+        commission={carRow.status === 'sold' ? Number(pv?.commission_aed || 0) : undefined}
+        status={carRow.status}
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <div>
