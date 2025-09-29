@@ -197,6 +197,7 @@ export const dictionaries: Record<LangCode, Record<string, unknown>> = {
     },
     dashboard: {
       title: "Avtomobil CRM Boshqaruv Paneli",
+      subtitle: "Avtomobillar bozorini boshqarish tizimi. Barcha ma'lumotlar real vaqtda yangilanadi.",
       last30: "So‘nggi 30 kun ma‘lumotlari",
       kpi: {
         totalProfit: "Umumiy foyda",
@@ -205,18 +206,47 @@ export const dictionaries: Record<LangCode, Record<string, unknown>> = {
         activeCars: "Faol avtomobillar",
       },
       cards: {
-        total: "Jami avtomobillar",
-        in_transit: "Yo'lda",
-        garage: "Garajda",
-        for_sale: "Sotuvda",
-        sold: "Sotilgan",
-        reserved: "Band"
+        total: {
+          title: "Jami avtomobillar",
+          description: "Jami avtomobillar soni"
+        },
+        in_transit: {
+          title: "Yo'lda",
+          description: "Yo'lda bo'lgan avtomobillar"
+        },
+        garage: {
+          title: "Garajda",
+          description: "Garajda va ta'mirda"
+        },
+        for_sale: {
+          title: "Sotuvda",
+          description: "Sotuvga qo'yilgan"
+        },
+        sold: {
+          title: "Sotilgan",
+          description: "Sotilgan avtomobillar"
+        },
+        reserved: {
+          title: "Band",
+          description: "Bron qilingan"
+        }
       },
       inventory: { title: "Inventar holati" },
       topProfit: { title: "Eng foydali avtomobillar", empty: "Ma‘lumot yo‘q" },
       lossCars: { title: "Zarar keltirgan avtomobillar", empty: "Zarar yo‘q 🎉" },
       brands: { title: "Brendlar bo‘yicha taqsimot", unit: "ta avtomobil", avgProfit: "O‘rtacha foyda:", avgMargin: "O‘rtacha marja:" },
       activity: { title: "So‘nggi faoliyat" },
+      quickActions: {
+        title: "Tezkor amallar",
+        viewCars: {
+          title: "Avtomobillar",
+          description: "Barcha avtomobillarni ko'rish"
+        },
+        addCar: {
+          title: "Yangi avtomobil",
+          description: "Yangi avtomobil qo'shish"
+        }
+      },
     },
 
     common: {
@@ -410,6 +440,7 @@ export const dictionaries: Record<LangCode, Record<string, unknown>> = {
 
     dashboard: {
       title: "Панель управления",
+      subtitle: "Система управления автомобильным бизнесом. Все данные обновляются в реальном времени.",
       last30: "Данные за последние 30 дней",
       kpi: {
         totalProfit: "Общая прибыль",
@@ -418,18 +449,47 @@ export const dictionaries: Record<LangCode, Record<string, unknown>> = {
         activeCars: "Активные авто",
       },
       cards: {
-        total: "Всего автомобилей",
-        in_transit: "В пути",
-        garage: "В гараже",
-        for_sale: "В продаже",
-        sold: "Продано",
-        reserved: "В резерве"
+        total: {
+          title: "Всего автомобилей",
+          description: "Общее количество автомобилей"
+        },
+        in_transit: {
+          title: "В пути",
+          description: "Автомобили в пути"
+        },
+        garage: {
+          title: "В гараже",
+          description: "В гараже и на ремонте"
+        },
+        for_sale: {
+          title: "В продаже",
+          description: "Выставлены на продажу"
+        },
+        sold: {
+          title: "Продано",
+          description: "Проданные автомобили"
+        },
+        reserved: {
+          title: "В резерве",
+          description: "Забронированные"
+        }
       },
       inventory: { title: "Статус инвентаря" },
       topProfit: { title: "Самые прибыльные авто", empty: "Нет данных" },
       lossCars: { title: "Убыточные авто", empty: "Убытков нет 🎉" },
       brands: { title: "Распределение по брендам", unit: "авто", avgProfit: "Средняя прибыль:", avgMargin: "Средняя маржа:" },
       activity: { title: "Последняя активность" },
+      quickActions: {
+        title: "Быстрые действия",
+        viewCars: {
+          title: "Автомобили",
+          description: "Просмотр всех автомобилей"
+        },
+        addCar: {
+          title: "Новый автомобиль",
+          description: "Добавить новый автомобиль"
+        }
+      },
     },
     reports: {
       title: "Отчеты",

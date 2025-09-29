@@ -44,12 +44,13 @@ export default async function Dashboard() {
       gradient: "from-blue-500 to-blue-600",
       icon: (
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" />
         </svg>
       ),
       value: counts.total,
       dictPath: "dashboard.cards.total",
-      description: "Jami avtomobillar soni"
+      description: "dashboard.cards.total.description"
     },
     {
       key: "in_transit",
@@ -62,7 +63,7 @@ export default async function Dashboard() {
       ),
       value: counts.inTransit,
       dictPath: "dashboard.cards.in_transit",
-      description: "Yo'lda bo'lgan avtomobillar"
+      description: "dashboard.cards.in_transit.description"
     },
     {
       key: "garage",
@@ -75,7 +76,7 @@ export default async function Dashboard() {
       ),
       value: counts.garage,
       dictPath: "dashboard.cards.garage",
-      description: "Garajda va ta'mirda"
+      description: "dashboard.cards.garage.description"
     },
     {
       key: "for_sale",
@@ -88,7 +89,7 @@ export default async function Dashboard() {
       ),
       value: counts.forSale,
       dictPath: "dashboard.cards.for_sale",
-      description: "Sotuvga qo'yilgan"
+      description: "dashboard.cards.for_sale.description"
     },
     {
       key: "sold",
@@ -101,7 +102,7 @@ export default async function Dashboard() {
       ),
       value: counts.sold,
       dictPath: "dashboard.cards.sold",
-      description: "Sotilgan avtomobillar"
+      description: "dashboard.cards.sold.description"
     },
     {
       key: "reserved",
@@ -114,7 +115,7 @@ export default async function Dashboard() {
       ),
       value: counts.reserved,
       dictPath: "dashboard.cards.reserved",
-      description: "Bron qilingan"
+      description: "dashboard.cards.reserved.description"
     },
   ];
 
@@ -126,7 +127,7 @@ export default async function Dashboard() {
           <Text path="dashboard.title" fallback="Панель управления" />
         </h1>
         <p className="text-gray-600 max-w-2xl mx-auto">
-          Avtomobillar bozorini boshqarish tizimi. Barcha ma&apos;lumotlar real vaqtda yangilanadi.
+          <Text path="dashboard.subtitle" fallback="Avtomobillar bozorini boshqarish tizimi. Barcha ma'lumotlar real vaqtda yangilanadi." />
         </p>
       </div>
 
@@ -148,10 +149,10 @@ export default async function Dashboard() {
 
               <div className="space-y-1">
                 <h3 className="font-semibold text-gray-900 text-sm">
-                  <Text path={card.dictPath} fallback={card.key} />
+                  <Text path={`${card.dictPath}.title`} fallback={card.key} />
                 </h3>
                 <p className="text-xs text-gray-500 leading-relaxed">
-                  {card.description}
+                  <Text path={card.description} fallback={card.key} />
                 </p>
               </div>
 
@@ -169,7 +170,9 @@ export default async function Dashboard() {
 
       {/* Quick Actions */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Tezkor amallar</h2>
+        <h2 className="text-lg font-semibold text-gray-900 mb-4">
+          <Text path="dashboard.quickActions.title" fallback="Tezkor amallar" />
+        </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <Link
             href="/cars"
@@ -177,12 +180,17 @@ export default async function Dashboard() {
           >
             <div className="w-10 h-10 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center group-hover:bg-blue-200">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" />
               </svg>
             </div>
             <div>
-              <div className="font-medium text-gray-900">Avtomobillar</div>
-              <div className="text-sm text-gray-500">Barcha avtomobillarni ko&apos;rish</div>
+              <div className="font-medium text-gray-900">
+                <Text path="dashboard.quickActions.viewCars.title" fallback="Avtomobillar" />
+              </div>
+              <div className="text-sm text-gray-500">
+                <Text path="dashboard.quickActions.viewCars.description" fallback="Barcha avtomobillarni ko'rish" />
+              </div>
             </div>
           </Link>
 
@@ -193,8 +201,12 @@ export default async function Dashboard() {
               </svg>
             </div>
             <div>
-              <div className="font-medium text-gray-900">Yangi avtomobil</div>
-              <div className="text-sm text-gray-500">Yangi avtomobil qo&apos;shish</div>
+              <div className="font-medium text-gray-900">
+                <Text path="dashboard.quickActions.addCar.title" fallback="Yangi avtomobil" />
+              </div>
+              <div className="text-sm text-gray-500">
+                <Text path="dashboard.quickActions.addCar.description" fallback="Yangi avtomobil qo'shish" />
+              </div>
             </div>
           </button>
 
