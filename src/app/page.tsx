@@ -120,107 +120,171 @@ export default async function Dashboard() {
   ];
 
   return (
-    <div className="space-y-8">
-      {/* Header */}
-      <div className="text-center">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">
+    <div className="space-y-8 animate-in fade-in-0">
+      {/* Header with gradient */}
+      <div className="text-center space-y-4">
+        <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-700 rounded-full text-sm font-medium border border-blue-200 mb-4">
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+          </svg>
+          <Text path="dashboard.last30" fallback="So'nggi 30 kun ma'lumotlari" />
+        </div>
+
+        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-3">
           <Text path="dashboard.title" fallback="Панель управления" />
         </h1>
-        <p className="text-gray-600 max-w-2xl mx-auto">
+        <p className="text-lg text-gray-600 max-w-3xl mx-auto">
           <Text path="dashboard.subtitle" fallback="Avtomobillar bozorini boshqarish tizimi. Barcha ma'lumotlar real vaqtda yangilanadi." />
         </p>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
-        {cards.map((card) => (
-          <Link key={card.key} href={card.href} className="block group">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 transition-all duration-200 group-hover:shadow-md group-hover:scale-105 group-hover:border-gray-300">
-              <div className="flex items-center justify-between mb-4">
-                <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${card.gradient} text-white flex items-center justify-center shadow-sm`}>
-                  {card.icon}
-                </div>
-                <div className="text-right">
-                  <div className="text-2xl font-bold text-gray-900 leading-none">
-                    {card.value}
+      {/* Stats Cards with improved design */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 md:gap-6">
+        {cards.map((card, index) => (
+          <Link
+            key={card.key}
+            href={card.href}
+            className="block group"
+            style={{ animationDelay: `${index * 50}ms` }}
+          >
+            <div className="card-interactive h-full p-5 relative overflow-hidden">
+              {/* Background gradient on hover */}
+              <div className={`absolute inset-0 bg-gradient-to-br ${card.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-300`} />
+
+              <div className="relative z-10">
+                {/* Icon and Value */}
+                <div className="flex items-start justify-between mb-4">
+                  <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${card.gradient} text-white flex items-center justify-center shadow-md group-hover:shadow-lg transition-shadow`}>
+                    {card.icon}
+                  </div>
+                  <div className="text-right">
+                    <div className="text-3xl font-bold text-gray-900 leading-none group-hover:scale-110 transition-transform">
+                      {card.value}
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <div className="space-y-1">
-                <h3 className="font-semibold text-gray-900 text-sm">
-                  <Text path={`${card.dictPath}.title`} fallback={card.key} />
-                </h3>
-                <p className="text-xs text-gray-500 leading-relaxed">
-                  <Text path={card.description} fallback={card.key} />
-                </p>
-              </div>
+                {/* Title and Description */}
+                <div className="space-y-1.5">
+                  <h3 className="font-semibold text-gray-900 text-sm leading-tight">
+                    <Text path={`${card.dictPath}.title`} fallback={card.key} />
+                  </h3>
+                  <p className="text-xs text-gray-500 leading-relaxed line-clamp-2">
+                    <Text path={card.description} fallback={card.key} />
+                  </p>
+                </div>
 
-              {/* Hover indicator */}
-              <div className="mt-4 flex items-center text-xs text-gray-400 group-hover:text-gray-600 transition-colors">
-                <span>Ko&apos;rish</span>
-                <svg className="w-3 h-3 ml-1 transform group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
+                {/* Hover indicator */}
+                <div className="mt-4 flex items-center text-xs font-medium text-gray-400 group-hover:text-blue-600 transition-colors">
+                  <span><Text path="dashboard.viewDetails" fallback="Ko'rish" /></span>
+                  <svg className="w-3.5 h-3.5 ml-1 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </div>
               </div>
             </div>
           </Link>
         ))}
       </div>
 
-      {/* Quick Actions */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">
-          <Text path="dashboard.quickActions.title" fallback="Tezkor amallar" />
-        </h2>
+      {/* Quick Actions with improved design */}
+      <div className="card p-6 md:p-8">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h2 className="text-xl font-bold text-gray-900">
+              <Text path="dashboard.quickActions.title" fallback="Tezkor amallar" />
+            </h2>
+            <p className="text-sm text-gray-500 mt-1">
+              <Text path="dashboard.quickActions.subtitle" fallback="Tez-tez ishlatiladigan amallar" />
+            </p>
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <Link
             href="/cars"
-            className="flex items-center gap-3 p-4 rounded-lg border border-gray-200 hover:border-blue-300 hover:bg-blue-50 transition-all duration-200 group"
+            className="card-interactive p-5 group"
           >
-            <div className="w-10 h-10 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center group-hover:bg-blue-200">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" />
-              </svg>
-            </div>
-            <div>
-              <div className="font-medium text-gray-900">
-                <Text path="dashboard.quickActions.viewCars.title" fallback="Avtomobillar" />
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 text-white flex items-center justify-center shadow-md group-hover:shadow-lg transition-shadow flex-shrink-0">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" />
+                </svg>
               </div>
-              <div className="text-sm text-gray-500">
-                <Text path="dashboard.quickActions.viewCars.description" fallback="Barcha avtomobillarni ko'rish" />
+              <div className="flex-1 min-w-0">
+                <div className="font-semibold text-gray-900 mb-1">
+                  <Text path="dashboard.quickActions.viewCars.title" fallback="Avtomobillar" />
+                </div>
+                <div className="text-sm text-gray-500 line-clamp-2">
+                  <Text path="dashboard.quickActions.viewCars.description" fallback="Barcha avtomobillarni ko'rish" />
+                </div>
               </div>
             </div>
           </Link>
 
-          <button className="flex items-center gap-3 p-4 rounded-lg border border-gray-200 hover:border-green-300 hover:bg-green-50 transition-all duration-200 group">
-            <div className="w-10 h-10 rounded-lg bg-green-100 text-green-600 flex items-center justify-center group-hover:bg-green-200">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-              </svg>
-            </div>
-            <div>
-              <div className="font-medium text-gray-900">
-                <Text path="dashboard.quickActions.addCar.title" fallback="Yangi avtomobil" />
+          <Link
+            href="/cars?action=add"
+            className="card-interactive p-5 group"
+          >
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500 to-green-600 text-white flex items-center justify-center shadow-md group-hover:shadow-lg transition-shadow flex-shrink-0">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
               </div>
-              <div className="text-sm text-gray-500">
-                <Text path="dashboard.quickActions.addCar.description" fallback="Yangi avtomobil qo'shish" />
+              <div className="flex-1 min-w-0">
+                <div className="font-semibold text-gray-900 mb-1">
+                  <Text path="dashboard.quickActions.addCar.title" fallback="Yangi avtomobil" />
+                </div>
+                <div className="text-sm text-gray-500 line-clamp-2">
+                  <Text path="dashboard.quickActions.addCar.description" fallback="Yangi avtomobil qo'shish" />
+                </div>
               </div>
             </div>
-          </button>
+          </Link>
 
-          <button className="flex items-center gap-3 p-4 rounded-lg border border-gray-200 hover:border-purple-300 hover:bg-purple-50 transition-all duration-200 group">
-            <div className="w-10 h-10 rounded-lg bg-purple-100 text-purple-600 flex items-center justify-center group-hover:bg-purple-200">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-              </svg>
+          <Link
+            href="/expenses"
+            className="card-interactive p-5 group"
+          >
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500 to-amber-600 text-white flex items-center justify-center shadow-md group-hover:shadow-lg transition-shadow flex-shrink-0">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="font-semibold text-gray-900 mb-1">
+                  <Text path="dashboard.quickActions.expenses.title" fallback="Xarajatlar" />
+                </div>
+                <div className="text-sm text-gray-500 line-clamp-2">
+                  <Text path="dashboard.quickActions.expenses.description" fallback="Xarajatlarni boshqarish" />
+                </div>
+              </div>
             </div>
-            <div>
-              <div className="font-medium text-gray-900">Hisobotlar</div>
-              <div className="text-sm text-gray-500">Moliyaviy hisobotlar</div>
+          </Link>
+
+          <Link
+            href="/reports"
+            className="card-interactive p-5 group"
+          >
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 text-white flex items-center justify-center shadow-md group-hover:shadow-lg transition-shadow flex-shrink-0">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="font-semibold text-gray-900 mb-1">
+                  <Text path="dashboard.quickActions.reports.title" fallback="Hisobotlar" />
+                </div>
+                <div className="text-sm text-gray-500 line-clamp-2">
+                  <Text path="dashboard.quickActions.reports.description" fallback="Moliyaviy hisobotlar" />
+                </div>
+              </div>
             </div>
-          </button>
+          </Link>
 
           <button className="flex items-center gap-3 p-4 rounded-lg border border-gray-200 hover:border-orange-300 hover:bg-orange-50 transition-all duration-200 group">
             <div className="w-10 h-10 rounded-lg bg-orange-100 text-orange-600 flex items-center justify-center group-hover:bg-orange-200">

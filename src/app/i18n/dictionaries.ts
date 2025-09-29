@@ -3,8 +3,11 @@ export type LangCode = "uz" | "ru";
 export const dictionaries: Record<LangCode, Record<string, unknown>> = {
   uz: {
     nav: {
-      panel: "Panel",
+      panel: "Bosh sahifa",
       cars: "Avtomobillar",
+      expenses: "Xarajatlar",
+      reports: "Hisobotlar",
+      addCar: "Avto qo'shish",
     },
     sell: {
       cta: "Sotish",
@@ -236,8 +239,10 @@ export const dictionaries: Record<LangCode, Record<string, unknown>> = {
       lossCars: { title: "Zarar keltirgan avtomobillar", empty: "Zarar yo‘q 🎉" },
       brands: { title: "Brendlar bo‘yicha taqsimot", unit: "ta avtomobil", avgProfit: "O‘rtacha foyda:", avgMargin: "O‘rtacha marja:" },
       activity: { title: "So‘nggi faoliyat" },
+      viewDetails: "Ko'rish",
       quickActions: {
         title: "Tezkor amallar",
+        subtitle: "Tez-tez ishlatiladigan amallar",
         viewCars: {
           title: "Avtomobillar",
           description: "Barcha avtomobillarni ko'rish"
@@ -245,6 +250,14 @@ export const dictionaries: Record<LangCode, Record<string, unknown>> = {
         addCar: {
           title: "Yangi avtomobil",
           description: "Yangi avtomobil qo'shish"
+        },
+        expenses: {
+          title: "Xarajatlar",
+          description: "Xarajatlarni boshqarish"
+        },
+        reports: {
+          title: "Hisobotlar",
+          description: "Moliyaviy hisobotlar"
         }
       },
     },
@@ -334,8 +347,11 @@ export const dictionaries: Record<LangCode, Record<string, unknown>> = {
   },
   ru: {
     nav: {
-      panel: "Панель",
+      panel: "Главная",
       cars: "Автомобили",
+      expenses: "Расходы",
+      reports: "Отчеты",
+      addCar: "Добавить авто",
     },
     sell: {
       cta: "Продать",
@@ -479,8 +495,10 @@ export const dictionaries: Record<LangCode, Record<string, unknown>> = {
       lossCars: { title: "Убыточные авто", empty: "Убытков нет 🎉" },
       brands: { title: "Распределение по брендам", unit: "авто", avgProfit: "Средняя прибыль:", avgMargin: "Средняя маржа:" },
       activity: { title: "Последняя активность" },
+      viewDetails: "Просмотр",
       quickActions: {
         title: "Быстрые действия",
+        subtitle: "Часто используемые действия",
         viewCars: {
           title: "Автомобили",
           description: "Просмотр всех автомобилей"
@@ -488,6 +506,14 @@ export const dictionaries: Record<LangCode, Record<string, unknown>> = {
         addCar: {
           title: "Новый автомобиль",
           description: "Добавить новый автомобиль"
+        },
+        expenses: {
+          title: "Расходы",
+          description: "Управление расходами"
+        },
+        reports: {
+          title: "Отчеты",
+          description: "Финансовые отчеты"
         }
       },
     },
