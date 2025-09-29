@@ -131,7 +131,7 @@ export default async function Dashboard() {
         </div>
 
         <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-3">
-          <Text path="dashboard.title" fallback="Панель управления" />
+          <Text path="dashboard.title" fallback="Avtomobil CRM Boshqaruv Paneli" />
         </h1>
         <p className="text-lg text-gray-600 max-w-3xl mx-auto">
           <Text path="dashboard.subtitle" fallback="Avtomobillar bozorini boshqarish tizimi. Barcha ma'lumotlar real vaqtda yangilanadi." />
@@ -167,10 +167,24 @@ export default async function Dashboard() {
                 {/* Title and Description */}
                 <div className="space-y-1.5">
                   <h3 className="font-semibold text-gray-900 text-sm leading-tight">
-                    <Text path={`${card.dictPath}.title`} fallback={card.key} />
+                    <Text path={`${card.dictPath}.title`} fallback={
+                      card.key === 'total' ? 'Jami avtomobillar' :
+                      card.key === 'in_transit' ? "Yo'lda" :
+                      card.key === 'garage' ? 'Garajda' :
+                      card.key === 'for_sale' ? 'Sotuvda' :
+                      card.key === 'sold' ? 'Sotilgan' :
+                      card.key === 'reserved' ? 'Band' : card.key
+                    } />
                   </h3>
                   <p className="text-xs text-gray-500 leading-relaxed line-clamp-2">
-                    <Text path={card.description} fallback={card.key} />
+                    <Text path={card.description} fallback={
+                      card.key === 'total' ? 'Jami avtomobillar soni' :
+                      card.key === 'in_transit' ? "Yo'lda bo'lgan avtomobillar" :
+                      card.key === 'garage' ? "Garajda va ta'mirda" :
+                      card.key === 'for_sale' ? "Sotuvga qo'yilgan" :
+                      card.key === 'sold' ? 'Sotilgan avtomobillar' :
+                      card.key === 'reserved' ? 'Bron qilingan' : card.key
+                    } />
                   </p>
                 </div>
 
@@ -188,7 +202,7 @@ export default async function Dashboard() {
       </div>
 
       {/* Quick Actions with improved design */}
-      <div className="card p-6 md:p-8">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 md:p-8">
         <div className="flex items-center justify-between mb-6">
           <div>
             <h2 className="text-xl font-bold text-gray-900">
