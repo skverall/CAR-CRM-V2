@@ -147,7 +147,7 @@ export default async function Dashboard() {
             className="block group"
             style={{ animationDelay: `${index * 50}ms` }}
           >
-            <div className="card-interactive h-full p-5 relative overflow-hidden">
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 transition-all duration-200 hover:shadow-md hover:border-gray-300 hover:-translate-y-0.5 cursor-pointer active:scale-[0.98] h-full p-5 relative overflow-hidden">
               {/* Background gradient on hover */}
               <div className={`absolute inset-0 bg-gradient-to-br ${card.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-300`} />
 
@@ -203,7 +203,7 @@ export default async function Dashboard() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <Link
             href="/cars"
-            className="card-interactive p-5 group"
+            className="bg-white rounded-xl shadow-sm border border-gray-200 transition-all duration-200 hover:shadow-md hover:border-gray-300 hover:-translate-y-0.5 cursor-pointer active:scale-[0.98] p-5 group"
           >
             <div className="flex items-start gap-4">
               <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 text-white flex items-center justify-center shadow-md group-hover:shadow-lg transition-shadow flex-shrink-0">
@@ -225,7 +225,7 @@ export default async function Dashboard() {
 
           <Link
             href="/cars?action=add"
-            className="card-interactive p-5 group"
+            className="bg-white rounded-xl shadow-sm border border-gray-200 transition-all duration-200 hover:shadow-md hover:border-gray-300 hover:-translate-y-0.5 cursor-pointer active:scale-[0.98] p-5 group"
           >
             <div className="flex items-start gap-4">
               <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500 to-green-600 text-white flex items-center justify-center shadow-md group-hover:shadow-lg transition-shadow flex-shrink-0">
@@ -246,7 +246,7 @@ export default async function Dashboard() {
 
           <Link
             href="/expenses"
-            className="card-interactive p-5 group"
+            className="bg-white rounded-xl shadow-sm border border-gray-200 transition-all duration-200 hover:shadow-md hover:border-gray-300 hover:-translate-y-0.5 cursor-pointer active:scale-[0.98] p-5 group"
           >
             <div className="flex items-start gap-4">
               <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500 to-amber-600 text-white flex items-center justify-center shadow-md group-hover:shadow-lg transition-shadow flex-shrink-0">
@@ -267,7 +267,7 @@ export default async function Dashboard() {
 
           <Link
             href="/reports"
-            className="card-interactive p-5 group"
+            className="bg-white rounded-xl shadow-sm border border-gray-200 transition-all duration-200 hover:shadow-md hover:border-gray-300 hover:-translate-y-0.5 cursor-pointer active:scale-[0.98] p-5 group"
           >
             <div className="flex items-start gap-4">
               <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 text-white flex items-center justify-center shadow-md group-hover:shadow-lg transition-shadow flex-shrink-0">

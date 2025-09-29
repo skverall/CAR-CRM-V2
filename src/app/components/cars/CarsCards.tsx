@@ -42,10 +42,10 @@ export default function CarsCards({ cars }: Props) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       {cars.map((car) => (
-        <Link 
-          key={car.id} 
+        <Link
+          key={car.id}
           href={`/cars/${car.id}`}
-          className="card-interactive group"
+          className="bg-white rounded-xl shadow-sm border border-gray-200 transition-all duration-200 hover:shadow-md hover:border-gray-300 hover:-translate-y-0.5 cursor-pointer active:scale-[0.98] group"
         >
           {/* Header with gradient */}
           <div className="relative h-32 bg-gradient-to-br from-blue-500 to-blue-600 rounded-t-lg overflow-hidden">
