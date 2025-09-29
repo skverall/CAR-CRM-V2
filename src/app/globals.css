@@ -285,11 +285,11 @@ html {
 }
 
 .card-hover {
-  @apply card hover:shadow-md hover:border-gray-300 hover:-translate-y-0.5;
+  @apply bg-white rounded-xl shadow-sm border border-gray-200 transition-all duration-200 hover:shadow-md hover:border-gray-300 hover:-translate-y-0.5;
 }
 
 .card-interactive {
-  @apply card-hover cursor-pointer active:scale-[0.98];
+  @apply bg-white rounded-xl shadow-sm border border-gray-200 transition-all duration-200 hover:shadow-md hover:border-gray-300 hover:-translate-y-0.5 cursor-pointer active:scale-[0.98];
 }
 
 /* Badge styles */
