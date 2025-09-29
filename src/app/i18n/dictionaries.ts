@@ -32,6 +32,13 @@ export const dictionaries: Record<LangCode, Record<string, unknown>> = {
     },
     cars: {
       title: "Avtomobillar",
+      subtitle: "Barcha avtomobillar ro'yxati va ularning holati",
+      search: "Qidiruv: VIN, marka, model...",
+      view: "Ko'rinish:",
+      showing: "Ko'rsatilmoqda:",
+      empty: "Hech qanday avtomobil topilmadi",
+      noResults: "Hech narsa topilmadi",
+      addNew: "Yangi qo'shish",
       summary: {
         total: "Jami",
         totalProfit: "Umumiy foyda",
@@ -50,6 +57,7 @@ export const dictionaries: Record<LangCode, Record<string, unknown>> = {
         decision: "Qaror",
         actions: "Amallar",
         view: "Ko'rish",
+        viewDetails: "Batafsil ko'rish",
       },
       details: {
         overview: "Umumiy ko‘rsatkichlar",
@@ -66,6 +74,11 @@ export const dictionaries: Record<LangCode, Record<string, unknown>> = {
       addTitle: "Yangi avtomobil qo‘shish",
       addCta: "Qo‘shish",
 
+    },
+    pagination: {
+      previous: "Oldingi",
+      next: "Keyingi",
+      page: "Sahifa",
     },
     reports: {
       title: "Hisobotlar",
@@ -376,6 +389,13 @@ export const dictionaries: Record<LangCode, Record<string, unknown>> = {
     },
     cars: {
       title: "Автомобили",
+      subtitle: "Список всех автомобилей и их статусы",
+      search: "Поиск: VIN, марка, модель...",
+      view: "Вид:",
+      showing: "Показано:",
+      empty: "Автомобили не найдены",
+      noResults: "Ничего не найдено",
+      addNew: "Добавить новый",
       summary: {
         total: "Всего",
         totalProfit: "Общая прибыль",
@@ -394,6 +414,7 @@ export const dictionaries: Record<LangCode, Record<string, unknown>> = {
         decision: "Решение",
         actions: "Действия",
         view: "Открыть",
+        viewDetails: "Подробнее",
       },
       details: {
         overview: "Сводка",
@@ -411,6 +432,11 @@ export const dictionaries: Record<LangCode, Record<string, unknown>> = {
       addTitle: "Добавить автомобиль",
       addCta: "Добавить",
 
+    },
+    pagination: {
+      previous: "Предыдущая",
+      next: "Следующая",
+      page: "Страница",
     },
     table: {
       search: "Поиск...",
