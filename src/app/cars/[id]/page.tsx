@@ -214,6 +214,9 @@ export default async function CarPage({ params, searchParams }: { params: { id: 
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold">{carRow.make} {carRow.model} {carRow.model_year || ""} <span className="text-gray-500 text-base">/ VIN: {carRow.vin}</span></h1>
         <div className="flex items-center gap-2">
+          {!isEdit && (
+            <a href={`/cars/${id}?edit=1`} className="px-3 py-2 rounded border hover:bg-gray-50">Tahrirlash</a>
+          )}
           {next && next !== "sold" && (
             <form action={changeStatus} className="flex items-center gap-2">
               <input type="hidden" name="car_id" value={id} />
