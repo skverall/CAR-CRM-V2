@@ -323,15 +323,23 @@ export default function CarsTable({ cars, orgId }: Props) {
                         ) : '—'}
                       </td>
                       <td className="px-4 py-4 text-center">
-                        <Link 
-                          href={`/cars/${car.id}`}
-                          className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 font-medium text-sm transition-colors"
-                        >
-                          <Text path="cars.table.view" fallback="Ko'rish" />
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                          </svg>
-                        </Link>
+                        <div className="inline-flex items-center gap-2">
+                          <Link
+                            href={`/cars/${car.id}?edit=1`}
+                            className="inline-flex items-center gap-2 px-2.5 py-1.5 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                          >
+                            {t("common.edit", "Tahrirlash")}
+                          </Link>
+                          <Link
+                            href={`/cars/${car.id}`}
+                            className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 font-medium text-sm transition-colors"
+                          >
+                            <Text path="cars.table.view" fallback="Ko'rish" />
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                            </svg>
+                          </Link>
+                        </div>
                       </td>
                     </tr>
                   ))
