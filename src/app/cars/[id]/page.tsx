@@ -411,23 +411,6 @@ export default async function CarPage({ params, searchParams }: { params: { id: 
             label="Sotuv (AED)"
             value={saleAED ? `AED ${formatAED(Number(saleAED))}` : '—'}
 
-      {/* Date range filter */}
-      <form method="GET" className="bg-white border rounded-xl p-4 shadow-sm flex flex-wrap items-end gap-3">
-        <div>
-          <label className="block text-xs text-gray-600 mb-1">Boshlanish</label>
-          <input type="date" name="from" defaultValue={(searchParams?.from as string) || ''} className="border rounded-lg px-3 py-2 text-sm" />
-        </div>
-        <div>
-          <label className="block text-xs text-gray-600 mb-1">Tugash</label>
-          <input type="date" name="to" defaultValue={(searchParams?.to as string) || ''} className="border rounded-lg px-3 py-2 text-sm" />
-        </div>
-        {activeCat && <input type="hidden" name="cat" value={activeCat} />}
-        <div className="ml-auto flex items-center gap-2">
-          <button className="px-3 py-2 bg-blue-600 text-white rounded-lg">Qo'llash</button>
-          <a href={`/cars/${id}`} className="px-3 py-2 border rounded-lg">Reset</a>
-        </div>
-      </form>
-
             tone={saleAED ? 'default' : 'warning'}
           />
           <StatCard
@@ -442,7 +425,6 @@ export default async function CarPage({ params, searchParams }: { params: { id: 
         </div>
       </div>
 
-
       {/* Date range filter */}
       <form method="GET" className="bg-white border rounded-xl p-4 shadow-sm flex flex-wrap items-end gap-3">
         <div>
@@ -459,6 +441,8 @@ export default async function CarPage({ params, searchParams }: { params: { id: 
           <a href={`/cars/${id}`} className="px-3 py-2 border rounded-lg">Reset</a>
         </div>
       </form>
+
+
 
       {/* New Profit Breakdown Component */}
       <ProfitBreakdown
