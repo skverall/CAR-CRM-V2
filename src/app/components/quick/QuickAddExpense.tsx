@@ -45,19 +45,15 @@ export default function QuickAddExpense({ onSubmit, orgId, cars }: Props) {
       .catch(() => {});
   }, [occurredAt, currency]);
 
-  const submit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const beforeSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     const fd = new FormData(e.currentTarget);
     if (orgId) fd.set("org_id", orgId);
-    await onSubmit(fd);
-    // remember
+    // remember (do not prevent default to allow native server action submit)
     localStorage.setItem("exp_last_date", String(fd.get("occurred_at")||""));
     localStorage.setItem("exp_last_currency", String(fd.get("currency")||""));
     localStorage.setItem("exp_last_category", String(fd.get("category")||""));
     localStorage.setItem("exp_last_car_id", String(fd.get("car_id")||""));
-    // reset and close
-    setAmount(""); setDescription("");
-    setOpen(false);
+    // leave modal closing/navigation to server redirect after submit
   };
 
   const t = useT();
@@ -65,7 +61,7 @@ export default function QuickAddExpense({ onSubmit, orgId, cars }: Props) {
     <>
       <Button type="button" onClick={() => setOpen(true)}>{t('expenses.quickAdd.cta','Xarajat qo\u2018shish')}</Button>
       <Modal open={open} onClose={() => setOpen(false)} title={t('expenses.quickAdd.title','Xarajat tez qo\u2018shish')}>
-        <form onSubmit={submit} className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+        <form action={onSubmit} onSubmit={beforeSubmit} className="grid grid-cols-2 sm:grid-cols-4 gap-2">
           <input name="occurred_at" value={occurredAt} onChange={e=>setOccurredAt(e.target.value)} type="date" required className="border px-2 py-1 rounded" />
           <input name="amount" value={amount} onChange={e=>setAmount(e.target.value)} type="number" step="0.01" required placeholder={t('expenses.fields.amount','Miqdor')} className="border px-2 py-1 rounded" />
           <input name="currency" value={currency} onChange={e=>setCurrency(e.target.value)} placeholder={t('expenses.fields.currency','Valyuta')} className="border px-2 py-1 rounded" />

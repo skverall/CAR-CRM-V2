@@ -27,9 +27,13 @@ async function addExpense(formData: FormData) {
   const carId = String(formData.get("car_id") || "");
   const scope = carId ? "car" : "overhead";
 
+  if (!occurredAt || !isFinite(amount) || !currency || !isFinite(rateToAed) || !category) {
+    throw new Error("Invalid form data");
+  }
+
   const amountAedFils = Math.round(amount * rateToAed * 100);
 
-  await db.from("au_expenses").insert([{
+  const { error } = await db.from("au_expenses").insert([{
     org_id: orgId,
     occurred_at: occurredAt,
     amount,
@@ -41,6 +45,11 @@ async function addExpense(formData: FormData) {
     description: description || null,
     car_id: carId || null,
   }]);
+
+  if (error) {
+    console.error("addExpense insert error", error);
+    throw new Error("Failed to add expense");
+  }
 
   redirect("/expenses");
 }

@@ -72,6 +72,10 @@ export default async function DailyExpensesPage({ searchParams }: { searchParams
   prevQuery.set("page", String(Math.max(1, currentPage - 1)));
   const nextQuery = new URLSearchParams(baseQuery);
   nextQuery.set("page", String(Math.min(totalPages, currentPage + 1)));
+  const firstQuery = new URLSearchParams(baseQuery);
+  firstQuery.set("page", "1");
+  const lastQuery = new URLSearchParams(baseQuery);
+  lastQuery.set("page", String(totalPages));
 
   const cats = [
     "purchase",
@@ -171,6 +175,14 @@ export default async function DailyExpensesPage({ searchParams }: { searchParams
           </select>
         </div>
         <div className="flex items-end gap-2">
+          <div className="flex items-center gap-2 mr-auto">
+            <label className="text-xs text-gray-500">Page size</label>
+            <select name="page_size" defaultValue={pageSize} className="rounded-lg border-gray-300">
+              <option value="25">25</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+            </select>
+          </div>
           <button className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700">Apply</button>
           <a className="px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-50" href="/reports/daily-expenses">Clear</a>
         </div>
@@ -281,14 +293,10 @@ export default async function DailyExpensesPage({ searchParams }: { searchParams
         <div className="p-4 flex items-center justify-between border-t border-gray-200">
           <div className="text-sm text-gray-600">Page {currentPage} of {totalPages}</div>
           <div className="flex gap-2">
-            <a
-              className={`px-3 py-1.5 rounded-lg border ${currentPage === 1 ? 'opacity-50 pointer-events-none' : ''}`}
-              href={`?${prevQuery.toString()}`}
-            >Prev</a>
-            <a
-              className={`px-3 py-1.5 rounded-lg border ${currentPage === totalPages ? 'opacity-50 pointer-events-none' : ''}`}
-              href={`?${nextQuery.toString()}`}
-            >Next</a>
+            <a className={`px-3 py-1.5 rounded-lg border ${currentPage === 1 ? 'opacity-50 pointer-events-none' : ''}`} href={`?${firstQuery.toString()}`}>First</a>
+            <a className={`px-3 py-1.5 rounded-lg border ${currentPage === 1 ? 'opacity-50 pointer-events-none' : ''}`} href={`?${prevQuery.toString()}`}>Prev</a>
+            <a className={`px-3 py-1.5 rounded-lg border ${currentPage === totalPages ? 'opacity-50 pointer-events-none' : ''}`} href={`?${nextQuery.toString()}`}>Next</a>
+            <a className={`px-3 py-1.5 rounded-lg border ${currentPage === totalPages ? 'opacity-50 pointer-events-none' : ''}`} href={`?${lastQuery.toString()}`}>Last</a>
           </div>
         </div>
       </div>
