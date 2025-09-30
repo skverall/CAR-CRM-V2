@@ -54,6 +54,24 @@ export default async function DailyExpensesPage({ searchParams }: { searchParams
   const summary = (ok ? json.data?.summary : null) as
     | { total_aed: number; by_category: Array<{ key: string; total_aed: number }>; by_car: Array<{ key: string; total_aed: number }> }
     | null;
+  const page = Number(typeof searchParams?.page === "string" ? searchParams.page : 1) || 1;
+  const pageSize = Number(typeof searchParams?.page_size === "string" ? searchParams.page_size : 50) || 50;
+  const total = items.length;
+  const totalPages = Math.max(1, Math.ceil(total / pageSize));
+  const currentPage = Math.min(Math.max(1, page), totalPages);
+  const startIdx = (currentPage - 1) * pageSize;
+  const visibleItems = items.slice(startIdx, startIdx + pageSize);
+
+  const baseQuery = new URLSearchParams({ start, end });
+  if (scope) baseQuery.set("scope", scope);
+  if (carId) baseQuery.set("car_id", carId);
+  if (category) baseQuery.set("category", category);
+  baseQuery.set("page_size", String(pageSize));
+
+  const prevQuery = new URLSearchParams(baseQuery);
+  prevQuery.set("page", String(Math.max(1, currentPage - 1)));
+  const nextQuery = new URLSearchParams(baseQuery);
+  nextQuery.set("page", String(Math.min(totalPages, currentPage + 1)));
 
   const cats = [
     "purchase",
@@ -152,8 +170,9 @@ export default async function DailyExpensesPage({ searchParams }: { searchParams
             ))}
           </select>
         </div>
-        <div className="flex items-end">
-          <button className="w-full px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700">Apply</button>
+        <div className="flex items-end gap-2">
+          <button className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700">Apply</button>
+          <a className="px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-50" href="/reports/daily-expenses">Clear</a>
         </div>
       </form>
 
@@ -185,7 +204,17 @@ export default async function DailyExpensesPage({ searchParams }: { searchParams
           <ul className="mt-2 space-y-1">
             {(summary?.by_car || []).slice(0, 5).map((row) => (
               <li key={row.key} className="flex justify-between text-sm">
-                <span>{row.key}</span>
+                <span>
+                  {row.key === 'PERSONAL' ? (
+                    <Text path="reports.dailyExpensesPage.filters.personal" fallback="Shaxsiy" />
+                  ) : row.key === 'OVERHEAD' ? (
+                    <Text path="reports.dailyExpensesPage.filters.overhead" fallback="Umumiy" />
+                  ) : row.key === 'CAR' ? (
+                    <Text path="reports.dailyExpensesPage.filters.car" fallback="Avto" />
+                  ) : (
+                    row.key
+                  )}
+                </span>
                 <span>{row.total_aed.toFixed(2)}</span>
               </li>
             ))}
@@ -220,16 +249,26 @@ export default async function DailyExpensesPage({ searchParams }: { searchParams
               </tr>
             </thead>
             <tbody>
-              {items.map((it, idx) => (
+              {visibleItems.map((it, idx) => (
                 <tr key={idx} className="border-t text-sm">
                   <td className="px-4 py-2 whitespace-nowrap">{it.occurred_at}</td>
                   <td className="px-4 py-2 whitespace-nowrap">{it.amount_aed.toFixed(2)}</td>
                   <td className="px-4 py-2 whitespace-nowrap">{it.category}</td>
-                  <td className="px-4 py-2 whitespace-nowrap">{it.car_vin || (it.scope === 'personal' ? 'PERSONAL' : it.scope.toUpperCase())}</td>
+                  <td className="px-4 py-2 whitespace-nowrap">
+                    {it.car_vin ? (
+                      it.car_vin
+                    ) : it.scope === 'personal' ? (
+                      <Text path="reports.dailyExpensesPage.filters.personal" fallback="Shaxsiy" />
+                    ) : it.scope === 'overhead' ? (
+                      <Text path="reports.dailyExpensesPage.filters.overhead" fallback="Umumiy" />
+                    ) : (
+                      <Text path="reports.dailyExpensesPage.filters.car" fallback="Avto" />
+                    )}
+                  </td>
                   <td className="px-4 py-2">{it.description || ""}</td>
                 </tr>
               ))}
-              {items.length === 0 && (
+              {visibleItems.length === 0 && (
                 <tr>
                   <td className="px-4 py-6 text-center text-sm text-gray-500" colSpan={5}>
                     <Text path="expenses.summary.noData" fallback="Ma'lumot yo'q" />
@@ -238,6 +277,19 @@ export default async function DailyExpensesPage({ searchParams }: { searchParams
               )}
             </tbody>
           </table>
+        </div>
+        <div className="p-4 flex items-center justify-between border-t border-gray-200">
+          <div className="text-sm text-gray-600">Page {currentPage} of {totalPages}</div>
+          <div className="flex gap-2">
+            <a
+              className={`px-3 py-1.5 rounded-lg border ${currentPage === 1 ? 'opacity-50 pointer-events-none' : ''}`}
+              href={`?${prevQuery.toString()}`}
+            >Prev</a>
+            <a
+              className={`px-3 py-1.5 rounded-lg border ${currentPage === totalPages ? 'opacity-50 pointer-events-none' : ''}`}
+              href={`?${nextQuery.toString()}`}
+            >Next</a>
+          </div>
         </div>
       </div>
     </div>
