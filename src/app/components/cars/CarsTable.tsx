@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import Text from "@/app/components/i18n/Text";
 import StatusBadge from "@/app/components/ui/StatusBadge";
@@ -30,10 +30,10 @@ type ViewMode = 'table' | 'cards';
 
 type Props = {
   cars: CarRow[];
-  orgId: string | null;
+  orgId?: string | null;
 };
 
-export default function CarsTable({ cars, orgId }: Props) {
+export default function CarsTable({ cars, orgId: _orgId }: Props) {
   const t = useT();
   const [sortKey, setSortKey] = useState<SortKey>('');
   const [sortDir, setSortDir] = useState<SortDir>('asc');
@@ -85,7 +85,7 @@ export default function CarsTable({ cars, orgId }: Props) {
   }, [filteredCars, currentPage, itemsPerPage]);
 
   // Reset to page 1 when search changes
-  useMemo(() => {
+  useEffect(() => {
     setCurrentPage(1);
   }, [searchQuery]);
 

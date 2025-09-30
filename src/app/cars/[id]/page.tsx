@@ -4,7 +4,6 @@ export const dynamic = "force-dynamic";
 import React from "react";
 
 import { notFound, redirect } from "next/navigation";
-import Text from "@/app/components/i18n/Text";
 import SellBar from "@/app/components/cars/SellBar";
 import ProfitBreakdown from "@/app/components/cars/ProfitBreakdown";
 
@@ -405,7 +404,7 @@ export default async function CarPage({ params, searchParams }: { params: { id: 
           <StatCard
             label="Xarajatlar (AED)"
             value={`AED ${formatAED(expensesAED)}`}
-            sublabel={`To‘g‘ridan-to‘g‘ri: ${formatAED(directExpensesAED)} • Overhead: ${formatAED(overheadAED)}`}
+            sublabel={`To&apos;g&apos;ridan-to&apos;g&apos;ri: ${formatAED(directExpensesAED)} • Overhead: ${formatAED(overheadAED)}`}
           />
           <StatCard
             label="Sotuv (AED)"
@@ -437,7 +436,7 @@ export default async function CarPage({ params, searchParams }: { params: { id: 
         </div>
         {activeCat && <input type="hidden" name="cat" value={activeCat} />}
         <div className="ml-auto flex items-center gap-2">
-          <button className="px-3 py-2 bg-blue-600 text-white rounded-lg">Qo'llash</button>
+          <button className="px-3 py-2 bg-blue-600 text-white rounded-lg">Qo&apos;llash</button>
           <a href={`/cars/${id}`} className="px-3 py-2 border rounded-lg">Reset</a>
         </div>
       </form>

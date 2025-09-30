@@ -42,20 +42,6 @@ async function fetchCars(orgId: string, statusParam?: string): Promise<CarRow[]>
   return (json.data.cars as CarRow[]);
 }
 
-async function sellViaDeals(formData: FormData) {
-  "use server";
-  const car_id = String(formData.get("car_id"));
-  const occurred_at = String(formData.get("occurred_at"));
-  const amount = Number(formData.get("amount"));
-  const currency = String(formData.get("currency"));
-  const rate_to_aed = Number(formData.get("rate_to_aed"));
-  if (!car_id || !occurred_at || !amount || !currency || !rate_to_aed) {
-    throw new Error("Sale details are required");
-  }
-  const sold_price_aed = currency === 'AED' ? amount : amount * rate_to_aed;
-  const payload = { car_id, sold_price_aed, sold_date: occurred_at };
-  await fetch(`/api/deals`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-}
 
 export default async function CarsPage({ searchParams }: { searchParams?: { status?: string } }) {
   const orgId = await getOrgId();
