@@ -1,6 +1,6 @@
 export type LangCode = "uz" | "ru";
 
-export const dictionaries: Record<LangCode, Record<string, unknown>> = {
+export const dictionaries = {
   uz: {
     nav: {
       panel: "Bosh sahifa",
@@ -390,6 +390,7 @@ export const dictionaries: Record<LangCode, Record<string, unknown>> = {
         description: "Izoh",
         car: "Avto",
       },
+      quickAdd: { cta: "Tez qo‘shish", title: "Daromad tez qo‘shish" },
     },
 
     fx: {
@@ -418,8 +419,7 @@ export const dictionaries: Record<LangCode, Record<string, unknown>> = {
       },
     },
 
-      quickAdd: { cta: "Tez qo‘shish", title: "Daromad tez qo‘shish" },
-    },
+
 
     reports: {
       title: "Hisobotlar",
@@ -819,5 +819,5 @@ export const dictionaries: Record<LangCode, Record<string, unknown>> = {
       title: "Руководство",
     }
   }
-}};
+}} as unknown as Record<LangCode, Record<string, unknown>>;
 

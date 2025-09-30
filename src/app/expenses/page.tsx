@@ -1,5 +1,4 @@
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
-import { getOrgId } from "@/lib/orgId";
 import { redirect } from "next/navigation";
 import Text from "@/app/components/i18n/Text";
 import ExpensesClientTable from "@/app/components/table/ExpensesClientTable";
@@ -7,11 +6,18 @@ import QuickAddExpense from "@/app/components/quick/QuickAddExpense";
 
 export const dynamic = "force-dynamic";
 
+
+async function getOrgId(): Promise<string> {
+  const db = getSupabaseAdmin();
+  const { data } = await db.from("orgs").select("id").eq("name", "Default Organization").single();
+  return (data as { id: string } | null)?.id ?? "";
+}
+
 async function addExpense(formData: FormData) {
   "use server";
   const db = getSupabaseAdmin();
   const orgId = await getOrgId();
-  
+
   const occurredAt = String(formData.get("occurred_at"));
   const amount = parseFloat(String(formData.get("amount")));
   const currency = String(formData.get("currency"));
@@ -140,7 +146,7 @@ export default async function ExpensesPage() {
             </div>
           </div>
           <div className="text-3xl font-bold text-gray-900">
-            {expenseRows.length > 0 
+            {expenseRows.length > 0
               ? (totalAed / expenseRows.length).toLocaleString('en-AE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
               : '0.00'
             } AED
