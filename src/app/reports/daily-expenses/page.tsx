@@ -40,6 +40,14 @@ export default async function DailyExpensesPage({ searchParams }: { searchParams
   if (carId) params.set("car_id", carId);
   if (category) params.set("category", category);
 
+  // Pagination inputs
+  const page = Number(typeof searchParams?.page === "string" ? searchParams.page : 1) || 1;
+  const pageSize = Number(typeof searchParams?.page_size === "string" ? searchParams.page_size : 50) || 50;
+  const limit = pageSize;
+  const offset = (Math.max(1, page) - 1) * pageSize;
+  params.set("limit", String(limit));
+  params.set("offset", String(offset));
+
   const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || ""}/api/reports/daily-expenses?${params.toString()}`, { cache: "no-store" });
   const json = await res.json();
   const ok = json?.success === true;
@@ -54,13 +62,9 @@ export default async function DailyExpensesPage({ searchParams }: { searchParams
   const summary = (ok ? json.data?.summary : null) as
     | { total_aed: number; by_category: Array<{ key: string; total_aed: number }>; by_car: Array<{ key: string; total_aed: number }> }
     | null;
-  const page = Number(typeof searchParams?.page === "string" ? searchParams.page : 1) || 1;
-  const pageSize = Number(typeof searchParams?.page_size === "string" ? searchParams.page_size : 50) || 50;
-  const total = items.length;
-  const totalPages = Math.max(1, Math.ceil(total / pageSize));
+  const totalCount = (ok ? json.data?.pagination?.total_count : 0) as number;
+  const totalPages = Math.max(1, Math.ceil((totalCount || 0) / pageSize));
   const currentPage = Math.min(Math.max(1, page), totalPages);
-  const startIdx = (currentPage - 1) * pageSize;
-  const visibleItems = items.slice(startIdx, startIdx + pageSize);
 
   const baseQuery = new URLSearchParams({ start, end });
   if (scope) baseQuery.set("scope", scope);
@@ -261,7 +265,7 @@ export default async function DailyExpensesPage({ searchParams }: { searchParams
               </tr>
             </thead>
             <tbody>
-              {visibleItems.map((it, idx) => (
+              {items.map((it, idx) => (
                 <tr key={idx} className="border-t text-sm">
                   <td className="px-4 py-2 whitespace-nowrap">{it.occurred_at}</td>
                   <td className="px-4 py-2 whitespace-nowrap">{it.amount_aed.toFixed(2)}</td>
@@ -280,7 +284,7 @@ export default async function DailyExpensesPage({ searchParams }: { searchParams
                   <td className="px-4 py-2">{it.description || ""}</td>
                 </tr>
               ))}
-              {visibleItems.length === 0 && (
+              {items.length === 0 && (
                 <tr>
                   <td className="px-4 py-6 text-center text-sm text-gray-500" colSpan={5}>
                     <Text path="expenses.summary.noData" fallback="Ma'lumot yo'q" />

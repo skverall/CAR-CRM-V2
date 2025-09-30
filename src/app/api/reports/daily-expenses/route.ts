@@ -29,6 +29,9 @@ export async function GET(request: NextRequest) {
     const carId = searchParams.get('car_id');
     const category = searchParams.get('category');
 
+    const limit = Math.max(1, Math.min(500, parseInt(searchParams.get('limit') || '50', 10)));
+    const offset = Math.max(0, parseInt(searchParams.get('offset') || '0', 10));
+
     let query = db
       .from('au_expenses')
       .select(`
@@ -40,7 +43,7 @@ export async function GET(request: NextRequest) {
         description,
         car_id,
         au_cars(vin)
-      `)
+      `, { count: 'exact' })
       .eq('org_id', orgId)
       .gte('occurred_at', start)
       .lte('occurred_at', end)
@@ -50,8 +53,7 @@ export async function GET(request: NextRequest) {
     if (carId) query = query.eq('car_id', carId);
     if (category) query = query.eq('category', category);
 
-    const { data: rows, error } = await query;
-
+    const { data: rows, error, count } = await query.range(offset, offset + limit - 1);
     if (error) throw error;
 
     type Row = {
@@ -80,6 +82,7 @@ export async function GET(request: NextRequest) {
       };
     });
 
+    // Summary is computed over returned page items for performance.
     const by = {
       category: new Map<string, number>(),
       scope: new Map<string, number>(),
@@ -104,6 +107,7 @@ export async function GET(request: NextRequest) {
       timestamp: new Date().toISOString(),
       data: {
         range: { start, end },
+        pagination: { limit, offset, total_count: count ?? 0 },
         summary: {
           total_aed: Number(total_aed.toFixed(2)),
           by_category: summarize(by.category),
