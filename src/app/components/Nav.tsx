@@ -1,12 +1,13 @@
 "use client";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useT } from "@/app/i18n/LangContext";
 import LanguageSwitcher from "@/app/components/LanguageSwitcher";
 import { useState } from "react";
 
 export default function Nav() {
   const pathname = usePathname();
+  const router = useRouter();
   const t = useT();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -65,6 +66,18 @@ export default function Nav() {
         <div className="flex items-center justify-between h-16">
           {/* Logo/Brand */}
           <div className="flex items-center gap-8">
+            <button
+              type="button"
+              onClick={() => router.back()}
+              title={t('pagination.previous','Oldingi')}
+              className="hidden sm:inline-flex items-center gap-2 px-2.5 py-1.5 rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+              <span className="hidden xl:inline">{t('pagination.previous','Oldingi')}</span>
+            </button>
+
             <Link href="/" className="flex items-center gap-2.5 text-xl font-bold text-gray-900 hover:opacity-80 transition-opacity">
               <div className="w-9 h-9 gradient-primary rounded-xl flex items-center justify-center text-white text-sm font-bold shadow-md">
                 🚗

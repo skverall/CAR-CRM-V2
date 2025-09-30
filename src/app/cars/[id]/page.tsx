@@ -3,7 +3,8 @@ export const dynamic = "force-dynamic";
 
 import React from "react";
 import Link from "next/link";
-
+import Text from "@/app/components/i18n/Text";
+import StatusBadge from "@/app/components/ui/StatusBadge";
 
 import { notFound, redirect } from "next/navigation";
 import SellBar from "@/app/components/cars/SellBar";
@@ -15,23 +16,6 @@ function formatAED(n: number) {
   return Number(n ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
-type Status = Car["status"];
-function StatusBadge({ status }: { status: Status }) {
-  const color = (
-    {
-      available: "bg-gray-100 text-gray-800 ring-gray-200",
-      repair: "bg-amber-100 text-amber-800 ring-amber-200",
-      listed: "bg-blue-100 text-blue-800 ring-blue-200",
-      sold: "bg-green-100 text-green-800 ring-green-200",
-      archived: "bg-slate-100 text-slate-700 ring-slate-200",
-    } as Record<string, string>
-  )[status] || "bg-gray-100 text-gray-800 ring-gray-200";
-  return (
-    <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ring-1 ${color}`}>
-      {status}
-    </span>
-  );
-}
 
 function StatCard({
   label,
@@ -325,7 +309,9 @@ export default async function CarPage({ params, searchParams }: { params: { id: 
           <h1 className="text-3xl font-bold">{carRow.make} {carRow.model} {carRow.model_year || ""}</h1>
           <div className="mt-1 flex items-center gap-3 text-sm text-gray-600">
             <span>VIN: {carRow.vin}</span>
-            <StatusBadge status={carRow.status} />
+            <StatusBadge status={carRow.status}>
+              <Text path={`status.${carRow.status}`} fallback={carRow.status} />
+            </StatusBadge>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -336,7 +322,7 @@ export default async function CarPage({ params, searchParams }: { params: { id: 
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
             </svg>
-            Xarajat qo\u2018shish
+            <Text path="expenses.quickAdd.cta" fallback="Xarajat qo‘shish" />
           </Link>
           {!isEdit && (
             <Link href={`/cars/${id}?edit=1`} className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700">
@@ -350,7 +336,7 @@ export default async function CarPage({ params, searchParams }: { params: { id: 
             <form action={changeStatus} className="flex items-center gap-2">
               <input type="hidden" name="car_id" value={id} />
               <input type="hidden" name="next_status" value={next} />
-              <button className="bg-blue-600 text-white px-3 py-2 rounded-lg shadow-sm hover:bg-blue-700">Holat: {carRow.status} → {next}</button>
+              <button className="bg-blue-600 text-white px-3 py-2 rounded-lg shadow-sm hover:bg-blue-700">Holat: <Text path={`status.${carRow.status}`} fallback={carRow.status} /> → <Text path={`status.${next}`} fallback={next || ''} /></button>
             </form>
           )}
           {next === "sold" && (
