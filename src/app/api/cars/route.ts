@@ -204,7 +204,7 @@ export async function POST(request: NextRequest) {
         purchase_price_aed: purchasePriceAedFils,
         mileage,
         notes,
-        status: 'in_transit'
+        status: 'available'
       }])
       .select()
       .single();
