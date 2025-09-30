@@ -205,13 +205,28 @@ async function changeStatus(formData: FormData) {
   redirect(`/cars/${carId}`);
 }
 
-export default async function CarPage({ params, searchParams }: { params: { id: string }, searchParams?: { edit?: string } }) {
+export default async function CarPage({ params, searchParams }: { params: { id: string }, searchParams?: { edit?: string; from?: string; to?: string; cat?: string; view?: string } }) {
   const id = params.id;
   const db = getSupabaseAdmin();
   const { data: car } = await db.from("au_cars").select("*").eq("id", id).single();
   if (!car) return notFound();
   const carRow: Car = car as unknown as Car;
   const isEdit = Boolean(searchParams?.edit);
+
+
+  const from = searchParams?.from || undefined;
+  const to = searchParams?.to || undefined;
+  const cat = searchParams?.cat || undefined;
+  const activeCat = cat || null;
+
+  function buildHref(nextCat?: string) {
+    const params = new URLSearchParams();
+    if (from) params.set('from', from);
+    if (to) params.set('to', to);
+    if (nextCat) params.set('cat', nextCat);
+    const qs = params.toString();
+    return `/cars/${id}` + (qs ? `?${qs}` : '');
+  }
 
   // Server action: update basic fields
   async function updateCar(formData: FormData) {
@@ -226,8 +241,17 @@ export default async function CarPage({ params, searchParams }: { params: { id: 
     redirect(`/cars/${id}`);
   }
 
-  const { data: expenses } = await db.from("au_expenses").select("*").eq("car_id", id).order("occurred_at");
-  const { data: incomes } = await db.from("au_incomes").select("*").eq("car_id", id).order("occurred_at");
+  // Apply date/category filters to queries
+  let expQuery = db.from("au_expenses").select("*").eq("car_id", id).order("occurred_at");
+  if (from) expQuery = expQuery.gte('occurred_at', from);
+  if (to) expQuery = expQuery.lte('occurred_at', to);
+  if (cat) expQuery = expQuery.eq('expense_type', cat);
+  const { data: expenses } = await expQuery;
+
+  let incQuery = db.from("au_incomes").select("*").eq("car_id", id).order("occurred_at");
+  if (from) incQuery = incQuery.gte('occurred_at', from);
+  if (to) incQuery = incQuery.lte('occurred_at', to);
+  const { data: incomes } = await incQuery;
   const { data: distributions } = await db.from("au_profit_distributions").select("*").eq("car_id", id);
   const { data: pv } = await db
     .from('car_profit_view')
@@ -253,6 +277,7 @@ export default async function CarPage({ params, searchParams }: { params: { id: 
     .from('au_incomes')
     .select('amount, currency, rate_to_aed, amount_aed, description, occurred_at')
     .eq('car_id', id)
+
     .ilike('description', '%[SALE]%')
     .order('occurred_at', { ascending: false })
     .limit(1);
@@ -269,6 +294,7 @@ export default async function CarPage({ params, searchParams }: { params: { id: 
   // Group expenses by category
   const groupedExpenses = expensesList.reduce((acc, e) => {
     const key = e.expense_type || 'Other';
+
     if (!acc[key]) acc[key] = { items: [] as Expense[], total: 0 };
     acc[key].items.push(e);
     acc[key].total += Number(e.amount_aed || 0);
@@ -282,9 +308,18 @@ export default async function CarPage({ params, searchParams }: { params: { id: 
   const curIdx = order.indexOf(carRow.status);
   const next = curIdx >= 0 && curIdx < order.length - 1 ? order[curIdx + 1] : null;
 
+
+  // Combined transactions
+  type Tx = { id: string; occurred_at: string; kind: 'expense'|'income'; amount: number; currency: string; amount_aed: number; description?: string };
+  const transactions: Tx[] = [
+    ...expensesList.map((e) => ({ id: `e-${e.id}`, occurred_at: e.occurred_at, kind: 'expense' as const, amount: Number(e.amount), currency: e.currency, amount_aed: Number(e.amount_aed), description: `${e.expense_type || ''} ${e.description || ''}`.trim() })),
+    ...incomesList.map((i) => ({ id: `i-${i.id}`, occurred_at: i.occurred_at, kind: 'income' as const, amount: Number(i.amount), currency: i.currency, amount_aed: Number(i.amount_aed), description: i.description || '' })),
+  ].sort((a,b) => (a.occurred_at < b.occurred_at ? 1 : -1));
+
   return (
     <div className="grid gap-6">
-      <div className="flex items-start justify-between flex-wrap gap-3">
+
+  <div className="flex items-start justify-between flex-wrap gap-3">
         <div>
           <h1 className="text-3xl font-bold">{carRow.make} {carRow.model} {carRow.model_year || ""}</h1>
           <div className="mt-1 flex items-center gap-3 text-sm text-gray-600">
@@ -310,6 +345,7 @@ export default async function CarPage({ params, searchParams }: { params: { id: 
           )}
           {canDistribute && (
             <form action={distribute}>
+
               <input type="hidden" name="car_id" value={id} />
               <button className="bg-green-600 text-white px-3 py-2 rounded-lg shadow-sm hover:bg-green-700">Foydani taqsimlash</button>
             </form>
@@ -352,6 +388,7 @@ export default async function CarPage({ params, searchParams }: { params: { id: 
             </select>
             <div className="col-span-2 sm:col-span-4 flex gap-2 justify-end">
               <a href={`/cars/${id}`} className="px-3 py-2 rounded border">Bekor qilish</a>
+
               <button type="submit" className="px-3 py-2 rounded bg-blue-600 text-white hover:bg-blue-700">Saqlash</button>
             </div>
           </form>
@@ -373,6 +410,24 @@ export default async function CarPage({ params, searchParams }: { params: { id: 
           <StatCard
             label="Sotuv (AED)"
             value={saleAED ? `AED ${formatAED(Number(saleAED))}` : '—'}
+
+      {/* Date range filter */}
+      <form method="GET" className="bg-white border rounded-xl p-4 shadow-sm flex flex-wrap items-end gap-3">
+        <div>
+          <label className="block text-xs text-gray-600 mb-1">Boshlanish</label>
+          <input type="date" name="from" defaultValue={(searchParams?.from as string) || ''} className="border rounded-lg px-3 py-2 text-sm" />
+        </div>
+        <div>
+          <label className="block text-xs text-gray-600 mb-1">Tugash</label>
+          <input type="date" name="to" defaultValue={(searchParams?.to as string) || ''} className="border rounded-lg px-3 py-2 text-sm" />
+        </div>
+        {activeCat && <input type="hidden" name="cat" value={activeCat} />}
+        <div className="ml-auto flex items-center gap-2">
+          <button className="px-3 py-2 bg-blue-600 text-white rounded-lg">Qo'llash</button>
+          <a href={`/cars/${id}`} className="px-3 py-2 border rounded-lg">Reset</a>
+        </div>
+      </form>
+
             tone={saleAED ? 'default' : 'warning'}
           />
           <StatCard
@@ -386,6 +441,24 @@ export default async function CarPage({ params, searchParams }: { params: { id: 
           Jami tannarx (AED): <span className="font-medium">AED {formatAED(totalCostAED)}</span>
         </div>
       </div>
+
+
+      {/* Date range filter */}
+      <form method="GET" className="bg-white border rounded-xl p-4 shadow-sm flex flex-wrap items-end gap-3">
+        <div>
+          <label className="block text-xs text-gray-600 mb-1">Boshlanish</label>
+          <input type="date" name="from" defaultValue={(searchParams?.from as string) || ''} className="border rounded-lg px-3 py-2 text-sm" />
+        </div>
+        <div>
+          <label className="block text-xs text-gray-600 mb-1">Tugash</label>
+          <input type="date" name="to" defaultValue={(searchParams?.to as string) || ''} className="border rounded-lg px-3 py-2 text-sm" />
+        </div>
+        {activeCat && <input type="hidden" name="cat" value={activeCat} />}
+        <div className="ml-auto flex items-center gap-2">
+          <button className="px-3 py-2 bg-blue-600 text-white rounded-lg">Qo'llash</button>
+          <a href={`/cars/${id}`} className="px-3 py-2 border rounded-lg">Reset</a>
+        </div>
+      </form>
 
       {/* New Profit Breakdown Component */}
       <ProfitBreakdown
@@ -407,6 +480,12 @@ export default async function CarPage({ params, searchParams }: { params: { id: 
             <div className="text-sm text-gray-600">Jami: <span className="font-medium text-red-700">AED {formatAED(expensesTotalListAED)}</span></div>
           </div>
 
+          <div className="flex flex-wrap gap-2 mb-3">
+            <a href={buildHref(undefined)} className={`px-2.5 py-1 rounded-full text-xs ring-1 ${!activeCat ? 'bg-blue-50 text-blue-700 ring-blue-200' : 'bg-white text-gray-700 ring-gray-200'}`}>Barchasi</a>
+            {groupedExpenseEntries.map(([catName]) => (
+              <a key={catName} href={buildHref(String(catName))} className={`px-2.5 py-1 rounded-full text-xs ring-1 ${activeCat === catName ? 'bg-blue-50 text-blue-700 ring-blue-200' : 'bg-white text-gray-700 ring-gray-200'}`}>{catName}</a>
+            ))}
+          </div>
           <div className="space-y-3">
             {groupedExpenseEntries.map(([cat, group]) => (
               <details key={cat} className="group bg-white border rounded-lg p-3 shadow-sm open:shadow">
@@ -458,6 +537,32 @@ export default async function CarPage({ params, searchParams }: { params: { id: 
           </ul>
         </div>
       </div>
+
+      {/* Combined overall timeline */}
+      <div className="mt-6">
+        <div className="flex items-baseline justify-between mb-2">
+          <h2 className="font-semibold">Umumiy timeline</h2>
+          <div className="text-sm text-gray-600">Balans: <span className="font-medium">AED {formatAED(incomesTotalListAED - expensesTotalListAED)}</span></div>
+        </div>
+        <ul className="bg-white border rounded-lg p-3 shadow-sm space-y-2">
+          {transactions.map((t) => (
+            <li key={t.id} className="relative pl-6 text-sm text-gray-700">
+              <span className={`absolute left-2 top-2 w-2 h-2 rounded-full ${t.kind === 'income' ? 'bg-green-500' : 'bg-red-500'}`} />
+              <div className="flex items-center justify-between">
+                <div>
+                  <span className="font-medium">{t.occurred_at}</span>
+                  <span className="mx-2 text-gray-400">•</span>
+                  <span>{t.description || ''}</span>
+                </div>
+                <div className={t.kind === 'income' ? 'text-green-700' : 'text-red-700'}>
+                  {t.kind === 'income' ? '+' : '-'} {t.amount} {t.currency} (AED {formatAED(Number(t.amount_aed || 0))})
+                </div>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
+
 
       {(distributions || []).length > 0 && (
         <div className="border rounded p-3">
