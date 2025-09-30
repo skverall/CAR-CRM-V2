@@ -55,7 +55,15 @@ export default function ExpensesClientTable({ rows, filename = "expenses" }: Pro
               <td className="p-2 border w-24">{String(r["rate_to_aed"] ?? "")}</td>
               <td className="p-2 border w-36">{fmt(((r["amount_aed_fils"])!=null)? (Number(r["amount_aed_fils"])/100) : Number(r["amount"]||0) * Number(r["rate_to_aed"]||1))}</td>
               <td className="p-2 border w-40">{String(r["category"] ?? "")}</td>
-              <td className="p-2 border w-40">{String(r["car_id"] ?? "")}</td>
+              <td className="p-2 border w-40">
+                {r["car_id"] ? (
+                  <a href={`/cars/${String(r["car_id"])}`} className="text-blue-600 hover:text-blue-800 underline">
+                    {String((r["car_label"]) ?? r["car_id"])}
+                  </a>
+                ) : (
+                  <span className="text-gray-500">{t('expenses.scopeNone','(Umumiy/Shaxsiy)')}</span>
+                )}
+              </td>
               <td className="p-2 border">{String(r["description"] ?? "")}</td>
               <td className="p-2 border w-28">
                 <button

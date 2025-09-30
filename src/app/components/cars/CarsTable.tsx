@@ -325,9 +325,21 @@ export default function CarsTable({ cars, orgId: _orgId }: Props) {
                       <td className="px-4 py-4 text-center">
                         <div className="inline-flex items-center gap-2">
                           <Link
-                            href={`/cars/${car.id}?edit=1`}
-                            className="inline-flex items-center gap-2 px-2.5 py-1.5 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                            href={`/expenses?car_id=${car.id}&quick=1`}
+                            className="inline-flex items-center gap-2 px-2.5 py-1.5 bg-green-600 text-white rounded-lg text-sm hover:bg-green-700 transition-colors"
                           >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                            </svg>
+                            {t('expenses.quickAdd.cta', 'Xarajat qo\u2018shish')}
+                          </Link>
+                          <Link
+                            href={`/cars/${car.id}?edit=1`}
+                            className="inline-flex items-center gap-2 px-2.5 py-1.5 bg-indigo-600 text-white rounded-lg text-sm hover:bg-indigo-700 transition-colors"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5h2m-7 7h10M9 21h6a2 2 0 002-2v-8a2 2 0 00-2-2H9a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                            </svg>
                             {t("common.edit", "Tahrirlash")}
                           </Link>
                           <Link

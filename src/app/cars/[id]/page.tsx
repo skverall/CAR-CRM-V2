@@ -2,6 +2,8 @@ import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 export const dynamic = "force-dynamic";
 
 import React from "react";
+import Link from "next/link";
+
 
 import { notFound, redirect } from "next/navigation";
 import SellBar from "@/app/components/cars/SellBar";
@@ -327,10 +329,22 @@ export default async function CarPage({ params, searchParams }: { params: { id: 
           </div>
         </div>
         <div className="flex items-center gap-2">
+          <Link
+            href={`/expenses?car_id=${id}&quick=1`}
+            className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+            Xarajat qo\u2018shish
+          </Link>
           {!isEdit && (
-            <a href={`/cars/${id}?edit=1`} className="px-3 py-2 rounded-lg border bg-white hover:bg-gray-50">Tahrirlash</a>
-
-
+            <Link href={`/cars/${id}?edit=1`} className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5h2m-7 7h10M9 21h6a2 2 0 002-2v-8a2 2 0 00-2-2H9a2 2 0 00-2 2v8a2 2 0 002 2z" />
+              </svg>
+              Tahrirlash
+            </Link>
           )}
           {next && next !== "sold" && (
             <form action={changeStatus} className="flex items-center gap-2">

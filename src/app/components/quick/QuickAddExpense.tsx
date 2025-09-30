@@ -11,16 +11,18 @@ type Props = {
   orgId: string | null;
   cars: CarRef[];
   clientMode?: boolean;
+  initialCarId?: string;
+  openByDefault?: boolean;
 };
 
-export default function QuickAddExpense({ onSubmit, orgId, cars, clientMode = false }: Props) {
-  const [open, setOpen] = useState(false);
+export default function QuickAddExpense({ onSubmit, orgId, cars, clientMode = false, initialCarId, openByDefault = false }: Props) {
+  const [open, setOpen] = useState(!!openByDefault);
   const [occurredAt, setOccurredAt] = useState<string>("");
   const [amount, setAmount] = useState<string>("");
   const [currency, setCurrency] = useState<string>("AED");
   const [rate, setRate] = useState<string>("1");
   const [category, setCategory] = useState<string>("repair");
-  const [carId, setCarId] = useState<string>("");
+  const [carId, setCarId] = useState<string>(initialCarId || "");
   const [description, setDescription] = useState<string>("");
 
   // Prefill from last used
@@ -29,8 +31,8 @@ export default function QuickAddExpense({ onSubmit, orgId, cars, clientMode = fa
     setOccurredAt(localStorage.getItem("exp_last_date") || today);
     setCurrency(localStorage.getItem("exp_last_currency") || "AED");
     setCategory(localStorage.getItem("exp_last_category") || "repair");
-    setCarId(localStorage.getItem("exp_last_car_id") || "");
-  }, []);
+    setCarId(initialCarId || localStorage.getItem("exp_last_car_id") || "");
+  }, [initialCarId]);
 
   // Fetch latest FX rate for chosen date/currency
   useEffect(() => {
