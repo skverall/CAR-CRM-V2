@@ -80,12 +80,19 @@ export default function ExpensesClientTable({ rows, filename = "expenses" }: Pro
           <tr>
             <td className="p-2 border text-right font-semibold" colSpan={4}>{t('table.totalsAed','Jami (AED):')}</td>
             <td className="p-2 border font-semibold">{fmt(totalAed)}</td>
-            <td className="p-2 border" colSpan={3}></td>
+            <td className="p-2 border" colSpan={4}></td>
           </tr>
         </tfoot>
       </table>
 
-      <ExpenseEditModal open={open} onClose={() => setOpen(false)} row={editRow as ExpenseRow} onSaved={() => { if (typeof window !== 'undefined') window.location.reload(); }} />
+      {open && editRow && (
+        <ExpenseEditModal
+          open={open}
+          onClose={() => setOpen(false)}
+          row={editRow}
+          onSaved={() => { if (typeof window !== 'undefined') window.location.reload(); }}
+        />
+      )}
     </div>
   );
 }
