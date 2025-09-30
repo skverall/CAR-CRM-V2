@@ -259,6 +259,25 @@ export default async function CarPage({ params, searchParams }: { params: { id: 
   const saleIncome = ((saleIncomeRows || [])[0] as SaleIncomeRow) || null;
   const saleAED = saleIncome ? (saleIncome.amount_aed ?? ((Number(saleIncome.amount || 0) * Number(saleIncome.rate_to_aed || 0)))) : 0;
 
+  // Aggregates for timelines and headers
+  const expensesList = ((expenses as unknown as Expense[]) || []);
+  const incomesList = ((incomes as unknown as Income[]) || []);
+
+  const expensesTotalListAED = expensesList.reduce((s, e) => s + Number(e.amount_aed || 0), 0);
+  const incomesTotalListAED = incomesList.reduce((s, i) => s + Number(i.amount_aed || 0), 0);
+
+  // Group expenses by category
+  const groupedExpenses = expensesList.reduce((acc, e) => {
+    const key = e.expense_type || 'Other';
+    if (!acc[key]) acc[key] = { items: [] as Expense[], total: 0 };
+    acc[key].items.push(e);
+    acc[key].total += Number(e.amount_aed || 0);
+    return acc;
+  }, {} as Record<string, { items: Expense[]; total: number }>);
+
+  const groupedExpenseEntries = Object.entries(groupedExpenses).sort((a,b)=> b[1].total - a[1].total);
+
+
   const order: Car["status"][] = ["available","repair","listed","sold","archived"];
   const curIdx = order.indexOf(carRow.status);
   const next = curIdx >= 0 && curIdx < order.length - 1 ? order[curIdx + 1] : null;
@@ -276,6 +295,8 @@ export default async function CarPage({ params, searchParams }: { params: { id: 
         <div className="flex items-center gap-2">
           {!isEdit && (
             <a href={`/cars/${id}?edit=1`} className="px-3 py-2 rounded-lg border bg-white hover:bg-gray-50">Tahrirlash</a>
+
+
           )}
           {next && next !== "sold" && (
             <form action={changeStatus} className="flex items-center gap-2">
@@ -294,6 +315,25 @@ export default async function CarPage({ params, searchParams }: { params: { id: 
             </form>
           )}
         </div>
+
+      {/* Sticky summary bar */}
+      <div className="sticky top-2 z-30">
+        <div className="bg-white/80 backdrop-blur rounded-xl border border-gray-200 shadow-sm px-4 py-3 flex items-center gap-6">
+          <div className="text-sm text-gray-600">Net foyda</div>
+          <div className={`text-xl font-semibold ${profit >= 0 ? 'text-green-700' : 'text-red-700'}`}>AED {formatAED(profit)}</div>
+          <div className="h-5 w-px bg-gray-200" />
+          <div className="text-sm text-gray-600">Marja</div>
+          <div className="text-xl font-semibold">{pv?.margin_pct != null ? `${Number(pv.margin_pct).toFixed(1)}%` : '\u2014'}</div>
+          {pv?.days_on_lot != null && (
+            <>
+              <div className="h-5 w-px bg-gray-200" />
+              <div className="text-sm text-gray-600">Kunlar</div>
+              <div className="text-xl font-semibold">{pv.days_on_lot}</div>
+            </>
+          )}
+        </div>
+      </div>
+
       </div>
 
       {isEdit && (
@@ -360,22 +400,59 @@ export default async function CarPage({ params, searchParams }: { params: { id: 
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {/* Expenses timeline with grouping */}
         <div>
-          <h2 className="font-semibold mb-2">Xarajatlar</h2>
-          <ul className="space-y-1">
-            {(expenses as unknown as Expense[] || []).map((e: Expense) => (
-              <li key={e.id} className="border rounded p-2 text-sm">
-                {e.occurred_at}: -{e.amount} {e.currency} (AED {e.amount_aed}) — {e.expense_type} {e.description || ""}
-              </li>
+          <div className="flex items-baseline justify-between mb-2">
+            <h2 className="font-semibold">Xarajatlar</h2>
+            <div className="text-sm text-gray-600">Jami: <span className="font-medium text-red-700">AED {formatAED(expensesTotalListAED)}</span></div>
+          </div>
+
+          <div className="space-y-3">
+            {groupedExpenseEntries.map(([cat, group]) => (
+              <details key={cat} className="group bg-white border rounded-lg p-3 shadow-sm open:shadow">
+                <summary className="flex items-center justify-between cursor-pointer list-none">
+                  <span className="font-medium text-gray-900">{cat}</span>
+                  <span className="text-sm text-red-700">AED {formatAED(group.total)}</span>
+                </summary>
+                <ul className="mt-3 ml-2 pl-4 border-l space-y-2">
+                  {group.items.map((e) => (
+                    <li key={e.id} className="relative pl-4 text-sm text-gray-700">
+                      <span className="absolute -left-2 top-2 w-2 h-2 bg-red-500 rounded-full" />
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <span className="font-medium">{e.occurred_at}</span>
+                          <span className="mx-2 text-gray-400">•</span>
+                          <span>{e.description || ''}</span>
+                        </div>
+                        <div className="text-red-700">- {e.amount} {e.currency} (AED {formatAED(Number(e.amount_aed || 0))})</div>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </details>
             ))}
-          </ul>
+          </div>
         </div>
+
+        {/* Incomes timeline */}
         <div>
-          <h2 className="font-semibold mb-2">Daromad</h2>
-          <ul className="space-y-1">
-            {(incomes as unknown as Income[] || []).map((i: Income) => (
-              <li key={i.id} className="border rounded p-2 text-sm">
-                {i.occurred_at}: +{i.amount} {i.currency} (AED {i.amount_aed}) — {i.description || ""}
+          <div className="flex items-baseline justify-between mb-2">
+            <h2 className="font-semibold">Daromad</h2>
+            <div className="text-sm text-gray-600">Jami: <span className="font-medium text-green-700">AED {formatAED(incomesTotalListAED)}</span></div>
+          </div>
+
+          <ul className="bg-white border rounded-lg p-3 shadow-sm space-y-2">
+            {incomesList.map((i) => (
+              <li key={i.id} className="relative pl-6 text-sm text-gray-700">
+                <span className="absolute left-2 top-2 w-2 h-2 bg-green-500 rounded-full" />
+                <div className="flex items-center justify-between">
+                  <div>
+                    <span className="font-medium">{i.occurred_at}</span>
+                    <span className="mx-2 text-gray-400">•</span>
+                    <span>{i.description || ''}</span>
+                  </div>
+                  <div className="text-green-700">+ {i.amount} {i.currency} (AED {formatAED(Number(i.amount_aed || 0))})</div>
+                </div>
               </li>
             ))}
           </ul>
