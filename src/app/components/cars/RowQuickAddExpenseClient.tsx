@@ -34,6 +34,7 @@ export default function RowQuickAddExpenseClient({
       onSubmit={onSubmit}
       orgId={orgId || null}
       cars={[{ id: carId, vin: carVin }]}
+      clientMode
     />
   );
 }

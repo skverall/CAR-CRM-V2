@@ -10,9 +10,10 @@ type Props = {
   onSubmit: (formData: FormData) => Promise<void>;
   orgId: string | null;
   cars: CarRef[];
+  clientMode?: boolean;
 };
 
-export default function QuickAddExpense({ onSubmit, orgId, cars }: Props) {
+export default function QuickAddExpense({ onSubmit, orgId, cars, clientMode = false }: Props) {
   const [open, setOpen] = useState(false);
   const [occurredAt, setOccurredAt] = useState<string>("");
   const [amount, setAmount] = useState<string>("");
@@ -56,12 +57,26 @@ export default function QuickAddExpense({ onSubmit, orgId, cars }: Props) {
     // leave modal closing/navigation to server redirect after submit
   };
 
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    if (clientMode) {
+      e.preventDefault();
+      // remember values and ensure org_id
+      beforeSubmit(e);
+      const fd = new FormData(e.currentTarget);
+      await onSubmit(fd);
+      setOpen(false);
+    } else {
+      // server action mode: allow native submit
+      beforeSubmit(e);
+    }
+  };
+
   const t = useT();
   return (
     <>
       <Button type="button" onClick={() => setOpen(true)}>{t('expenses.quickAdd.cta','Xarajat qo\u2018shish')}</Button>
       <Modal open={open} onClose={() => setOpen(false)} title={t('expenses.quickAdd.title','Xarajat tez qo\u2018shish')}>
-        <form action={onSubmit} onSubmit={beforeSubmit} className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+        <form action={clientMode ? undefined : (onSubmit as unknown as (formData: FormData) => void)} onSubmit={handleSubmit} className="grid grid-cols-2 sm:grid-cols-4 gap-2">
           <input name="occurred_at" value={occurredAt} onChange={e=>setOccurredAt(e.target.value)} type="date" required className="border px-2 py-1 rounded" />
           <input name="amount" value={amount} onChange={e=>setAmount(e.target.value)} type="number" step="0.01" required placeholder={t('expenses.fields.amount','Miqdor')} className="border px-2 py-1 rounded" />
           <input name="currency" value={currency} onChange={e=>setCurrency(e.target.value)} placeholder={t('expenses.fields.currency','Valyuta')} className="border px-2 py-1 rounded" />

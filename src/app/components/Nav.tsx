@@ -106,7 +106,7 @@ export default function Nav() {
             {/* Quick Actions - Desktop */}
             <div className="hidden lg:flex items-center gap-2">
               <Link
-                href="/cars?action=add"
+                href="/cars/add"
                 className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -163,7 +163,7 @@ export default function Nav() {
 
               {/* Mobile Quick Action */}
               <Link
-                href="/cars?action=add"
+                href="/cars/add"
                 onClick={() => setMobileMenuOpen(false)}
                 className="flex items-center gap-3 px-3 py-2.5 mt-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
               >

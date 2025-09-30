@@ -89,7 +89,7 @@ export default async function Dashboard() {
           </Link>
 
           <Link
-            href="/cars?action=add"
+            href="/cars/add"
             className="bg-white rounded-xl shadow-sm border border-gray-200 transition-all duration-200 hover:shadow-md hover:border-gray-300 hover:-translate-y-0.5 cursor-pointer active:scale-[0.98] p-5 group"
           >
             <div className="flex items-start gap-4">
