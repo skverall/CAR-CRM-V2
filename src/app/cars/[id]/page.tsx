@@ -1,10 +1,64 @@
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 export const dynamic = "force-dynamic";
 
+import React from "react";
+
 import { notFound, redirect } from "next/navigation";
 import Text from "@/app/components/i18n/Text";
 import SellBar from "@/app/components/cars/SellBar";
 import ProfitBreakdown from "@/app/components/cars/ProfitBreakdown";
+
+
+// Helpers for better visual presentation
+function formatAED(n: number) {
+  return Number(n ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+type Status = Car["status"];
+function StatusBadge({ status }: { status: Status }) {
+  const color = (
+    {
+      available: "bg-gray-100 text-gray-800 ring-gray-200",
+      repair: "bg-amber-100 text-amber-800 ring-amber-200",
+      listed: "bg-blue-100 text-blue-800 ring-blue-200",
+      sold: "bg-green-100 text-green-800 ring-green-200",
+      archived: "bg-slate-100 text-slate-700 ring-slate-200",
+    } as Record<string, string>
+  )[status] || "bg-gray-100 text-gray-800 ring-gray-200";
+  return (
+    <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ring-1 ${color}`}>
+      {status}
+    </span>
+  );
+}
+
+function StatCard({
+  label,
+  value,
+  sublabel,
+  tone = 'default',
+}: {
+  label: React.ReactNode;
+  value: React.ReactNode;
+  sublabel?: React.ReactNode;
+  tone?: 'default' | 'success' | 'danger' | 'warning';
+}) {
+  const toneClass =
+    tone === 'success'
+      ? 'text-green-700'
+      : tone === 'danger'
+      ? 'text-red-700'
+      : tone === 'warning'
+      ? 'text-amber-700'
+      : 'text-gray-900';
+  return (
+    <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
+      <div className="text-xs uppercase tracking-wide text-gray-500">{label}</div>
+      <div className={`mt-1 text-2xl font-semibold ${toneClass}`}>{value}</div>
+      {sublabel && <div className="mt-1 text-xs text-gray-500">{sublabel}</div>}
+    </div>
+  );
+}
 
 type Car = {
   vin: string;
@@ -211,17 +265,23 @@ export default async function CarPage({ params, searchParams }: { params: { id: 
 
   return (
     <div className="grid gap-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">{carRow.make} {carRow.model} {carRow.model_year || ""} <span className="text-gray-500 text-base">/ VIN: {carRow.vin}</span></h1>
+      <div className="flex items-start justify-between flex-wrap gap-3">
+        <div>
+          <h1 className="text-3xl font-bold">{carRow.make} {carRow.model} {carRow.model_year || ""}</h1>
+          <div className="mt-1 flex items-center gap-3 text-sm text-gray-600">
+            <span>VIN: {carRow.vin}</span>
+            <StatusBadge status={carRow.status} />
+          </div>
+        </div>
         <div className="flex items-center gap-2">
           {!isEdit && (
-            <a href={`/cars/${id}?edit=1`} className="px-3 py-2 rounded border hover:bg-gray-50">Tahrirlash</a>
+            <a href={`/cars/${id}?edit=1`} className="px-3 py-2 rounded-lg border bg-white hover:bg-gray-50">Tahrirlash</a>
           )}
           {next && next !== "sold" && (
             <form action={changeStatus} className="flex items-center gap-2">
               <input type="hidden" name="car_id" value={id} />
               <input type="hidden" name="next_status" value={next} />
-              <button className="bg-blue-600 text-white px-3 py-2 rounded">Holat: {carRow.status} → {next}</button>
+              <button className="bg-blue-600 text-white px-3 py-2 rounded-lg shadow-sm hover:bg-blue-700">Holat: {carRow.status} → {next}</button>
             </form>
           )}
           {next === "sold" && (
@@ -230,7 +290,7 @@ export default async function CarPage({ params, searchParams }: { params: { id: 
           {canDistribute && (
             <form action={distribute}>
               <input type="hidden" name="car_id" value={id} />
-              <button className="bg-green-600 text-white px-3 py-2 rounded">Foydani taqsimlash</button>
+              <button className="bg-green-600 text-white px-3 py-2 rounded-lg shadow-sm hover:bg-green-700">Foydani taqsimlash</button>
             </form>
           )}
         </div>
@@ -258,32 +318,33 @@ export default async function CarPage({ params, searchParams }: { params: { id: 
         </div>
       )}
 
-      <div className="border rounded p-4 bg-yellow-50 grid gap-2">
-        <div className="font-semibold"><Text path="cars.details.overview" fallback="Umumiy ko‘rsatkichlar" /></div>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
-          <div className="border rounded p-2 bg-white">
-            <div className="text-xs text-gray-600"><Text path="cars.details.purchase" fallback="Xarid" /></div>
-            <div className="text-sm">{carRow.purchase_price} {carRow.purchase_currency}</div>
-            <div className="text-sm">AED {purchaseAED.toFixed(2)}</div>
-          </div>
-          <div className="border rounded p-2 bg-white">
-            <div className="text-xs text-gray-600"><Text path="cars.details.expenses" fallback="Xarajatlar (AED)" /></div>
-            <div className="text-sm"><Text path="cars.details.direct" fallback="To‘g‘ridan-to‘grilar" />: {directExpensesAED.toFixed(2)}</div>
-            <div className="text-sm"><Text path="cars.details.overhead" fallback="Umumiy (overhead)" />: {overheadAED.toFixed(2)}</div>
-            <div className="text-sm font-medium"><Text path="cars.details.total" fallback="Jami" />: {expensesAED.toFixed(2)}</div>
-          </div>
-          <div className="border rounded p-2 bg-white">
-            <div className="text-xs text-gray-600"><Text path="cars.details.sale" fallback="Sotuv" /></div>
-            <div className="text-sm">{saleIncome ? `${saleIncome.amount} ${saleIncome.currency}` : '—'}</div>
-            <div className="text-sm">AED {Number(saleAED || 0).toFixed(2)}</div>
-          </div>
-          <div className="border rounded p-2 bg-white">
-            <div className="text-xs text-gray-600"><Text path="cars.details.netProfit" fallback="Net Profit (AED)" /></div>
-            <div className={profit >= 0 ? "text-green-700 font-semibold" : "text-red-700 font-semibold"}>{profit.toFixed(2)}</div>
-          </div>
+      <div className="grid gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          <StatCard
+            label="Xarid (AED)"
+            value={`AED ${formatAED(purchaseAED)}`}
+            sublabel={`${Number(carRow.purchase_price)} ${carRow.purchase_currency}`}
+          />
+          <StatCard
+            label="Xarajatlar (AED)"
+            value={`AED ${formatAED(expensesAED)}`}
+            sublabel={`To‘g‘ridan-to‘g‘ri: ${formatAED(directExpensesAED)} • Overhead: ${formatAED(overheadAED)}`}
+          />
+          <StatCard
+            label="Sotuv (AED)"
+            value={saleAED ? `AED ${formatAED(Number(saleAED))}` : '—'}
+            tone={saleAED ? 'default' : 'warning'}
+          />
+          <StatCard
+            label="Net foyda (AED)"
+            value={`${profit >= 0 ? '+' : ''}AED ${formatAED(profit)}`}
+            sublabel={pv?.margin_pct != null ? `Marja: ${Number(pv.margin_pct).toFixed(1)}%` : undefined}
+            tone={profit >= 0 ? 'success' : 'danger'}
+          />
         </div>
-        <div className="text-sm text-gray-700 mt-1"><Text path="cars.details.totalCostAED" fallback="Jami tannarx (AED)" />: {Number(totalCostAED || 0).toFixed(2)}</div>
-
+        <div className="text-sm text-gray-600">
+          Jami tannarx (AED): <span className="font-medium">AED {formatAED(totalCostAED)}</span>
+        </div>
       </div>
 
       {/* New Profit Breakdown Component */}
