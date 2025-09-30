@@ -337,6 +337,7 @@ export const dictionaries: Record<LangCode, Record<string, unknown>> = {
     },
     expenses: {
       title: "Xarajatlar",
+      subtitle: "Barcha xarajatlar ro'yxati va ularning tahlili",
       filters: "Filtrlar",
       addTitle: "Xarajat qo‘shish",
       fields: {
@@ -365,7 +366,16 @@ export const dictionaries: Record<LangCode, Record<string, unknown>> = {
       scopeNone: "(Umumiy/Shaxsiy)",
       quickAdd: { cta: "Xarajat qo‘shish", title: "Xarajat tez qo‘shish" },
       noteOverhead: "Eslatma: Avto tanlanmasa, xarajat \u201cUmumiy/Shaxsiy\u201d hisoblanadi va avtomatik ravishda faol mashinalar orasida taqsimlanadi.",
-
+      summary: {
+        total: "Jami xarajatlar",
+        average: "O'rtacha xarajat",
+        topCategory: "Eng ko'p xarajat",
+        transactions: "ta xarajat",
+        perTransaction: "har bir xarajat uchun",
+        noData: "Ma'lumot yo'q"
+      },
+      topCategories: "Eng ko'p xarajat qilingan toifalar",
+      allExpenses: "Barcha xarajatlar"
     },
     incomes: {
       title: "Daromad (qo'lda)",
@@ -410,6 +420,44 @@ export const dictionaries: Record<LangCode, Record<string, unknown>> = {
 
       quickAdd: { cta: "Tez qo‘shish", title: "Daromad tez qo‘shish" },
     },
+
+    reports: {
+      title: "Hisobotlar",
+      subtitle: "Moliyaviy hisobotlar, analitika va ma'lumotlarni eksport qilish",
+      badge: "Hisobotlar markazi",
+      viewReport: "Hisobotni ko'rish",
+      analytics: {
+        title: "Analitika",
+        description: "Foyda va sotuvlar tahlili, grafik va statistika"
+      },
+      dailyExpenses: {
+        title: "Kunlik xarajatlar",
+        description: "Kunlik xarajatlar hisoboti va filtrlash"
+      },
+      export: {
+        title: "Eksport",
+        description: "Ma'lumotlarni CSV formatida yuklab olish",
+        sectionTitle: "Ma'lumotlarni eksport qilish",
+        sectionDescription: "Barcha ma'lumotlarni CSV formatida yuklab oling",
+        carsCsv: "CSV — Avtomobillar",
+        carsDescription: "Barcha avtomobillar ro'yxati",
+        expensesCsv: "CSV — Xarajatlar",
+        expensesDescription: "Barcha xarajatlar",
+        incomesCsv: "CSV — Daromadlar",
+        incomesDescription: "Barcha daromadlar",
+        movementsCsv: "CSV — Kapital harakatlari",
+        dailyExpenses: "Kunlik xarajatlar",
+      },
+      financial: {
+        title: "Moliyaviy hisobot",
+        description: "Umumiy moliyaviy ko'rsatkichlar va tahlil"
+      },
+      info: {
+        title: "Hisobotlar haqida",
+        description: "Barcha hisobotlar real vaqtda yangilanadi va sizning tashkilotingiz ma'lumotlariga asoslangan. Eksport qilingan fayllar Excel yoki Google Sheets da ochilishi mumkin."
+      },
+    },
+
   },
   ru: {
     nav: {
@@ -585,6 +633,18 @@ export const dictionaries: Record<LangCode, Record<string, unknown>> = {
       scopeNone: "(Общий/Личный)",
       quickAdd: { cta: "Добавить расход", title: "Быстрое добавление расхода" },
       noteOverhead: "Если авто не выбрано, расход считается \u00abОбщий/Личный\u00bb и автоматически распределяется между активными машинами.",
+      summary: {
+        total: "Всего расходов",
+        average: "Средний расход",
+        topCategory: "Больше всего расходов",
+        transactions: "расходов",
+        perTransaction: "на каждый расход",
+        noData: "Нет данных"
+      },
+      topCategories: "Топ категорий по расходам",
+      allExpenses: "Все расходы",
+      subtitle: "Список всех расходов и их анализ"
+    },
 
     dashboard: {
       title: "Панель управления",
@@ -651,12 +711,38 @@ export const dictionaries: Record<LangCode, Record<string, unknown>> = {
     },
     reports: {
       title: "Отчеты",
+      subtitle: "Финансовые отчеты, аналитика и экспорт данных",
+      badge: "Центр отчетов",
+      viewReport: "Посмотреть отчет",
+      analytics: {
+        title: "Аналитика",
+        description: "Анализ прибыли и продаж, графики и статистика"
+      },
+      dailyExpenses: {
+        title: "Ежедневные расходы",
+        description: "Отчет по ежедневным расходам и фильтрация"
+      },
       export: {
+        title: "Экспорт",
+        description: "Скачать данные в формате CSV",
+        sectionTitle: "Экспорт данных",
+        sectionDescription: "Скачайте все данные в формате CSV",
         carsCsv: "CSV — Автомобили",
+        carsDescription: "Список всех автомобилей",
         expensesCsv: "CSV — Расходы",
+        expensesDescription: "Все расходы",
         incomesCsv: "CSV — Доходы",
+        incomesDescription: "Все доходы",
         movementsCsv: "CSV — Движения капитала",
         dailyExpenses: "Ежедневные расходы",
+      },
+      financial: {
+        title: "Финансовый отчет",
+        description: "Общие финансовые показатели и анализ"
+      },
+      info: {
+        title: "О отчетах",
+        description: "Все отчеты обновляются в реальном времени и основаны на данных вашей организации. Экспортированные файлы можно открыть в Excel или Google Sheets."
       },
       dailyExpensesPage: {
         title: "Ежедневные расходы",
