@@ -272,7 +272,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: { 
             <div className="text-xl text-gray-400">
               <Text path="expenses.summary.noData" fallback="Ma'lumot yo'q" />
             </div>
-          )
+          )}
         </div>
       </div>
 
