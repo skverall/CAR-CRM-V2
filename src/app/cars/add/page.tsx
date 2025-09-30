@@ -58,7 +58,7 @@ async function addCar(prevState: AddCarState, formData: FormData): Promise<AddCa
       {
         ...payload,
         purchase_price_aed: purchasePriceAedFils,
-        status: "in_transit",
+        status: "available",
         org_id: orgId,
       },
     ]);

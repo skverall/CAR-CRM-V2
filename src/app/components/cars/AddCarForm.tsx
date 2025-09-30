@@ -1,11 +1,15 @@
 "use client";
 import { useFormState } from "react-dom";
+import { useState, useEffect } from "react";
 import Text from "@/app/components/i18n/Text";
 
 export type AddCarState = { error?: string; success?: string };
 
 export default function AddCarForm({ action }: { action: (prevState: AddCarState, formData: FormData) => Promise<AddCarState> }) {
   const [state, formAction] = useFormState(action, { error: undefined, success: undefined });
+  const [currency, setCurrency] = useState<string>('AED');
+  const [rate, setRate] = useState<string>('1');
+  useEffect(() => { if (currency === 'AED') setRate('1'); }, [currency]);
   return (
     <div className="bg-white border rounded-lg p-6">
       <h2 className="text-xl font-semibold mb-4">
@@ -106,13 +110,12 @@ export default function AddCarForm({ action }: { action: (prevState: AddCarState
         <input name="model_year" type="number" placeholder="Yil" className="border px-3 py-2 rounded" />
         <input name="purchase_date" type="date" required className="border px-3 py-2 rounded" />
         <input name="purchase_price" type="number" step="0.01" placeholder="Narx" required className="border px-3 py-2 rounded" />
-        <select name="purchase_currency" required className="border px-3 py-2 rounded">
-          <option value="">Valyuta</option>
-          <option value="USD">USD</option>
+        <select name="purchase_currency" required className="border px-3 py-2 rounded" value={currency} onChange={(e) => setCurrency(e.target.value)}>
           <option value="AED">AED</option>
+          <option value="USD">USD</option>
           <option value="EUR">EUR</option>
         </select>
-        <input name="purchase_rate_to_aed" type="number" step="0.01" placeholder="AED kursi" required className="border px-3 py-2 rounded" />
+        <input name="purchase_rate_to_aed" type="number" step="0.0001" placeholder="AED kursi" required className="border px-3 py-2 rounded" value={rate} onChange={(e) => setRate(e.target.value)} />
         <input name="mileage" type="number" placeholder="Probeg (km)" className="border px-3 py-2 rounded" />
         <input name="source" placeholder="Manba" className="border px-3 py-2 rounded" />
         <input name="notes" placeholder="Izohlar" className="border px-3 py-2 rounded col-span-2" />
