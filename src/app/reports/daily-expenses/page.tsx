@@ -9,8 +9,12 @@ function toISODate(d: Date) {
 
 async function getOrgId(): Promise<string> {
   const db = getSupabaseAdmin();
+  // Try by explicit name first (backward compatibility)
   const { data } = await db.from("orgs").select("id").eq("name", "Default Organization").single();
-  return (data as { id: string } | null)?.id ?? "";
+  if ((data as { id: string } | null)?.id) return (data as { id: string }).id;
+  // Fallback: take the first org available
+  const { data: anyOrg } = await db.from("orgs").select("id").limit(1);
+  return ((anyOrg as Array<{ id: string }> | null)?.[0]?.id) ?? "";
 }
 
 export default async function DailyExpensesPage({ searchParams }: { searchParams?: Record<string, string | string[]> }) {
@@ -48,8 +52,14 @@ export default async function DailyExpensesPage({ searchParams }: { searchParams
   params.set("limit", String(limit));
   params.set("offset", String(offset));
 
-  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || ""}/api/reports/daily-expenses?${params.toString()}`, { cache: "no-store" });
-  const json = await res.json();
+  // Use relative path to avoid SSR self-fetch issues when BASE_URL is not set
+  let json: any = null;
+  try {
+    const res = await fetch(`/api/reports/daily-expenses?${params.toString()}`, { cache: "no-store" });
+    json = await res.json();
+  } catch (e) {
+    json = { success: false };
+  }
   const ok = json?.success === true;
   const items = (ok ? json.data?.items : []) as Array<{
     occurred_at: string;
