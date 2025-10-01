@@ -37,56 +37,39 @@ export default function FinancialInlineWidget({
   const hasSale = typeof soldPriceAED === "number" && soldPriceAED != null;
   const totalExpensesAED = (directExpensesAED || 0) + (overheadAED || 0);
   return (
-    <div className="mt-1 text-xs text-gray-600 grid grid-cols-1 lg:grid-cols-3 gap-1 lg:gap-3">
-      {/* Purchase */}
-      <div className="flex items-center gap-2">
+    <div className="mt-1 text-[13px] text-gray-700 grid grid-cols-1 lg:grid-cols-2 gap-1 lg:gap-2 leading-snug">
+      {/* Row 1: Purchase + Expenses (compact, с акцентом на цифры) */}
+      <div className="flex flex-wrap items-center gap-2">
         <span className="inline-flex items-center justify-center w-5 h-5 rounded bg-blue-100 text-blue-700">B</span>
-        <div className="flex flex-wrap items-baseline gap-x-1">
-          <span>
-            {fmt(purchasePrice)} {purchaseCurrency || "AED"}
-            {purchaseCurrency && purchaseCurrency !== "AED" && purchaseRateToAed ? ` × ${purchaseRateToAed}` : ""}
-          </span>
-          <span className="text-gray-400">·</span>
-          <span>{fmt(purchasePriceAED)} AED</span>
-        </div>
-      </div>
-      {/* Expenses */}
-      <div className="flex items-center gap-2">
+        <span title={`${fmt(purchasePrice)} ${purchaseCurrency || 'AED'}${purchaseCurrency && purchaseCurrency !== 'AED' && purchaseRateToAed ? ` × ${purchaseRateToAed}` : ''}`}
+          className="font-medium">
+          {fmt(purchasePriceAED)} AED
+        </span>
+        <span className="text-gray-300">/</span>
         <span className="inline-flex items-center justify-center w-5 h-5 rounded bg-amber-100 text-amber-700">E</span>
-        <div className="flex flex-wrap items-baseline gap-x-1">
-          <span>
-            <Text path="profit.directExpenses" fallback="To'g'ri" />: {fmt(directExpensesAED)}
-          </span>
-          <span className="text-gray-400">·</span>
-          <span>
-            <Text path="profit.overheadExpenses" fallback="Overhead" />: {fmt(overheadAED)}
-          </span>
-          <span className="text-gray-400">·</span>
-          <span>
-            <Text path="profit.totalCost" fallback="Jami tan narx" />: {fmt((purchaseComponentAED || purchasePriceAED || 0) + totalExpensesAED)} AED
-          </span>
-        </div>
+        <span className="font-medium" title={`D: ${fmt(directExpensesAED)} • OH: ${fmt(overheadAED)}`}>
+          {fmt(totalExpensesAED)} AED
+        </span>
+        <span className="text-gray-400">·</span>
+        <span className="text-gray-600">
+          <Text path="profit.totalCost" fallback="Cost" />: <span className="font-medium">{fmt((purchaseComponentAED || purchasePriceAED || 0) + totalExpensesAED)} AED</span>
+        </span>
       </div>
-      {/* Sale & KPIs */}
-      <div className="flex items-center gap-2">
+
+      {/* Row 2: Sale + Profit (яркий акцент) */}
+      <div className="flex flex-wrap items-center gap-2">
         <span className="inline-flex items-center justify-center w-5 h-5 rounded bg-green-100 text-green-700">S</span>
-        <div className="flex flex-wrap items-baseline gap-x-2">
-          <span>
-            <Text path="cars.table.soldPrice" fallback="Sotuv" />: {hasSale ? `${fmt(soldPriceAED)} AED` : "—"}
-          </span>
-          <span className="text-gray-400">·</span>
-          <span>
-            <Text path="cars.table.profit" fallback="Foyda" />: {profitAED != null ? `${profitAED >= 0 ? "+" : ""}${fmt(profitAED)}` : "—"} AED
-          </span>
-          <span className="text-gray-400">·</span>
-          <span>
-            ROI: {roiPct != null ? `${fmt(roiPct, "ru-RU", 1, 1)}%` : "—"}
-          </span>
-          <span className="text-gray-400">·</span>
-          <span>
-            <Text path="cars.table.margin" fallback="Marja" />: {marginPct != null ? `${fmt(marginPct, "ru-RU", 1, 1)}%` : "—"}
-          </span>
-        </div>
+        <span className="font-medium">{hasSale ? `${fmt(soldPriceAED)} AED` : '—'}</span>
+        <span className="text-gray-300">/</span>
+        <span className={profitAED != null && profitAED < 0 ? 'text-red-600 font-semibold' : 'text-green-700 font-semibold'}>
+          {profitAED != null ? `${profitAED >= 0 ? '+' : ''}${fmt(profitAED)} AED` : '—'}
+        </span>
+        {marginPct != null && (
+          <span className="text-gray-500">· <Text path="cars.table.margin" fallback="Marja" /> {fmt(marginPct, 'ru-RU', 1, 1)}%</span>
+        )}
+        {roiPct != null && (
+          <span className="text-gray-500">· ROI {fmt(roiPct, 'ru-RU', 1, 1)}%</span>
+        )}
       </div>
     </div>
   );
