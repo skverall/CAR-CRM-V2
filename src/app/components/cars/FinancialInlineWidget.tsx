@@ -36,42 +36,53 @@ export default function FinancialInlineWidget({
 }: FinancialInlineWidgetProps) {
   const hasSale = typeof soldPriceAED === "number" && soldPriceAED != null;
   const totalExpensesAED = (directExpensesAED || 0) + (overheadAED || 0);
+  const totalCost = (purchaseComponentAED || purchasePriceAED || 0) + totalExpensesAED;
   return (
-    <div className="mt-1 text-[14px] text-gray-800 space-y-1 leading-snug">
-      {/* Line 1: Buy • Expenses • Cost */}
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
-        <span className="inline-flex items-center gap-1">
+    <div className="mt-1 text-[13px] text-gray-800 leading-relaxed">
+      {/* Two-column compact layout: left = B/E, right = Cost/Sale/Profit */}
+      <div className="grid grid-cols-2 gap-x-6 gap-y-1 items-baseline">
+        {/* B - Purchase */}
+        <div className="inline-flex items-center gap-2 min-w-0">
           <span className="inline-flex items-center justify-center w-5 h-5 rounded bg-blue-100 text-blue-700 text-[12px]">B</span>
-          <span className="tabular-nums font-semibold" title={`${fmt(purchasePrice)} ${purchaseCurrency || 'AED'}${purchaseCurrency && purchaseCurrency !== 'AED' && purchaseRateToAed ? ` × ${purchaseRateToAed}` : ''}`}>
+          <span
+            className="tabular-nums font-semibold whitespace-nowrap"
+            title={`${fmt(purchasePrice)} ${purchaseCurrency || 'AED'}${purchaseCurrency && purchaseCurrency !== 'AED' && purchaseRateToAed ? ` × ${purchaseRateToAed}` : ''}`}
+          >
             {fmt(purchasePriceAED)} AED
           </span>
-        </span>
-        <span className="inline-flex items-center gap-1">
+        </div>
+        {/* Total cost */}
+        <div className="flex items-center justify-end gap-2 text-gray-600">
+          <span><Text path="profit.totalCost" fallback="Cost" />:</span>
+          <span className="tabular-nums font-semibold text-gray-900 whitespace-nowrap">{fmt(totalCost)} AED</span>
+        </div>
+
+        {/* E - Expenses */}
+        <div className="inline-flex items-center gap-2 min-w-0">
           <span className="inline-flex items-center justify-center w-5 h-5 rounded bg-amber-100 text-amber-700 text-[12px]">E</span>
-          <span className="tabular-nums font-semibold" title={`D: ${fmt(directExpensesAED)} • OH: ${fmt(overheadAED)}`}>
+          <span className="tabular-nums font-semibold whitespace-nowrap" title={`D: ${fmt(directExpensesAED)} • OH: ${fmt(overheadAED)}`}>
             {fmt(totalExpensesAED)} AED
           </span>
-        </span>
-        <span className="inline-flex items-center gap-1 text-gray-600">
-          <span className="text-gray-500"><Text path="profit.totalCost" fallback="Cost" />:</span>
-          <span className="tabular-nums font-semibold">{fmt((purchaseComponentAED || purchasePriceAED || 0) + totalExpensesAED)} AED</span>
-        </span>
+        </div>
+        {/* S - Sale and Profit */}
+        <div className="flex items-center justify-end gap-2">
+          <span className="inline-flex items-center gap-2">
+            <span className="inline-flex items-center justify-center w-5 h-5 rounded bg-green-100 text-green-700 text-[12px]">S</span>
+            <span className="tabular-nums font-semibold whitespace-nowrap">{hasSale ? `${fmt(soldPriceAED)} AED` : '—'}</span>
+          </span>
+          <span className={`tabular-nums ml-2 ${profitAED != null && profitAED < 0 ? 'text-red-600 font-semibold' : 'text-green-700 font-semibold'}`}>
+            {profitAED != null ? `${profitAED >= 0 ? '+' : ''}${fmt(profitAED)} AED` : '—'}
+          </span>
+        </div>
       </div>
 
-      {/* Line 2: Sale • Profit • Margin/ROI */}
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
-        <span className="inline-flex items-center gap-1">
-          <span className="inline-flex items-center justify-center w-5 h-5 rounded bg-green-100 text-green-700 text-[12px]">S</span>
-          <span className="tabular-nums font-semibold">{hasSale ? `${fmt(soldPriceAED)} AED` : '—'}</span>
-        </span>
-        <span className={`tabular-nums ${profitAED != null && profitAED < 0 ? 'text-red-600 font-semibold' : 'text-green-700 font-semibold'}`}>
-          {profitAED != null ? `${profitAED >= 0 ? '+' : ''}${fmt(profitAED)} AED` : '—'}
-        </span>
+      {/* Secondary line: small metrics */}
+      <div className="mt-0.5 text-[12px] text-gray-500 flex flex-wrap gap-x-4 gap-y-1">
         {marginPct != null && (
-          <span className="text-gray-600">{fmt(marginPct, 'ru-RU', 1, 1)}% <Text path="cars.table.margin" fallback="marja" /></span>
+          <span className="whitespace-nowrap">{fmt(marginPct, 'ru-RU', 1, 1)}% <Text path="cars.table.margin" fallback="marja" /></span>
         )}
         {roiPct != null && (
-          <span className="text-gray-500">ROI {fmt(roiPct, 'ru-RU', 1, 1)}%</span>
+          <span className="whitespace-nowrap">ROI {fmt(roiPct, 'ru-RU', 1, 1)}%</span>
         )}
       </div>
     </div>
