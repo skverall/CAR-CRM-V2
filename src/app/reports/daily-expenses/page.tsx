@@ -7,6 +7,32 @@ function toISODate(d: Date) {
   return d.toISOString().slice(0, 10);
 }
 
+// Types for API response (avoid `any`)
+interface DailyExpenseItem {
+  occurred_at: string;
+  amount_aed: number;
+  scope: "car" | "overhead" | "personal";
+  category: string;
+  description: string | null;
+  car_vin?: string | null;
+}
+
+interface DailyExpensesSummary {
+  total_aed: number;
+  by_category: Array<{ key: string; total_aed: number }>;
+  by_car: Array<{ key: string; total_aed: number }>;
+}
+
+interface DailyExpensesResponse {
+  success: boolean;
+  data?: {
+    items?: DailyExpenseItem[];
+    summary?: DailyExpensesSummary;
+    pagination?: { total_count: number };
+  };
+}
+
+
 async function getOrgId(): Promise<string> {
   const db = getSupabaseAdmin();
   // Try by explicit name first (backward compatibility)
@@ -53,26 +79,17 @@ export default async function DailyExpensesPage({ searchParams }: { searchParams
   params.set("offset", String(offset));
 
   // Use relative path to avoid SSR self-fetch issues when BASE_URL is not set
-  let json: any = null;
+  let json: DailyExpensesResponse | null = null;
   try {
     const res = await fetch(`/api/reports/daily-expenses?${params.toString()}`, { cache: "no-store" });
-    json = await res.json();
-  } catch (e) {
+    json = (await res.json()) as DailyExpensesResponse;
+  } catch {
     json = { success: false };
   }
   const ok = json?.success === true;
-  const items = (ok ? json.data?.items : []) as Array<{
-    occurred_at: string;
-    amount_aed: number;
-    scope: "car" | "overhead" | "personal";
-    category: string;
-    description: string | null;
-    car_vin?: string | null;
-  }>;
-  const summary = (ok ? json.data?.summary : null) as
-    | { total_aed: number; by_category: Array<{ key: string; total_aed: number }>; by_car: Array<{ key: string; total_aed: number }> }
-    | null;
-  const totalCount = (ok ? json.data?.pagination?.total_count : 0) as number;
+  const items: DailyExpenseItem[] = ok && json?.data?.items ? json.data.items : [];
+  const summary: DailyExpensesSummary | null = ok && json?.data?.summary ? json.data.summary : null;
+  const totalCount: number = ok && json?.data?.pagination?.total_count ? json.data.pagination.total_count : 0;
   const totalPages = Math.max(1, Math.ceil((totalCount || 0) / pageSize));
   const currentPage = Math.min(Math.max(1, page), totalPages);
 

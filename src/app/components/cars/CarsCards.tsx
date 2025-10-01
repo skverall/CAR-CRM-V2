@@ -3,7 +3,6 @@
 import Link from "next/link";
 import Text from "@/app/components/i18n/Text";
 import StatusBadge from "@/app/components/ui/StatusBadge";
-import Badge from "@/app/components/ui/Badge";
 
 type CarRow = {
   id: string;
