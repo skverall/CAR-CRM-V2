@@ -58,6 +58,14 @@ export interface CarListItem {
   model_year: number | null;
   status: 'in_transit' | 'for_sale' | 'reserved' | 'sold' | 'archived';
   purchase_date: string;
+  // Financial fields for list row widget
+  purchase_currency?: string;
+  purchase_rate_to_aed?: number;
+  purchase_price?: number; // original amount in purchase_currency
+  purchase_price_aed?: number | null;
+  purchase_component_aed?: number; // from car_cost_view
+  car_expenses_component_aed?: number; // from car_cost_view
+  overhead_component_aed?: number; // from car_cost_view
   cost_base_aed: number;
   sold_price_aed: number | null;
   profit_aed: number | null;

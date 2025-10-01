@@ -137,7 +137,7 @@ async function sellCar(formData: FormData) {
     commission_aed: 0
   }).eq("id", carId);
 
-  // Create or update deal snapshot for reliability of reports
+  // Create or update deal snapshot for reliability of reports (with rate lock)
   const { data: pv } = await db
     .from('car_profit_view')
     .select('sold_price_aed, commission_aed, total_cost_aed, profit_aed, margin_pct, days_on_lot')
@@ -147,26 +147,31 @@ async function sellCar(formData: FormData) {
   if (pv) {
     const { data: existingSnap } = await db
       .from('deal_snapshots')
-      .select('id')
+      .select('id, rate_locked')
       .eq('car_id', carId)
       .limit(1);
 
-    const snapshot = {
-      car_id: carId,
-      org_id: (await db.from('au_cars').select('org_id').eq('id', carId).single()).data?.org_id || null,
-      sold_date: occurred_at,
-      sold_price_aed: pv.sold_price_aed ?? amount_aed,
-      commission_aed: pv.commission_aed ?? 0,
-      total_cost_aed: pv.total_cost_aed ?? 0,
-      profit_aed: pv.profit_aed ?? (amount_aed - (pv.total_cost_aed ?? 0)),
-      margin_pct: pv.margin_pct ?? null,
-      days_on_lot: pv.days_on_lot ?? null,
-    } as Record<string, unknown>;
+    // If already locked, do not overwrite
+    const isLocked = !!(existingSnap && existingSnap[0]?.rate_locked);
+    if (!isLocked) {
+      const snapshot = {
+        car_id: carId,
+        org_id: (await db.from('au_cars').select('org_id').eq('id', carId).single()).data?.org_id || null,
+        sold_date: occurred_at,
+        sold_price_aed: pv.sold_price_aed ?? amount_aed,
+        commission_aed: pv.commission_aed ?? 0,
+        total_cost_aed: pv.total_cost_aed ?? 0,
+        profit_aed: pv.profit_aed ?? (amount_aed - (pv.total_cost_aed ?? 0)),
+        margin_pct: pv.margin_pct ?? null,
+        days_on_lot: pv.days_on_lot ?? null,
+        rate_locked: true,
+      } as Record<string, unknown>;
 
-    if (existingSnap && existingSnap.length > 0) {
-      await db.from('deal_snapshots').update(snapshot).eq('id', existingSnap[0].id);
-    } else {
-      await db.from('deal_snapshots').insert([snapshot]);
+      if (existingSnap && existingSnap.length > 0) {
+        await db.from('deal_snapshots').update(snapshot).eq('id', existingSnap[0].id);
+      } else {
+        await db.from('deal_snapshots').insert([snapshot]);
+      }
     }
   }
 
@@ -243,6 +248,13 @@ export default async function CarPage({ params, searchParams }: { params: { id: 
     .select('profit_aed, margin_pct, days_on_lot, sold_price_aed, commission_aed, total_cost_aed')
     .eq('id', id)
     .single();
+  const { data: snap } = await db
+    .from('deal_snapshots')
+    .select('rate_locked')
+    .eq('car_id', id)
+    .limit(1);
+  const snapArr = (snap as Array<{ rate_locked: boolean }> | null) || [];
+  const rateLocked = !!snapArr[0]?.rate_locked;
   const profit = Number(pv?.profit_aed ?? 0);
   const canDistribute = carRow.status === "sold" && profit > 0 && (distributions || []).length === 0;
 
@@ -312,6 +324,12 @@ export default async function CarPage({ params, searchParams }: { params: { id: 
             <StatusBadge status={carRow.status}>
               <Text path={`status.${carRow.status}`} fallback={carRow.status} />
             </StatusBadge>
+            {rateLocked && (
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-emerald-100 text-emerald-700 border border-emerald-200" title="Курс зафиксирован">
+                <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 11c1.657 0 3-1.343 3-3V6a3 3 0 10-6 0v2c0 1.657 1.343 3 3 3zm-6 2a2 2 0 012-2h8a2 2 0 012 2v5a2 2 0 01-2 2H8a2 2 0 01-2-2v-5z"/></svg>
+                <span>Курс зафиксирован</span>
+              </span>
+            )}
           </div>
         </div>
         <div className="flex items-center gap-2">

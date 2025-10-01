@@ -50,6 +50,9 @@ export async function GET(request: NextRequest) {
         model,
         status,
         purchase_date,
+        purchase_component_aed,
+        car_expenses_component_aed,
+        overhead_component_aed,
         total_cost_aed
       `)
       .eq('org_id', orgId);
@@ -93,7 +96,7 @@ export async function GET(request: NextRequest) {
     if (ids.length > 0) {
       const { data: aus } = await db
         .from('au_cars')
-        .select('id, model_year, decision_tag, purchase_price_aed, sold_price_aed')
+        .select('id, model_year, decision_tag, purchase_price_aed, sold_price_aed, purchase_currency, purchase_rate_to_aed, purchase_price')
         .in('id', ids);
       auMap = (aus || []).reduce((acc: Record<string, Record<string, unknown>>, row: Record<string, unknown>) => {
         acc[row.id as string] = row;
@@ -126,7 +129,15 @@ export async function GET(request: NextRequest) {
         model_year: au ? (au.model_year as number) || null : null,
         status: car.status as 'in_transit' | 'for_sale' | 'reserved' | 'sold' | 'archived',
         purchase_date: car.purchase_date as string,
+        // FX and purchase details
+        purchase_currency: (au?.purchase_currency as string) || undefined,
+        purchase_rate_to_aed: typeof au?.purchase_rate_to_aed === 'number' ? (au!.purchase_rate_to_aed as number) : undefined,
+        purchase_price: typeof au?.purchase_price === 'number' ? (au!.purchase_price as number) : undefined,
         purchase_price_aed: au && typeof au.purchase_price_aed === 'number' ? (au.purchase_price_aed as number) / 100 : null,
+        // Cost breakdown components
+        purchase_component_aed: typeof car.purchase_component_aed === 'number' ? (car.purchase_component_aed as number) : undefined,
+        car_expenses_component_aed: typeof car.car_expenses_component_aed === 'number' ? (car.car_expenses_component_aed as number) : undefined,
+        overhead_component_aed: typeof car.overhead_component_aed === 'number' ? (car.overhead_component_aed as number) : undefined,
         cost_base_aed: car.total_cost_aed as number,
         sold_price_aed: pv ? (pv.sold_price_aed as number) || null : (au && typeof au.sold_price_aed === 'number' ? (au.sold_price_aed as number)/100 : null),
         profit_aed: pv ? (pv.profit_aed as number) || null : null,
