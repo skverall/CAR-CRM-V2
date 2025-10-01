@@ -417,19 +417,19 @@ export default function CarsTable({ cars, orgId: _orgId }: Props) {
                           </StatusBadge>
                           {columns.days && (
                             <span
-                              className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                              className={`px-2 py-0.5 rounded-full text-xs font-medium whitespace-nowrap ${
                                 daysInStock(car) >= 60 ? 'bg-red-100 text-red-700' :
                                 daysInStock(car) >= 30 ? 'bg-amber-100 text-amber-700' : 'bg-gray-100 text-gray-700'
                               }`}
                               title={t('cars.daysInStock', 'Kunlar omborda') as string}
                             >
-                              {daysInStock(car)} d
+                              {daysInStock(car)}d
                             </span>
                           )}
                         </div>
                       </td>
-                      <td className="px-4 py-4 text-sm text-gray-600 whitespace-nowrap">
-                        {new Date(car.purchase_date).toLocaleDateString('uz-UZ')}
+                      <td className="px-4 py-4 text-xs text-gray-600 whitespace-nowrap" title={new Date(car.purchase_date).toLocaleDateString('uz-UZ')}>
+                        {new Date(car.purchase_date).toLocaleDateString('uz-UZ', { day: '2-digit', month: 'short' })}
                       </td>
                       {columns.purchase && (
                         <td className="px-4 py-4 text-right text-sm font-medium text-gray-900 whitespace-nowrap">
