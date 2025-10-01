@@ -245,14 +245,32 @@ export async function GET(req: NextRequest) {
     };
 
     function drawHeader() {
-      // Top bar
+      // Top bar background
       doc.rect(page.margin, page.margin, page.width - page.margin * 2, 60).fill('#F8FAFC');
+
+      // Org name & report title (left)
       doc.fillColor('#0F172A').fontSize(16).font('Helvetica-Bold')
         .text(orgName, page.margin + 16, page.margin + 12, { width: page.width - page.margin * 2 - 32, align: 'left' });
       doc.fontSize(12).font('Helvetica').fillColor('#334155')
         .text('Sales Report', page.margin + 16, page.margin + 32);
       doc.fontSize(9).fillColor('#475569')
         .text(`Period: ${periodText}`, page.margin + 16, page.margin + 48);
+
+      // Company mark (top-right): try image public/logo.png, else initials badge
+      try {
+        doc.image('public/logo.png', page.width - page.margin - 44, page.margin + 8, { fit: [36, 36] });
+      } catch {
+        // Fallback: initials badge
+        const initials = orgName
+          .split(/\s+/)
+          .filter(Boolean)
+          .slice(0, 2)
+          .map(w => w[0]?.toUpperCase() || '')
+          .join('');
+        doc.roundedRect(page.width - page.margin - 44, page.margin + 8, 36, 36, 8).fill('#E2E8F0');
+        doc.fillColor('#0F172A').font('Helvetica-Bold').fontSize(12)
+          .text(initials || '•', page.width - page.margin - 44, page.margin + 18, { width: 36, align: 'center' });
+      }
 
       // Totals box (right side)
       const boxW = 220, boxH = 60, boxX = page.width - page.margin - boxW, boxY = page.margin;
@@ -270,10 +288,24 @@ export async function GET(req: NextRequest) {
 
     let pageNo = 1;
     function drawFooter() {
-      const text = `Page ${pageNo}`;
+      const contact = 'Phone: +971 585 263 233  •  Email: aydmaxx@gmail.com';
+      const leftX = page.margin, rightX = page.width - page.margin;
+      const y = page.height - page.margin - 16;
+      // separator line
+      doc.strokeColor('#E2E8F0').moveTo(leftX, y).lineTo(rightX, y).stroke();
+      // footer text, website link & page number
       doc.fontSize(8).fillColor('#64748B');
-      doc.text(text, page.margin, page.height - page.margin - 10, { align: 'center', width: page.width - page.margin * 2 });
-      doc.fillColor('#0F172A');
+      doc.text(contact, leftX, y + 4, { width: page.width - page.margin * 2, align: 'left' });
+      doc.fillColor('#2563EB');
+      doc.text('ezcar24.com', leftX, y + 4, {
+        width: page.width - page.margin * 2,
+        align: 'center',
+        link: 'https://ezcar24.com',
+        underline: true,
+      });
+      doc.fillColor('#64748B');
+      doc.text(`Page ${pageNo}`, leftX, y + 4, { width: page.width - page.margin * 2, align: 'right' });
+      doc.fillColor('#0F172A').strokeColor('#000000');
     }
 
     function drawTableHeader(y: number) {
