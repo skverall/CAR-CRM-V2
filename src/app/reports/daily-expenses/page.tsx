@@ -155,16 +155,16 @@ export default async function DailyExpensesPage({ searchParams }: { searchParams
       {/* Filters */}
       <form className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 grid grid-cols-1 md:grid-cols-6 gap-3" method="get">
         <div>
-          <label className="block text-xs text-gray-500 mb-1">Start</label>
+          <label className="block text-xs text-gray-500 mb-1"><Text path="reports.dailyExpensesPage.filters.start" fallback="Boshlanish" /></label>
           <input type="date" name="start" defaultValue={start} className="w-full rounded-lg border-gray-300" />
         </div>
         <div>
-          <label className="block text-xs text-gray-500 mb-1">End</label>
+          <label className="block text-xs text-gray-500 mb-1"><Text path="reports.dailyExpensesPage.filters.end" fallback="Tugash" /></label>
           <input type="date" name="end" defaultValue={end} className="w-full rounded-lg border-gray-300" />
         </div>
         <div>
           <label className="block text-xs text-gray-500 mb-1">
-            <Text path="reports.dailyExpensesPage.filters.scope" fallback="Scope" />
+            <Text path="reports.dailyExpensesPage.filters.scope" fallback="Ko‘lam" />
           </label>
           <select name="scope" defaultValue={scope} className="w-full rounded-lg border-gray-300">
             <option value="">
@@ -176,7 +176,7 @@ export default async function DailyExpensesPage({ searchParams }: { searchParams
             <option value="personal">
               <Text path="reports.dailyExpensesPage.filters.personal" fallback="Shaxsiy" />
             </option>
-            <option value="car">car</option>
+            <option value="car"><Text path="reports.dailyExpensesPage.filters.car" fallback="Avto" /></option>
           </select>
         </div>
         <div>
@@ -205,17 +205,17 @@ export default async function DailyExpensesPage({ searchParams }: { searchParams
             ))}
           </select>
         </div>
-        <div className="flex items-end gap-2">
+        <div className="flex items-end gap-2 flex-wrap min-w-0">
           <div className="flex items-center gap-2 mr-auto">
-            <label className="text-xs text-gray-500">Page size</label>
+            <label className="text-xs text-gray-500"><Text path="reports.dailyExpensesPage.pageSize" fallback="Bet hajmi" /></label>
             <select name="page_size" defaultValue={pageSize} className="rounded-lg border-gray-300">
               <option value="25">25</option>
               <option value="50">50</option>
               <option value="100">100</option>
             </select>
           </div>
-          <button className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700">Apply</button>
-          <a className="px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-50" href="/reports/daily-expenses">Clear</a>
+          <button className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 shrink-0"><Text path="common.apply" fallback="Qo‘llash" /></button>
+          <a className="px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-50 shrink-0" href="/reports/daily-expenses"><Text path="common.clear" fallback="Tozalash" /></a>
         </div>
       </form>
 
